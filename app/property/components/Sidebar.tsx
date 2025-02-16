@@ -9,12 +9,12 @@ import { getAllProperties } from "@/src/api/property"
 import { Property } from '../../../type/Property'
 
 type PropertySidebarProps = {
-    setSelectedProperty: (property: Property) => void;
+    setSelectedPropertyID: React.Dispatch<React.SetStateAction<number|null>>; 
     properties: Property[];
     setProperties: React.Dispatch<React.SetStateAction<Property[]>>; 
 };
 
-export default function PropertySidebar({ setSelectedProperty, properties, setProperties }: PropertySidebarProps) {
+export default function PropertySidebar({ setSelectedPropertyID, properties, setProperties }: PropertySidebarProps) {
     const [isSortOptionVisible, setIsSortOptionVisible] = useState<boolean>(false)
     const [isCreateNewPropertyVisible, setIsCreateNewPropertyVisible] = useState<boolean>(false)
     const [selectedSort, setSelectedSort] = useState<string>("A-Z")
@@ -157,7 +157,7 @@ export default function PropertySidebar({ setSelectedProperty, properties, setPr
                         isPropertyActive={property.id === activeProperty}
                         onClick={() => {
                             setActiveProperty(property.id)
-                            setSelectedProperty(property)
+                            setSelectedPropertyID(property.id)
                         }}
                     />
                 ))}

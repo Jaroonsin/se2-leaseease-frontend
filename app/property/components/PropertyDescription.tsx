@@ -9,10 +9,10 @@ import {Property} from "../../../type/Property";
 type PropertyDescriptionProps = {
     Property: Property
     setProperties: React.Dispatch<React.SetStateAction<Property[]>>; 
-    setSelectedProperty: React.Dispatch<React.SetStateAction<Property|null>>; 
+    setSelectedPropertyID: React.Dispatch<React.SetStateAction<number|null>>; 
 }
 
-export default function PropertyDescription({ Property, setProperties, setSelectedProperty }: PropertyDescriptionProps) {
+export default function PropertyDescription({ Property, setProperties, setSelectedPropertyID }: PropertyDescriptionProps) {
 
   const [isEditPropertyVisible, setIsEditPropertyVisible] = useState<boolean>(false)
   const [isDeletePropertyVisible, setIsDeletePropertyVisible] = useState<boolean>(false)
@@ -79,8 +79,8 @@ export default function PropertyDescription({ Property, setProperties, setSelect
           </p>
         </div>
       </div>
-      {isEditPropertyVisible && <EditProperty setIsEditPropertyVisible = {setIsEditPropertyVisible} PropertyID={Property.id} setProperties={setProperties} Property={Property}/>}
-      {isDeletePropertyVisible && <DeleteProperty setIsDeletePropertyVisible = {setIsDeletePropertyVisible} PropertyID={Property.id} setProperties={setProperties} setSelectedProperty={setSelectedProperty}/>}
+      {isEditPropertyVisible && <EditProperty setIsEditPropertyVisible = {setIsEditPropertyVisible} PropertyID={Property.id} setProperties={setProperties} Property={Property} />}
+      {isDeletePropertyVisible && <DeleteProperty setIsDeletePropertyVisible = {setIsDeletePropertyVisible} PropertyID={Property.id} setProperties={setProperties} setSelectedPropertyID={setSelectedPropertyID}/>}
     </div>
   );
 };

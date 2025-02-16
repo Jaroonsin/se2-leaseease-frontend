@@ -7,16 +7,16 @@ type DeletePropertyProps = {
     setIsDeletePropertyVisible: Dispatch<SetStateAction<boolean>>
     PropertyID: number
     setProperties: React.Dispatch<React.SetStateAction<Property[]>>; 
-    setSelectedProperty: React.Dispatch<React.SetStateAction<Property|null>>; 
+    setSelectedPropertyID: React.Dispatch<React.SetStateAction<number|null>>; 
 }
 
-export default function DeleteProperty({ setIsDeletePropertyVisible, PropertyID, setProperties, setSelectedProperty }: DeletePropertyProps) {
+export default function DeleteProperty({ setIsDeletePropertyVisible, PropertyID, setProperties, setSelectedPropertyID }: DeletePropertyProps) {
     const handleDelete = async (PropertyID: number) =>{
         try {
             const result = await deleteProperty(PropertyID);
             setIsDeletePropertyVisible(false);
             setProperties((prev) => prev.filter((p) => p.id !== PropertyID));
-            setSelectedProperty(null);
+            setSelectedPropertyID(null);
         } catch (error) {
             console.error("Error deleting property:", error);
         }

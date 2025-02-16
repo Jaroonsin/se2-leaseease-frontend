@@ -8,10 +8,10 @@ import { Property } from '../../../type/Property'
 type PropertyDescriptionProps = {
     selectedProperty: Property | null;
     setProperties: React.Dispatch<React.SetStateAction<Property[]>>; 
-    setSelectedProperty: React.Dispatch<React.SetStateAction<Property|null>>;
+    setSelectedPropertyID: React.Dispatch<React.SetStateAction<number|null>>;
 }
 
-export default function MiddlePage({ selectedProperty, setProperties, setSelectedProperty }: PropertyDescriptionProps) {
+export default function MiddlePage({ selectedProperty, setProperties, setSelectedPropertyID }: PropertyDescriptionProps) {
     if (!selectedProperty) {
         return <p className="flex items-center justify-center text-center m-auto">Select a property to view details</p>;
     }
@@ -25,7 +25,7 @@ export default function MiddlePage({ selectedProperty, setProperties, setSelecte
             <PropertyDescription
                 Property={selectedProperty}
                 setProperties={setProperties}
-                setSelectedProperty={setSelectedProperty}
+                setSelectedPropertyID={setSelectedPropertyID}
             />
 
             <div className="flex flex-col items-start gap-5 flex-1 self-stretch my-[20px]">
