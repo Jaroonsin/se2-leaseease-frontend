@@ -4,8 +4,7 @@ import Header from '../property/components/Header'
 import SingleHistory from './components/SingleHistory'
 import { fetchUserInfo } from '@/store/authSlice'
 import { useDispatch, useSelector } from 'react-redux'
-import { AppDispatch } from '@/store/store'
-import { RootState } from '@/store/store'
+import { RootState, AppDispatch } from '@/store/store'
 import { fetchReservations } from '@/store/historySlice'
 
 type reservationType = {
@@ -22,8 +21,10 @@ type reservationType = {
 
 export default function Page() {
 	const dispatch = useDispatch<AppDispatch>()
-	const [reservations, setReservations] = useState<reservationType[]>([])
+	// const [reservations, setReservations] = useState<reservationType[]>([])
+	const { reservations, loading, error } = useSelector((state: RootState) => state.reservations)
 	const [status, setStatus] = useState('all')
+	const [sortBy, setSortBy] = useState<'propertyName' | 'lastModified'>('propertyName')
 	useEffect(() => {
 		// const fetchData = async () => {
 		// 	const action = await dispatch(fetchUserInfo())
@@ -33,7 +34,7 @@ export default function Page() {
 			const action = await dispatch(fetchReservations())
 			if (action.payload && typeof action.payload !== 'string') {
 				// Success case - action.payload will be ApiResponse<Reservation[]>
-				setReservations(action.payload.data || [])
+				// setReservations(action.payload.data || [])
 				console.log('Reservations data:', action.payload.data)
 			} else {
 				// Error case - action.payload will be a string
@@ -44,10 +45,22 @@ export default function Page() {
 		fetchHistory()
 	}, [dispatch])
 
+	// if (loading) return <div>Loading...</div>
+	// if (error) return <div>Error: {error}</div>
+
 	const filteredReservations = reservations.filter(
 		(reservation) =>
 			status === 'all' || reservation.status === status
 	)
+
+	const sortedReservations = filteredReservations.sort((a, b) => {
+		if (sortBy === 'propertyName') {
+			return a.propertyName.localeCompare(b.propertyName) // Sort alphabetically by property name
+		} else {
+			return new Date(b.lastModified).getTime() - new Date(a.lastModified).getTime() // Sort by lastModified date
+			// return new Date(a.lastModified).getTime() - new Date(b.lastModified).getTime()
+		}
+	})
 
 	return (
 		<div className="flex w-full flex-col items-center rounded-md">
@@ -151,11 +164,14 @@ export default function Page() {
 											Property
 										</p>
 									</div>
-									<div className="flex pl-[0.5rem] justify-center items-center gap-[0.625rem]">
+									<button
+										className="flex pl-[0.5rem] justify-center items-center gap-[0.625rem]"
+										onClick={() => setSortBy('propertyName')}
+									>
 										<svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0 0 17 16" fill="none">
 											<path d="M14.5 10.6665L11.8333 13.3332M11.8333 13.3332L9.16667 10.6665M11.8333 13.3332V2.6665M2.5 5.33317L5.16667 2.6665M5.16667 2.6665L7.83333 5.33317M5.16667 2.6665V13.3332" stroke="#94A3B8" strokeLinecap="round" strokeLinejoin="round" />
 										</svg>
-									</div>
+									</button>
 								</div>
 							</div>
 							<div className="flex w-[12.5rem] py-[0.75rem] px-[1rem] flex-col justify-center items-start gap-[0.625rem]">
@@ -169,11 +185,14 @@ export default function Page() {
 											Last Response
 										</p>
 									</div>
-									<div className="flex pl-[0.5rem] justify-center items-center gap-[0.625rem]">
+									<button
+										className="flex pl-[0.5rem] justify-center items-center gap-[0.625rem]"
+										onClick={() => setSortBy('lastModified')}
+									>
 										<svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0 0 17 16" fill="none">
 											<path d="M14.5 10.6665L11.8333 13.3332M11.8333 13.3332L9.16667 10.6665M11.8333 13.3332V2.6665M2.5 5.33317L5.16667 2.6665M5.16667 2.6665L7.83333 5.33317M5.16667 2.6665V13.3332" stroke="#94A3B8" strokeLinecap="round" strokeLinejoin="round" />
 										</svg>
-									</div>
+									</button>
 								</div>
 							</div>
 							<div className="flex w-[7rem] py-[0.75rem] px-[1rem] flex-col justify-center items-center gap-[0.625rem]">
@@ -223,13 +242,13 @@ export default function Page() {
 					</div>
 
 					{/*  */}
-					{filteredReservations.length === 0 ? (
+					{sortedReservations.length === 0 ? (
 						<div className="flex w-full h-full justify-center items-center text-center align-center">
 							<p>No properties found for the selected status.</p>
 						</div>
 					) : (
-						<div>
-							{filteredReservations.map((reservation) => (
+						<div className='w-full h-full'>
+							{sortedReservations.map((reservation) => (
 								<SingleHistory key={reservation.id} reservation={reservation} />
 							))}
 						</div>

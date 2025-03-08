@@ -28,12 +28,14 @@ interface ReservationsState {
 	reservations: Reservation[]
 	loading: boolean
 	error: string | null
+	successMessage: string | null
 }
 
 const initialState: ReservationsState = {
 	reservations: [],
 	loading: false,
 	error: null,
+	successMessage: null,
 }
 
 // Fetch Reservations
@@ -52,7 +54,28 @@ export const fetchReservations = createAsyncThunk<
 	}
 })
 
-// Create a slice to handle the reservation state
+export const deleteReservation = createAsyncThunk<
+	string, // Success type: we will return the message string on success
+	number, // Payload type: reservation id
+	AsyncThunkConfig // Custom configuration
+>(
+	'reservations/delete', // action type
+	async (id, { rejectWithValue }) => {
+		try {
+			const response = await apiClient.delete(
+				`http://localhost:5000/api/v2/lessee/delete/${id}`
+			);
+			// Return the message from the response
+			if (response.data.status_code === 200) {
+				return response.data.message; // Return success message
+			}
+			return rejectWithValue('Failed to delete reservation');
+		} catch (error: any) {
+			return rejectWithValue(error.message); // Return error message if failed
+		}
+	}
+);
+
 const reservationsSlice = createSlice({
 	name: 'reservations',
 	initialState,
@@ -61,19 +84,38 @@ const reservationsSlice = createSlice({
 		builder
 			// Fetch Reservations
 			.addCase(fetchReservations.pending, (state) => {
-				state.loading = true
-				state.error = null
+				state.loading = true;
+				state.error = null;
 			})
 			.addCase(fetchReservations.fulfilled, (state, action) => {
-				state.loading = false
-				state.reservations = action.payload.data || [] // Store the fetched reservations
+				state.loading = false;
+				state.reservations = action.payload.data || []; // Store the fetched reservations
 			})
 			.addCase(fetchReservations.rejected, (state, action) => {
-				state.loading = false
-				state.error = action.payload as string // Set error message if the request fails
+				state.loading = false;
+				state.error = action.payload as string; // Set error message if the request fails
 			})
+			// Delete Reservation
+			.addCase(deleteReservation.pending, (state) => {
+				state.loading = true;
+				state.error = null;
+			})
+			// .addCase(deleteReservation.fulfilled, (state, action) => {
+			// 	state.loading = false;
+			// 	// Remove the deleted reservation from the list by id
+			// 	state.reservations = state.reservations.filter(
+			// 		(reservation) => reservation.id !== action.payload.id
+			// 	);
+			// 	// Optional: You can store the success message if you need to display it
+			// 	state.successMessage = action.payload;
+			// })
+			.addCase(deleteReservation.rejected, (state, action) => {
+				state.loading = false;
+				state.error = action.payload as string; // Set error message if the request fails
+			});
 	},
-})
+});
+
 
 export default reservationsSlice.reducer
 
