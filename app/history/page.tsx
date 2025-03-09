@@ -7,21 +7,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState, AppDispatch } from '@/store/store'
 import { fetchReservations } from '@/store/historySlice'
 
-type reservationType = {
-	id: number
-	purpose: string
-	proposedMessage: string
-	question: string
-	status: string
-	interestedProperty: number
-	lesseeID: number
-	propertyName: string
-	lastModified: string
-}
-
 export default function Page() {
 	const dispatch = useDispatch<AppDispatch>()
-	// const [reservations, setReservations] = useState<reservationType[]>([])
 	const { reservations, loading, error } = useSelector((state: RootState) => state.reservations)
 	const [status, setStatus] = useState('all')
 	const [sortBy, setSortBy] = useState<'propertyName' | 'lastModified'>('propertyName')
@@ -48,7 +35,19 @@ export default function Page() {
 	// if (loading) return <div>Loading...</div>
 	// if (error) return <div>Error: {error}</div>
 
-	const filteredReservations = reservations.filter(
+	const filteredReservationsTmp = reservations
+		.map((reservation) =>
+			reservation.status === 'waiting'
+				? { ...reservation, status: 'payment' }
+				: reservation
+		)
+		.filter(
+			(reservation) =>
+				status === 'all' || reservation.status === status
+		);
+
+
+	const filteredReservations = filteredReservationsTmp.filter(
 		(reservation) =>
 			status === 'all' || reservation.status === status
 	)
@@ -119,15 +118,15 @@ export default function Page() {
 					</div>
 
 					<div
-						className={`flex w-[5rem] h-[1.75rem] py-[0.25rem] px-[0.75rem] flex-col justify-center items-center gap-[0.625rem] rounded-md ${status === 'waiting' ? 'bg-white shadow-md' : ''
+						className={`flex w-[5rem] h-[1.75rem] py-[0.25rem] px-[0.75rem] flex-col justify-center items-center gap-[0.625rem] rounded-md ${status === 'payment' ? 'bg-white shadow-md' : ''
 							}`}
 					>
 						<button
 							className="flex justify-center items-center gap-[0.625rem]"
-							onClick={() => setStatus('waiting')}
+							onClick={() => setStatus('payment')}
 						>
 							<p
-								className={`text-sm font-medium leading-[1.25rem] ${status === 'waiting' ? 'text-slate-900' : 'text-slate-500'
+								className={`text-sm font-medium leading-[1.25rem] ${status === 'payment' ? 'text-slate-900' : 'text-slate-500'
 									}`}
 							>
 								Waiting
