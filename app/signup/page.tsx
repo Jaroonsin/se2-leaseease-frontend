@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppDispatch } from '@/store/hooks';
 import { register, requestOTP } from '@/store/authSlice';
+
 const SignUp = () => {
     const router = useRouter();
     const [name, setName] = useState('');
@@ -46,10 +47,10 @@ const SignUp = () => {
                         name,
                         email,
                         address: 'peace home',
-						image_url: 'https://www.gravatar.com/avatar/'
+                        image_url: 'https://www.gravatar.com/avatar/',
                     },
                     password,
-                }),
+                })
             );
             await dispatch(requestOTP());
             router.push('/otp');
@@ -85,163 +86,188 @@ const SignUp = () => {
     };
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gray-100">
-            <div className="flex w-full max-w-4xl bg-white shadow-lg rounded-lg overflow-hidden">
-                <div className="w-1/2 p-8">
-                    <h2 className="text-2xl font-semibold text-gray-700 text-center">Sign up account</h2>
-                    <p className="text-gray-600 mb-6 text-center">Enter your details to sign up your account</p>
-
-                    <form onSubmit={handleSubmit} className="space-y-4 p-6">
-                        <div className="mb-4 flex space-x-5">
-                            <div className="mb-4">
-                                <label htmlFor="name" className="block text-gray-700">
-                                    Name
+        <div className="flex flex-col items-center justify-center">
+            <div className="flex w-full h-screen">
+                <div className="flex flex-col w-1/2 p-[48px_80px] items-center justify-center gap-10">
+                    <div className="flex flex-col items-center gap-2 p-[16px_0px]">
+                        <h2 className="text-3xl font-semibold text-slate-700">Sign up account</h2>
+                        <p className="text-slate-700">Enter your details to sign up your account</p>
+                    </div>
+                    <form onSubmit={handleSubmit} className="w-full">
+                        <div className="flex flex-col gap-4">
+                            <div className="flex flex-start gap-5">
+                                <div className="w-1/2 gap-1 flex flex-col">
+                                    <label htmlFor="name" className="block text-slate-700 text-xs font-medium">
+                                        Name
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="name"
+                                        className="w-full p-2 border rounded-md placeholder-slate-300"
+                                        value={name}
+                                        placeholder="Name"
+                                        onChange={(e) => setName(e.target.value)}
+                                        required
+                                    />
+                                    {errors.name && (
+                                        <div className=" text-red-500">
+                                            <p>{errors.name}</p>
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="w-1/2 gap-1 flex flex-col">
+                                    <label htmlFor="surname" className="block text-slate-700 text-xs font-medium">
+                                        Surname
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="surname"
+                                        className="w-full p-2 border rounded-md placeholder-slate-300"
+                                        value={surname}
+                                        placeholder="Surname"
+                                        onChange={(e) => setSurname(e.target.value)}
+                                        required
+                                    />
+                                    {errors.surname && (
+                                        <div className=" text-red-500">
+                                            <p>{errors.surname}</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="flex flex-col gap-1">
+                                <label htmlFor="dob" className="block text-slate-700 text-xs font-medium">
+                                    Date of Birth
                                 </label>
                                 <input
-                                    type="text"
-                                    id="name"
-                                    className="w-full p-2 border rounded text-gray-700"
-                                    value={name}
-                                    placeholder="Name"
-                                    onChange={(e) => setName(e.target.value)}
+                                    type="date"
+                                    id="dob"
+                                    className="w-full p-2 border rounded-md placeholder-slate-300"
+                                    placeholder="Date of Birth"
+                                    value={dob}
+                                    onChange={(e) => setDob(e.target.value)}
                                     required
                                 />
-                                {errors.name && (
+                                {errors.dob && (
                                     <div className=" text-red-500">
-                                        <p>{errors.name}</p>
+                                        <p>{errors.dob}</p>
                                     </div>
                                 )}
                             </div>
-                            <div className="mb-4">
-                                <label htmlFor="surname" className="block text-gray-700">
-                                    Surname
+                            <div className="flex flex-col gap-1">
+                                <label htmlFor="email" className="block text-slate-700 text-xs font-medium">
+                                    Email
                                 </label>
                                 <input
-                                    type="text"
-                                    id="surname"
-                                    className="w-full p-2 border rounded text-gray-700"
-                                    value={surname}
-                                    placeholder="Surname"
-                                    onChange={(e) => setSurname(e.target.value)}
+                                    type="email"
+                                    id="email"
+                                    className="w-full p-2 border rounded-md placeholder-slate-300"
+                                    value={email}
+                                    placeholder="Email"
+                                    onChange={(e) => setEmail(e.target.value)}
                                     required
                                 />
-                                {errors.surname && (
+                                {errors.email && (
                                     <div className=" text-red-500">
-                                        <p>{errors.surname}</p>
+                                        <p>{errors.email}</p>
                                     </div>
                                 )}
                             </div>
-                        </div>
-                        <div className="mb-4">
-                            <label htmlFor="dob" className="block text-gray-700">
-                                Date of Birth
-                            </label>
-                            <input
-                                type="date"
-                                id="dob"
-                                className="w-full p-2 border rounded text-gray-700"
-                                placeholder="Date of Birth"
-                                value={dob}
-                                onChange={(e) => setDob(e.target.value)}
-                                required
-                            />
-                            {errors.dob && (
-                                <div className=" text-red-500">
-                                    <p>{errors.dob}</p>
-                                </div>
-                            )}
-                        </div>
-                        <div className="mb-4">
-                            <label htmlFor="email" className="block text-gray-700">
-                                Email
-                            </label>
-                            <input
-                                type="email"
-                                id="email"
-                                className="w-full p-2 border rounded text-gray-700"
-                                value={email}
-                                placeholder="Email"
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                            />
-                            {errors.email && (
-                                <div className=" text-red-500">
-                                    <p>{errors.email}</p>
-                                </div>
-                            )}
-                        </div>
-                        <div className="mb-6">
-                            <label htmlFor="password" className="block text-gray-700">
-                                Password
-                            </label>
-                            <input
-                                type="password"
-                                id="password"
-                                className="w-full p-2 border rounded text-gray-700"
-                                value={password}
-                                placeholder="Password"
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                            />
-                            {errors.password && (
-                                <div className=" text-red-500">
-                                    <p>{errors.password}</p>
-                                </div>
-                            )}
-                        </div>
+                            <div className="flex flex-col gap-1">
+                                <label htmlFor="password" className="block text-gray-700 text-xs font-medium">
+                                    Password
+                                </label>
+                                <input
+                                    type="password"
+                                    id="password"
+                                    className="w-full p-2 border rounded-md placeholder-slate-300"
+                                    value={password}
+                                    placeholder="Password"
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                />
+                                {errors.password && (
+                                    <div className=" text-red-500">
+                                        <p>{errors.password}</p>
+                                    </div>
+                                )}
+                            </div>
 
-                        <div className="mb-6">
-                            <label className="block text-gray-700 font-bold mb-2">Choose your account type</label>
-                            <div className="flex space-x-4">
-                                <label className="inline-flex items-center">
-                                    <input
-                                        type="radio"
-                                        className="form-radio h-5 w-5 text-blue-500"
-                                        value="lessee"
-                                        checked={accountType === 'lessee'}
-                                        onChange={() => setAccountType('lessee')}
-                                    />
-                                    <span className="ml-2">
-                                        Lessee <span className="text-gray-500">(Want to rent the property)</span>
-                                    </span>
+                            <div className="flex flex-col gap-2.5">
+                                <label className="block text-slate-700 text-xs font-medium">
+                                    Choose your account type
                                 </label>
-                                <label className="inline-flex items-center">
-                                    <input
-                                        type="radio"
-                                        className="form-radio h-5 w-5 text-blue-500"
-                                        value="lessor"
-                                        checked={accountType === 'lessor'}
-                                        onChange={() => setAccountType('lessor')}
-                                    />
-                                    <span className="ml-2">
-                                        Lessor <span className="text-gray-500">(Want to lease out the property)</span>
-                                    </span>
-                                </label>
+                                <div className="flex flex-start gap-5">
+                                    <div
+                                        className={`border rounded-lg  p-3 w-1/2 cursor-pointer flex flex-col justify-center items-start${
+                                            accountType === 'lessee'
+                                                ? ' border-blue-900 bg-indigo-100'
+                                                : 'border-slate-200'
+                                        }`}
+                                        onClick={() => setAccountType('lessee')}
+                                    >
+                                        <label className="flex flex-col items-start gap-1.5 cursor-pointer">
+                                            <div className="flex flex-col">
+                                                <img src="/user.svg" alt="Lessee Icon" />
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <h2 className="text-sm font-medium text-blue-950">Lessee</h2>
+                                                <p className="text-slate-500 text-xs">Want to rent the property</p>
+                                            </div>
+                                        </label>
+                                    </div>
+
+                                    <div
+                                        className={`border rounded-lg p-3 w-1/2 cursor-pointer flex flex-col justify-center items-start${
+                                            accountType === 'lessor'
+                                                ? ' border-blue-900 bg-indigo-100'
+                                                : 'border-slate-200'
+                                        }`}
+                                        onClick={() => setAccountType('lessor')}
+                                    >
+                                        <label className="flex flex-col gap-1.5 cursor-pointer">
+                                            <div className="flex">
+                                                <img src="/building.svg" alt="Lessor Icon" />
+                                            </div>
+                                            <div>
+                                                <h2 className="text-sm font-medium text-blue-950">Lessor</h2>
+                                                <p className="text-slate-500 text-xs">Want to lease out the property</p>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-
-                        <button
-                            type="submit"
-                            className="w-full bg-blue-600 text-white p-2 rounded"
-                            onClick={() => handleRegister()}
-                        >
-                            Sign up
-                        </button>
-
-                        <p className="text-center text-gray-600">
-                            Already have an account?{' '}
-                            <span className="text-blue-600 cursor-pointer" onClick={() => router.push('/login')}>
-                                Sign In
-                            </span>
-                        </p>
                     </form>
                     {error && (
                         <div className="mb-4 text-black text-center text-2xl font-semibold bg-red-500 p-4 rounded-lg">
                             <p>{error}</p>
                         </div>
                     )}
+                    <div className="w-full flex flex-col gap-2">
+                        <button
+                            type="submit"
+                            className="w-full bg-blue-900 text-white p-3.5 rounded-lg"
+                            onClick={() => handleRegister()}
+                        >
+                            Sign up
+                        </button>
+
+                        <p className="text-center text-slate-700">
+                            Already have an account?{' '}
+                            <span
+                                className="text-slate-700 font-bold cursor-pointer"
+                                onClick={() => router.push('/login')}
+                            >
+                                Sign In
+                            </span>
+                        </p>
+                    </div>
                 </div>
-                <div className="w-1/2 bg-cover bg-center" style={{ backgroundImage: "url('bg-condo.jpg')" }} />
+                <div
+                    className="flex flex-col w-1/2 bg-cover bg-center rounded-tl-[24px] mt-14"
+                    style={{ backgroundImage: "url('bg-2.png')" }}
+                />
             </div>
         </div>
     );
