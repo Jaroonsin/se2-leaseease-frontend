@@ -14,7 +14,7 @@ export function middleware(req: NextRequest) {
 
     // For protected routes, if no token is present, redirect the user to the login page.
     // You can define an array of protected routes as needed.
-    const protectedRoutes = ['/dashboard', '/profile', '/property']; // Add other protected paths as required.
+    const protectedRoutes = ['/dashboard', '/profile', '/property', '/lessee_center']; // Add other protected paths as required.
     if (protectedRoutes.some((route) => pathname.startsWith(route)) && !token) {
         const url = req.nextUrl.clone();
         url.pathname = '/login';
@@ -28,5 +28,5 @@ export function middleware(req: NextRequest) {
 // Configure the middleware to apply only on specific routes.
 // Adjust the matcher paths to cover your protected routes and the login route.
 export const config = {
-    matcher: ['/dashboard/:path*', '/profile/:path*', '/login', '/property/:path*'],
+    matcher: ['/dashboard/:path*', '/profile/:path*', '/login', '/property/:path*', '/lessee_center/:path*'],
 };

@@ -1,8 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { AxiosResponse } from 'axios';
 import { apiClient } from '@/src/api/axios';
-import { Root } from 'postcss';
-import { RootState } from './store';
+import { AsyncThunkConfig, RootState } from './store';
 
 interface Data {
     properties: Property[];
@@ -23,7 +22,7 @@ export type Property = {
     name: string;
     rating: number;
     location: string;
-    size: string;
+    size: number;
     price: number;
     date: string;
     image: string;
@@ -55,65 +54,78 @@ const initialState: PropertiesState = {
 };
 
 // ** Fetch Properties **
-export const fetchProperties = createAsyncThunk('properties/get', async (_, { rejectWithValue }) => {
-    try {
-        const res: AxiosResponse<ApiResponse<Data>> = await apiClient.get('properties/get');
-		//dummy data
-        const data: Data = res.data.data!;
-        if (data) {
-			const data_random: Property[] = data.properties.map((property, index) => ({
-				...property,
-				rating: parseFloat((Math.random() * (5 - 3.5) + 3.5).toFixed(1)),
-				reviews: Math.floor(Math.random() * 500) + 1,
-				image: `https://loremflickr.com/2048/1280?random=${index + 1}`,
-				date: new Date(property.date).toLocaleString('en-GB', {
-					day: '2-digit',
-					month: 'short',
-					year: 'numeric',
-					hour: '2-digit',
-					minute: '2-digit',
-				}),
-			}));
+export const fetchProperties = createAsyncThunk<Data, void, AsyncThunkConfig>(
+    'properties/get',
+    async (_, { rejectWithValue }) => {
+        try {
+            const res: AxiosResponse<ApiResponse<Data>> = await apiClient.get('properties/get');
+            //dummy data
+            const data: Data = res.data.data!;
+            if (data) {
+                const data_random: Property[] = data.properties.map((property, index) => ({
+                    ...property,
+                    rating: parseFloat((Math.random() * (5 - 3.5) + 3.5).toFixed(1)),
+                    reviews: Math.floor(Math.random() * 500) + 1,
+                    image: `https://loremflickr.com/2048/1280?random=${index + 1}`,
+                    date: new Date(property.date).toLocaleString('en-GB', {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                    }),
+                }));
 
-            return { ...data, properties: data_random };
+                return { ...data, properties: data_random };
+            }
+            return data;
+        } catch (error: any) {
+            return rejectWithValue(error.message);
         }
-    } catch (error: any) {
-        return rejectWithValue(error.message);
     }
-});
+);
 
 // ** Create Property **
-export const createProperty = createAsyncThunk('properties/create', async (property: Property, { rejectWithValue }) => {
-    try {
-        const res = await apiClient.post('properties/create', property);
-        property.id = res.data.data.property_id;
-        return property;
-    } catch (error: any) {
-        return rejectWithValue(error.message);
+export const createProperty = createAsyncThunk<Property, Property, AsyncThunkConfig>(
+    'properties/create',
+    async (property, { rejectWithValue }) => {
+        try {
+            const res = await apiClient.post('properties/create', property);
+            property.id = res.data.data.property_id;
+            return property;
+        } catch (error: any) {
+            return rejectWithValue(error.message);
+        }
     }
-});
+);
 
 // ** Update Property **
-export const updateProperty = createAsyncThunk('properties/update', async (property: Property, { rejectWithValue }) => {
-    try {
-        await apiClient.put(`properties/update/${property.id}`, property);
-        return property;
-    } catch (error: any) {
-        return rejectWithValue(error.message);
+export const updateProperty = createAsyncThunk<Property, Property, AsyncThunkConfig>(
+    'properties/update',
+    async (property, { rejectWithValue }) => {
+        try {
+            await apiClient.put(`properties/update/${property.id}`, property);
+            return property;
+        } catch (error: any) {
+            return rejectWithValue(error.message);
+        }
     }
-});
+);
 
 // ** Delete Property **
-export const deleteProperty = createAsyncThunk('properties/delete', async (_, { getState, rejectWithValue }) => {
-    try {
-        const state = getState() as RootState;
-        const id = state.property.selectedProperty?.id;
-        await apiClient.delete(`properties/delete/${id}`);
-        return id ? id : 0;
-    } catch (error: any) {
-        return rejectWithValue(error.message);
+export const deleteProperty = createAsyncThunk<number, void, AsyncThunkConfig>(
+    'properties/delete',
+    async (_, { getState, rejectWithValue }) => {
+        try {
+            const state = getState();
+            const id = state.property.selectedProperty?.id;
+            await apiClient.delete(`properties/delete/${id}`);
+            return id ? id : 0;
+        } catch (error: any) {
+            return rejectWithValue(error.message);
+        }
     }
-});
+);
 
 const propertiesSlice = createSlice({
     name: 'properties',
@@ -130,7 +142,7 @@ const propertiesSlice = createSlice({
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(fetchProperties.fulfilled, (state, action: PayloadAction<any>) => {
+            .addCase(fetchProperties.fulfilled, (state, action) => {
                 // console.log(action.payload)
                 state.loading = false;
                 state.properties = action.payload.properties || [];
@@ -149,7 +161,7 @@ const propertiesSlice = createSlice({
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(createProperty.fulfilled, (state, action: PayloadAction<Property>) => {
+            .addCase(createProperty.fulfilled, (state, action) => {
                 state.loading = false;
                 state.properties.push(action.payload);
                 state.totalRecords += 1;
@@ -164,8 +176,9 @@ const propertiesSlice = createSlice({
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(updateProperty.fulfilled, (state, action: PayloadAction<Property>) => {
+            .addCase(updateProperty.fulfilled, (state, action) => {
                 state.loading = false;
+                state.selectedProperty = action.payload;
                 const index = state.properties.findIndex((prop) => prop.id === action.payload.id);
                 if (index !== -1) {
                     state.properties[index] = {
@@ -184,7 +197,7 @@ const propertiesSlice = createSlice({
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(deleteProperty.fulfilled, (state, action: PayloadAction<number>) => {
+            .addCase(deleteProperty.fulfilled, (state, action) => {
                 state.loading = false;
                 state.properties = state.properties.filter((prop) => prop.id !== action.payload);
                 state.totalRecords -= 1;

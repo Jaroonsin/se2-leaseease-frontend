@@ -44,7 +44,7 @@ export default function CreateNewProperty({ setIsCreateNewPropertyVisible }: Cre
             const propertyData: Property = {
                 id: 0,
                 name: name ?? '',
-                size: (size?.toString() ?? 'udf') + ' sqft',
+                size: size ?? 0,
                 price: price ?? 0,
                 location: location ?? '',
                 detail: detail ?? '',

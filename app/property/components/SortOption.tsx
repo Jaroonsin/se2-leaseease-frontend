@@ -77,7 +77,7 @@ const SortOption = forwardRef<HTMLDivElement, SortOptionProps>(
                 </div>
             </div>
         );
-    },
+    }
 );
 
 export default SortOption;

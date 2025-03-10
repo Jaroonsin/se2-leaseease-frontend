@@ -19,7 +19,7 @@ export default function EditProperty({ setIsEditPropertyVisible }: EditPropertyP
     const [selectedFile, setSelectedFile] = useState<string | null>(selectedProperty?.image ?? null);
     const [name, setName] = useState<string | null>(selectedProperty?.name || '');
     const [location, setLocation] = useState<string | null>(selectedProperty?.location || '');
-    const [size, setSize] = useState<string | null>(selectedProperty?.size || '');
+    const [size, setSize] = useState<number | null>(selectedProperty?.size || 0);
     const [price, setPrice] = useState<number | null>(selectedProperty?.price || null);
 
     const [errors, setErrors] = useState<{
@@ -51,7 +51,7 @@ export default function EditProperty({ setIsEditPropertyVisible }: EditPropertyP
         const editProperty: Property = {
             name: name || '',
             location: location || '',
-            size: size || '',
+            size: size || 0,
             price: price ?? 0,
             id: selectedProperty?.id || 0,
             rating: selectedProperty?.rating || 0,
@@ -209,8 +209,8 @@ export default function EditProperty({ setIsEditPropertyVisible }: EditPropertyP
                                     className="text-base font-normal leading-[24px] w-full outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                     style={{ fontFamily: 'Inter' }}
                                     placeholder="eg. 100.00"
-                                    value={size || ''}
-                                    onChange={(e) => setSize(e.target.value || null)}
+                                    value={size || 0}
+                                    onChange={(e) => setSize(Number(e.target.value) || null)}
                                 />
                             </div>
                         </div>

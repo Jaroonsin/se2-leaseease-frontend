@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { apiClient } from '@/src/api/axios';
+import { AsyncThunkConfig } from './store';
 
 interface ApiResponse<T> {
     status_code: number;
@@ -31,7 +32,7 @@ const initialState: AuthState = {
     email: '',
 };
 
-export const fetchUserInfo = createAsyncThunk<ApiResponse<User>, void, { rejectValue: string }>(
+export const fetchUserInfo = createAsyncThunk<ApiResponse<User>, void, AsyncThunkConfig>(
     'auth/fetchUserInfo',
     async (_, { rejectWithValue }) => {
         try {
@@ -43,9 +44,9 @@ export const fetchUserInfo = createAsyncThunk<ApiResponse<User>, void, { rejectV
     }
 );
 
-export const login = createAsyncThunk(
+export const login = createAsyncThunk<ApiResponse<User>, { email: string; password: string }, AsyncThunkConfig>(
     'auth/login',
-    async (credentials: { email: string; password: string }, { rejectWithValue }) => {
+    async (credentials, { rejectWithValue }) => {
         try {
             const response = await apiClient.post<ApiResponse<User>>('auth/login', {
                 email: credentials.email,
@@ -57,8 +58,10 @@ export const login = createAsyncThunk(
         }
     }
 );
-
-export const logout = createAsyncThunk('auth/logout', async (_, { rejectWithValue }) => {
+// prettier-ignore
+export const logout = createAsyncThunk<null, void, AsyncThunkConfig>(
+	'auth/logout',
+	async (_, { rejectWithValue }) => {
     try {
         await apiClient.post<ApiResponse<null>>('auth/logout');
         await new Promise((resolve) => setTimeout(resolve, 500));
@@ -68,9 +71,9 @@ export const logout = createAsyncThunk('auth/logout', async (_, { rejectWithValu
     }
 });
 
-export const register = createAsyncThunk(
+export const register = createAsyncThunk<string, { user: User; password: string }, AsyncThunkConfig>(
     'auth/register',
-    async (credentials: { user: User; password: string }, { rejectWithValue }) => {
+    async (credentials, { rejectWithValue }) => {
         try {
             const response = await apiClient.post<ApiResponse<User>>('auth/register', {
                 email: credentials.user.email,
@@ -86,40 +89,43 @@ export const register = createAsyncThunk(
     }
 );
 
-export const requestOTP = createAsyncThunk('auth/requestOTP', async (_, { getState, rejectWithValue }) => {
-    try {
-        const state = getState() as { auth: AuthState };
-        const email = state.auth.email;
-        const response = await apiClient.post<ApiResponse<null>>('auth/request-otp', {
-            email,
-        });
-        return null;
-    } catch (error: any) {
-        return rejectWithValue(error.message);
-    }
-});
-
-export const verifyOTP = createAsyncThunk('auth/verifyOTP', async (otp: string, { getState, rejectWithValue }) => {
-    try {
-        const state = getState() as { auth: AuthState };
-        const email = state.auth.email;
-        const response = await apiClient.post<ApiResponse<null>>('auth/verify-otp', {
-            email,
-            otp,
-        });
-        // console.log(response.data)
-        if (response.data.status_code !== 200) {
-            return rejectWithValue(response.data.message);
+export const requestOTP = createAsyncThunk<null, void, AsyncThunkConfig>(
+    'auth/requestOTP',
+    async (_, { getState, rejectWithValue }) => {
+        try {
+            const email = getState().auth.email;
+            const response = await apiClient.post<ApiResponse<null>>('auth/request-otp', {
+                email,
+            });
+            return null;
+        } catch (error: any) {
+            return rejectWithValue(error.message);
         }
-        return null;
-    } catch (error: any) {
-        return rejectWithValue('error from here');
     }
-});
+);
 
-export const forgotPassword = createAsyncThunk(
+export const verifyOTP = createAsyncThunk<null, string, AsyncThunkConfig>(
+    'auth/verifyOTP',
+    async (otp, { getState, rejectWithValue }) => {
+        try {
+            const email = getState().auth.email;
+            const response = await apiClient.post<ApiResponse<null>>('auth/verify-otp', {
+                email,
+                otp,
+            });
+            if (response.data.status_code !== 200) {
+                return rejectWithValue(response.data.message);
+            }
+            return null;
+        } catch (error: any) {
+            return rejectWithValue('error from here');
+        }
+    }
+);
+
+export const forgotPassword = createAsyncThunk<null, { email: string }, AsyncThunkConfig>(
     'auth/forgotPassword',
-    async (credentials: { email: string }, { rejectWithValue }) => {
+    async (credentials, { rejectWithValue }) => {
         try {
             const response = await apiClient.post<ApiResponse<null>>('auth/forgot-password', {
                 email: credentials.email,
@@ -130,10 +136,10 @@ export const forgotPassword = createAsyncThunk(
         }
     }
 );
-
-export const resetPassword = createAsyncThunk(
+// prettier-ignore
+export const resetPassword = createAsyncThunk<null, { email: string; password: string; token: string }, AsyncThunkConfig>(
     'auth/resetPassword',
-    async (credentials: { email: string; password: string; token: string }, { rejectWithValue }) => {
+    async (credentials , { rejectWithValue }) => {
         try {
             const response = await apiClient.post<ApiResponse<null>>('auth/reset-password', {
                 email: credentials.email,
@@ -157,7 +163,7 @@ const authSlice = createSlice({
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(fetchUserInfo.fulfilled, (state, action: PayloadAction<ApiResponse<User>>) => {
+            .addCase(fetchUserInfo.fulfilled, (state, action) => {
                 state.loading = false;
                 state.user = action.payload.data || null;
                 state.isAuthenticated = true;
@@ -171,8 +177,8 @@ const authSlice = createSlice({
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(login.fulfilled, (state, action: PayloadAction<ApiResponse<User>>) => {
-                state.user = action.payload.data || null;
+            .addCase(login.fulfilled, (state, action) => {
+                state.user = action.payload.data!;
                 state.isAuthenticated = true;
                 state.loading = false;
             })
@@ -200,7 +206,7 @@ const authSlice = createSlice({
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(register.fulfilled, (state, action: PayloadAction<string>) => {
+            .addCase(register.fulfilled, (state, action) => {
                 state.email = action.payload;
                 state.loading = false;
             })
