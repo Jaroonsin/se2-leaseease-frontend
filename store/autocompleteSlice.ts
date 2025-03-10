@@ -6,7 +6,16 @@ import { Property } from './propertySlice';
 interface ApiResponse<T> {
     status_code: number;
     message: string;
-    data?: T;
+    data?: {
+        properties: T;
+		last_page: number;
+    };
+}
+
+interface AutocompleteResponse {
+    status_code: number;
+    message: string;
+    data?: string[];
 }
 
 interface AutocompleteState {
@@ -15,6 +24,7 @@ interface AutocompleteState {
 	loading: boolean;
 	searchLoading: boolean;
 	error: string | null;
+	lastPage: number;
   }
   
   // Initial state
@@ -24,6 +34,7 @@ interface AutocompleteState {
 	loading: false,
 	searchLoading: false,
 	error: null,
+	lastPage: 1,
   };
 
 interface SearchParams {
@@ -38,79 +49,93 @@ interface SearchParams {
 	pagesize?: number;
   }
 
-export const fetchAutocomplete = createAsyncThunk<ApiResponse<string[]>, string, AsyncThunkConfig>(
-	'autocomplete/fetchAutocomplete',
-	async (query, { rejectWithValue }) => {
-		try {
-			const response = await apiClient.get<ApiResponse<string[]>>(`properties/autocomplete?query=${query}`);
-			return response.data;
-		} catch (error: any) {
-			return rejectWithValue(error.response?.data?.message || 'เกิดข้อผิดพลาดในการเชื่อมต่อ API');
-		}
-	}
-);
-
-// Fetch search properties
-export const fetchSearchProperties = createAsyncThunk<
-  ApiResponse<Property[]>, 
-  SearchParams, 
+export const fetchAutocomplete = createAsyncThunk<
+  string[], 
+  string, 
   AsyncThunkConfig
 >(
-  'properties/fetchSearchProperties',
-  async (params, { rejectWithValue }) => {
-    try {
-      const response = await apiClient.get<ApiResponse<Property[]>>('properties/search', { params });
-      return response.data;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'เกิดข้อผิดพลาดในการเชื่อมต่อ API');
-    }
+  'autocomplete/fetchAutocomplete',
+  async (query, { rejectWithValue }) => {
+	  try {
+		  const response = await apiClient.get<AutocompleteResponse>(`properties/autocomplete?query=${query}`);
+		  return response.data?.data || [];
+	  } catch (error: any) {
+		  return rejectWithValue(error.response?.data?.message || 'เกิดข้อผิดพลาดในการเชื่อมต่อ API');
+	  }
   }
+);
+
+// ✅ Fixed fetchSearchProperties
+export const fetchSearchProperties = createAsyncThunk<
+    { properties: Property[]; last_page: number }, 
+    SearchParams, 
+    AsyncThunkConfig
+>(
+    'properties/fetchSearchProperties',
+    async (params, { rejectWithValue }) => {
+        try {
+            const response = await apiClient.get<ApiResponse<Property[]>>('properties/search', { params });
+            return {
+                properties: response.data?.data?.properties || [],
+                last_page: response.data?.data?.last_page || 1
+            };
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || 'เกิดข้อผิดพลาดในการเชื่อมต่อ API');
+        }
+    }
 );
 
 const autocompleteSlice = createSlice({
 	name: 'autocomplete',
 	initialState,
 	reducers: {
-	  clearSuggestions: (state) => {
-		state.suggestions = [];
-		state.error = null;
-	  },
-	  clearSearchResults: (state) => {
-		state.searchResults = [];
-		state.error = null;
-	  },
+		clearSuggestions: (state) => {
+			state.suggestions = [];
+			state.error = null;
+		},
+		clearSearchResults: (state) => {
+			state.searchResults = [];
+			state.error = null;
+		},
 	},
 	extraReducers: (builder) => {
-	  builder
-		// Handle fetchAutocomplete
-		.addCase(fetchAutocomplete.pending, (state) => {
-		  state.loading = true;
-		  state.error = null;
-		})
-		.addCase(fetchAutocomplete.fulfilled, (state, action: PayloadAction<ApiResponse<string[]>>) => {
-		  state.loading = false;
-		  state.suggestions = action.payload.data || [];
-		})
-		.addCase(fetchAutocomplete.rejected, (state, action) => {
-		  state.loading = false;
-		  state.error = action.payload as string || 'An error occurred';
-		})
-  
-		// Handle fetchSearchProperties
-		.addCase(fetchSearchProperties.pending, (state) => {
-		  state.searchLoading = true;
-		  state.error = null;
-		})
-		.addCase(fetchSearchProperties.fulfilled, (state, action: PayloadAction<ApiResponse<Property[]>>) => {
-		  state.searchLoading = false;
-		  state.searchResults = action.payload.data || [];
-		})
-		.addCase(fetchSearchProperties.rejected, (state, action) => {
-		  state.searchLoading = false;
-		  state.error = action.payload as string || 'An error occurred';
-		});
-	},
-  });
+		builder
+			// Handle fetchAutocomplete
+			.addCase(fetchAutocomplete.pending, (state) => {
+				state.loading = true;
+				state.error = null;
+			})
+			.addCase(fetchAutocomplete.fulfilled, (state, action: PayloadAction<string[]>) => {
+				state.loading = false;
+				state.suggestions = action.payload || [];
+			})
+			.addCase(fetchAutocomplete.rejected, (state, action) => {
+				state.loading = false;
+				state.error = action.payload as string || 'An error occurred';
+			})
 
-  export const { clearSuggestions, clearSearchResults } = autocompleteSlice.actions;
-  export default autocompleteSlice.reducer;
+			// Handle fetchSearchProperties
+			.addCase(fetchSearchProperties.pending, (state) => {
+				state.searchLoading = true;
+				state.error = null;
+			})
+			.addCase(
+				fetchSearchProperties.fulfilled,
+				(state, action: PayloadAction<{ properties: Property[]; last_page: number }>) => {
+					state.searchLoading = false;
+					state.searchResults = action.payload.properties.map(property => ({
+						...property,
+						image_url: property.image_url || "", 
+					}));
+					state.lastPage = action.payload.last_page;
+				}
+			)
+			.addCase(fetchSearchProperties.rejected, (state, action) => {
+				state.searchLoading = false;
+				state.error = action.payload as string || 'An error occurred';
+			});
+	},
+});
+
+export const { clearSuggestions, clearSearchResults } = autocompleteSlice.actions;
+export default autocompleteSlice.reducer;
