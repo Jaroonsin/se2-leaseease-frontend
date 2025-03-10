@@ -3,7 +3,7 @@
 
 import { forwardRef } from 'react';
 import { useAppDispatch } from '@/store/hooks';
-import { logout } from '@/store/authSlice';
+import { logout } from '@/store/auth/authThunks';
 import { useRouter } from 'next/navigation';
 
 type DrowdownProps = {

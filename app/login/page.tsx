@@ -3,7 +3,7 @@ import { useState } from 'react';
 import LoadPage from '@/components/ui/loadpage';
 
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { login, fetchUserInfo } from '@/store/authSlice';
+import { login } from '@/store/auth/authThunks';
 import { useRouter } from 'next/navigation';
 
 const handleSubmit = (e: React.FormEvent) => {

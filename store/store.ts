@@ -1,5 +1,5 @@
 import { configureStore, Middleware } from '@reduxjs/toolkit';
-import authReducer from './authSlice';
+import authReducer from './auth/authSlice';
 import propertyReducer from './propertySlice';
 import autocompleteReducer from './autocompleteSlice';
 import eachpropertyReduce from './eachpropertySlice';
