@@ -110,7 +110,7 @@ const SignUp = () => {
                                         required
                                     />
                                     {errors.name && (
-                                        <div className=" text-red-500">
+                                        <div className=" text-red-500 text-xs">
                                             <p>{errors.name}</p>
                                         </div>
                                     )}
@@ -129,7 +129,7 @@ const SignUp = () => {
                                         required
                                     />
                                     {errors.surname && (
-                                        <div className=" text-red-500">
+                                        <div className=" text-red-500 text-xs">
                                             <p>{errors.surname}</p>
                                         </div>
                                     )}
@@ -149,7 +149,7 @@ const SignUp = () => {
                                     required
                                 />
                                 {errors.dob && (
-                                    <div className=" text-red-500">
+                                    <div className=" text-red-500 text-xs">
                                         <p>{errors.dob}</p>
                                     </div>
                                 )}
@@ -168,7 +168,7 @@ const SignUp = () => {
                                     required
                                 />
                                 {errors.email && (
-                                    <div className=" text-red-500">
+                                    <div className=" text-red-500 text-xs">
                                         <p>{errors.email}</p>
                                     </div>
                                 )}
@@ -187,7 +187,7 @@ const SignUp = () => {
                                     required
                                 />
                                 {errors.password && (
-                                    <div className=" text-red-500">
+                                    <div className=" text-red-500 text-xs">
                                         <p>{errors.password}</p>
                                     </div>
                                 )}
