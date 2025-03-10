@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { apiClient } from '@/src/api/axios';
 import { AsyncThunkConfig } from './store';
+import { supabase } from '@/utils/supabase';
 
 interface ApiResponse<T> {
     status_code: number;
@@ -14,6 +15,7 @@ interface User {
     email: string;
     name: string;
     address: string;
+    image_url: string;
 }
 
 interface AuthState {
@@ -36,13 +38,43 @@ export const fetchUserInfo = createAsyncThunk<ApiResponse<User>, void, AsyncThun
     'auth/fetchUserInfo',
     async (_, { rejectWithValue }) => {
         try {
-            const response = await apiClient.get<ApiResponse<User>>('auth/check');
+            const response = await apiClient.post<ApiResponse<User>>('user/check');
             return response.data;
         } catch (error: any) {
-            return rejectWithValue(error.response?.data?.message || 'เกิดข้อผิดพลาดในการเชื่อมต่อ API');
+            return rejectWithValue(error.response?.data?.message || 'Error connecting to API');
         }
     }
 );
+export const updateUserInfo = createAsyncThunk<null, { name: string; address: string }, AsyncThunkConfig>(
+    'auth/updateUserInfo',
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await apiClient.put<ApiResponse<User>>('user/user', {
+                name: data.name,
+                address: data.address,
+            });
+            return null;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || 'Error connecting to API');
+        }
+    }
+);
+
+export const updateUserImage = createAsyncThunk<null, void, AsyncThunkConfig>(
+    'auth/updateUserImage',
+    async (_, { getState, rejectWithValue }) => {
+        const image_url = getState().auth.user?.image_url;
+        try {
+            const response = await apiClient.put<ApiResponse<User>>('user/image', {
+                image_url,
+            });
+            return null;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || 'Error connecting to API');
+        }
+    }
+);
+export const updateUserPassword = () => {};
 
 export const login = createAsyncThunk<ApiResponse<User>, { email: string; password: string }, AsyncThunkConfig>(
     'auth/login',
@@ -153,6 +185,32 @@ export const resetPassword = createAsyncThunk<null, { email: string; password: s
     }
 );
 
+export const uploadImage = createAsyncThunk<string, FormData, AsyncThunkConfig>(
+    'auth/uploadImage',
+    async (formData, { getState, rejectWithValue }) => {
+        try {
+            const file = formData.get('file') as File;
+            const userId = getState().auth.user?.id;
+            if (!file) throw new Error('No file provided');
+
+            const filePath = `${userId}/profile.jpg`;
+
+            const { error } = await supabase.storage
+                .from('user')
+                .upload(filePath, file, { cacheControl: '3600', upsert: false });
+
+            if (error) {
+                console.error('Upload failed:', error.message);
+                throw error;
+            }
+
+            return supabase.storage.from('user').getPublicUrl(filePath).data.publicUrl;
+        } catch (error: any) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
 const authSlice = createSlice({
     name: 'auth',
     initialState,
@@ -222,6 +280,40 @@ const authSlice = createSlice({
                 state.loading = false;
             })
             .addCase(verifyOTP.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            })
+            .addCase(uploadImage.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(uploadImage.fulfilled, (state, action) => {
+                state.loading = false;
+                state.user!.image_url = action.payload;
+            })
+            .addCase(uploadImage.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            })
+            .addCase(updateUserInfo.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(updateUserInfo.fulfilled, (state) => {
+                state.loading = false;
+            })
+            .addCase(updateUserInfo.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            })
+            .addCase(updateUserImage.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(updateUserImage.fulfilled, (state) => {
+                state.loading = false;
+            })
+            .addCase(updateUserImage.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
             });

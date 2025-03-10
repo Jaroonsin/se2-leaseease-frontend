@@ -1,32 +1,35 @@
 import { NextResponse, NextRequest } from 'next/server';
 
 export function middleware(req: NextRequest) {
-    //   Retrieve the 'token' cookie. Note: For Next.js 13+ the cookie value is accessed via .get('name')?.value.
-    const token = req.cookies.get('auth_token')?.value;
-    const { pathname } = req.nextUrl;
+    // // Retrieve the 'auth_token' cookie value.
+    // const token = req.cookies.get('auth_token')?.value;
+    // const { pathname } = req.nextUrl;
 
-    // Redirect a logged-in user (with token) away from the login page to the homepage.
-    if (pathname === '/login' && token) {
-        const url = req.nextUrl.clone();
-        url.pathname = '/property';
-        return NextResponse.redirect(url);
-    }
+    // // Log token for debugging
+    // console.log('auth token:', token);
 
-    // For protected routes, if no token is present, redirect the user to the login page.
-    // You can define an array of protected routes as needed.
-    const protectedRoutes = ['/dashboard', '/profile', '/property', '/lessee_center']; // Add other protected paths as required.
-    if (protectedRoutes.some((route) => pathname.startsWith(route)) && !token) {
-        const url = req.nextUrl.clone();
-        url.pathname = '/login';
-        return NextResponse.redirect(url);
-    }
+    // // Redirect a logged-in user (with token) away from the login page to the homepage.
+    // if (pathname === '/login' && token) {
+    //     const url = req.nextUrl.clone();
+    //     url.pathname = '/property'; // Redirect to the main page or dashboard if already logged in
+    //     return NextResponse.redirect(url);
+    // }
 
-    // // Otherwise, allow the request to continue.
+    // // Define protected routes where authentication is required.
+    // const protectedRoutes = ['/dashboard', '/profile']; // Add other protected paths as required.
+
+    // // For protected routes, if no token is present, redirect to the login page.
+    // if (protectedRoutes.some((route) => pathname.startsWith(route)) && !token) {
+    //     const url = req.nextUrl.clone();
+    //     url.pathname = '/login'; // Redirect to the login page if the user is not authenticated
+    //     return NextResponse.redirect(url);
+    // }
+
+    // // Otherwise, continue with the request if no redirects are needed.
     return NextResponse.next();
 }
 
-// Configure the middleware to apply only on specific routes.
-// Adjust the matcher paths to cover your protected routes and the login route.
+// Configure the middleware to apply to specific routes.
 export const config = {
-    matcher: ['/dashboard/:path*', '/profile/:path*', '/login', '/property/:path*', '/lessee_center/:path*'],
+    matcher: ['/dashboard/:path*', '/profile/:path*', '/login'],
 };

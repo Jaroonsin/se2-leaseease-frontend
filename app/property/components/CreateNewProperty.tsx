@@ -50,7 +50,7 @@ export default function CreateNewProperty({ setIsCreateNewPropertyVisible }: Cre
                 detail: detail ?? '',
                 rating: 0,
                 reviews: 0,
-                image: `https://loremflickr.com/2048/1280?random=${Math.floor(Math.random() * 1000) + 1}`,
+                image_url: `https://loremflickr.com/2048/1280?random=${Math.floor(Math.random() * 1000) + 1}`,
                 date: new Date().toISOString(),
                 status: 'available',
             };

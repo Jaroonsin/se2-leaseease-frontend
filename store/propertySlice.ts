@@ -25,7 +25,7 @@ export type Property = {
     size: number;
     price: number;
     date: string;
-    image: string;
+    image_url: string;
     reviews: number;
     status: string;
     detail: string;
@@ -64,9 +64,7 @@ export const fetchProperties = createAsyncThunk<Data, void, AsyncThunkConfig>(
             if (data) {
                 const data_random: Property[] = data.properties.map((property, index) => ({
                     ...property,
-                    rating: parseFloat((Math.random() * (5 - 3.5) + 3.5).toFixed(1)),
-                    reviews: Math.floor(Math.random() * 500) + 1,
-                    image: `https://loremflickr.com/2048/1280?random=${index + 1}`,
+                    rating: parseFloat(property.rating.toFixed(1)),
                     date: new Date(property.date).toLocaleString('en-GB', {
                         day: '2-digit',
                         month: 'short',

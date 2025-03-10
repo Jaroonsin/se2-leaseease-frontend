@@ -2,12 +2,14 @@
 
 'use client';
 import { useState, useEffect, useRef } from 'react';
+import { useAppSelector } from '@/store/hooks';
 import AccountOption from './AccountOption';
 
 export default function PropertyHeader() {
     const [isAccountOptionVisible, setIsAccountOptionVisible] = useState<boolean>(false);
     const accountOptionRef = useRef<HTMLDivElement>(null);
 
+    const { user } = useAppSelector((state) => state.auth);
     const toggleAccountOption = (): void => {
         setIsAccountOptionVisible(!isAccountOptionVisible);
     };
@@ -36,11 +38,11 @@ export default function PropertyHeader() {
             </div>
 
             <div className="flex p-2.5 justify-center items-center gap-3">
-                <p className="text-slate-900 text-sm font-medium leading-5 p-4">John Doe</p>
+                <p className="text-slate-900 text-sm font-medium leading-5 p-4">{user?.name}</p>
                 <div
                     className="w-[40px] h-[40px] rounded-full bg-cover bg-center cursor-pointer"
                     style={{
-                        backgroundImage: "url('https://loremflickr.com/40/40?random=1')",
+                        backgroundImage: `url(${user?.image_url})`,
                     }}
                     onClick={toggleAccountOption}
                 ></div>

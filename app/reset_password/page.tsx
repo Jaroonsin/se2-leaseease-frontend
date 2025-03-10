@@ -2,7 +2,7 @@
 
 import { useAppDispatch } from '@/store/hooks';
 import { resetPassword } from '@/store/authSlice';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function Page() {
@@ -10,10 +10,21 @@ export default function Page() {
     const router = useRouter();
     const [password, setPassword] = useState<string>('');
     const [confirmPassword, setConfirmPassword] = useState<string>('');
-    const searchParams = useSearchParams();
-    const email = searchParams.get('email') || '';
-    const token = searchParams.get('token') || '';
+    const [email, setEmail] = useState<string>('');
+    const [token, setToken] = useState<string>('');
     const [errors, setErrors] = useState<string>('');
+
+    // Get search params only on the client side
+    useEffect(() => {
+        const searchParams = new URLSearchParams(window.location.search);
+        const emailParam = searchParams.get('email');
+        const tokenParam = searchParams.get('token');
+
+        if (emailParam && tokenParam) {
+            setEmail(emailParam);
+            setToken(tokenParam);
+        }
+    }, []);
 
     const validate = (): string => {
         let checkStrongPassword: string = '';

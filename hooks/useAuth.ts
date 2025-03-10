@@ -23,5 +23,9 @@ export function useAuth() {
         }
     }, [isAuthenticated, loading, router]);
 
+    useEffect(() => {
+        console.log(user);
+    }, [user]);
+
     return { user, loading, isAuthenticated };
 }

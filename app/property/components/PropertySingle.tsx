@@ -19,7 +19,7 @@ export default function PropertySingle({ property, isPropertyActive, onClick }: 
             <div
                 className="w-[40px] h-[40px] rounded-[6px] bg-[length:199.261%_100%] bg-no-repeat bg-[position:-19.615px_0]"
                 style={{
-                    backgroundImage: `url(${property.image})`,
+                    backgroundImage: `url(${property.image_url})`,
                     backgroundSize: '199.261% 100%',
                     backgroundPosition: '-19.615px 0',
                 }}

@@ -12,7 +12,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 import LoadPage from '@/components/ui/loadpage';
 
-export default function PropertyPage({ children }: { children: React.ReactNode }) {
+export default function PropertyPage() {
     const { loading } = useAuth();
     const [search, setSearch] = useState('');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -248,8 +248,8 @@ export default function PropertyPage({ children }: { children: React.ReactNode }
                         >
                             <div className="w-[382px] h-[160px] rounded-md">
                                 <img
-                                    src={property.image}
-                                    alt="Property Image"
+                                    src={property.image_url}
+                                    alt="Property image_url"
                                     className="w-full h-full rounded-md object-cover"
                                 />
                             </div>

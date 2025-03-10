@@ -6,6 +6,6 @@ export type Property = {
     size: number;
     price: number;
     date: string;
-    image: string;
+    image_url: string;
     reviews: number;
 };

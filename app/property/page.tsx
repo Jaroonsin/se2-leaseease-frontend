@@ -7,7 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 
 import LoadPage from '@/components/ui/loadpage';
 
-export default function PropertyPage({ children }: { children: React.ReactNode }) {
+export default function PropertyPage() {
     const { loading } = useAuth();
 
     return loading ? (
