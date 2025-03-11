@@ -11,7 +11,8 @@ const ReviewTable: React.FC = () => {
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
     const [tableData, setTableData] = useState<reviewData[]>([]);
     const [currentRequest, setCurrentRequest] = useState<number | null>(null);
-    const totalPages = tableData ? tableData.length : 1 / rowsPerPage;
+    const totalPages = tableData ? tableData.length / rowsPerPage : 1;
+    const { selectedProperty } = useAppSelector((state) => state.property);
     // Fetch all data when component mounts
     useEffect(() => {
         const fetchData = async () => {
@@ -119,3 +120,6 @@ const ReviewTable: React.FC = () => {
 };
 
 export default ReviewTable;
+function useAppSelector(arg0: (state: any) => any): { selectedProperty: any } {
+    throw new Error('Function not implemented.');
+}

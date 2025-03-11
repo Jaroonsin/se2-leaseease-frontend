@@ -2,6 +2,7 @@ import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { getRequestData, requestData } from '@/src/api/data/request';
 import Footer from '../Footer';
 import RequestSlider from '../Slider/RequestSlider';
+import { useAppSelector } from '@/store/hooks';
 
 const RequestTable: React.FC = () => {
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -10,7 +11,8 @@ const RequestTable: React.FC = () => {
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
     const [tableData, setTableData] = useState<requestData[]>([]);
     const [currentRequest, setCurrentRequest] = useState<number | null>(null);
-    const totalPages = tableData ? tableData.length : 1 / rowsPerPage;
+    const totalPages = tableData ? tableData.length / rowsPerPage : 1;
+    const { selectedProperty } = useAppSelector((state) => state.property);
     // Fetch all data when component mounts
     useEffect(() => {
         const fetchData = async () => {
