@@ -1,7 +1,7 @@
 'use client';
 
 import { useAppDispatch } from '@/store/hooks';
-import { resetPassword } from '@/store/authSlice';
+import { resetPassword } from '@/store/auth/authThunks';
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 

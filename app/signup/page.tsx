@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppDispatch } from '@/store/hooks';
-import { register, requestOTP } from '@/store/authSlice';
+import { register, requestOTP } from '@/store/auth/authThunks';
 
 const SignUp = () => {
     const router = useRouter();
