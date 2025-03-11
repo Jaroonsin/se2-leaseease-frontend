@@ -4,23 +4,30 @@ import Rating from '@mui/material/Rating';
 import { Dispatch, SetStateAction, useState } from 'react';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import NearMeOutlinedIcon from '@mui/icons-material/NearMeOutlined';
+import { reviewData } from '@/src/api/data/review';
 
 type ReviewSliderProps = {
     id: string;
     totalRequests: number;
     currentRequest: number;
     setCurrentRequest: Dispatch<SetStateAction<number | null>>;
+    tableData: reviewData[];
 };
 
-export default function ReviewSlider({ id, totalRequests, currentRequest, setCurrentRequest }: ReviewSliderProps) {
-    const [imgPath, setImgPath] = useState('/avatar.png');
-    const [userName, setUserName] = useState('John Doe');
-    const [requestTime, setRequestTime] = useState('29 Oct 2024 22:45');
-    const [rating, setRating] = useState(4.7);
-    const [detail, setDetail] = useState(
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ullamcorper quam ac risus ornare...'
-    );
-    const [lesseeStatus, setLesseeStatus] = useState('Active');
+export default function ReviewSlider({
+    id,
+    totalRequests,
+    currentRequest,
+    setCurrentRequest,
+    tableData,
+}: ReviewSliderProps) {
+    const data = tableData[currentRequest];
+    const userName = data.name;
+    const requestTime = data.reviewedAt;
+    const rating = data.rating;
+    const detail = data.message;
+    const imgPath = data.imageURL != '' ? data.imageURL : null;
+
     return (
         <div className="flex z-50 w-[32.5rem] h-[calc(100vh-4rem)] p-0 flex-col items-start absolute right-0 bottom-0 border-l border-slate-300 bg-white shadow-[0px_4px_6px_-4px_rgba(0,_0,_0,_0.10),_0px_10px_15px_-3px_rgba(0,_0,_0,_0.10)]  overflow-y-auto">
             <div className="flex h-[2.5rem] p-[0.625rem] [0.75rem] items-center gap-[1.5rem] self-stretch">
@@ -112,7 +119,7 @@ export default function ReviewSlider({ id, totalRequests, currentRequest, setCur
                     />
                     <div>
                         <h2 className="text-slate-400 text-sm font-normal">{userName}</h2>
-                        <p className="text-slate-400 text-sm font-normal">Requested at {requestTime}</p>
+                        <p className="text-slate-400 text-sm font-normal">Reviewed at {requestTime}</p>
                     </div>
                 </div>
 

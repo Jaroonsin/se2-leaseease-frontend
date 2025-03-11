@@ -17,7 +17,7 @@ const ReviewTable: React.FC = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const requestDatas = await getReviewData();
+                const requestDatas = await getReviewData(selectedProperty ? selectedProperty.id : -1);
                 setTableData(requestDatas);
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -44,6 +44,7 @@ const ReviewTable: React.FC = () => {
             }
             return 0;
         });
+        setCurrentRequest(null);
         setTableData(sortedData);
     };
 
@@ -113,6 +114,7 @@ const ReviewTable: React.FC = () => {
                     totalRequests={tableData.length}
                     currentRequest={currentRequest}
                     setCurrentRequest={setCurrentRequest}
+                    tableData={tableData}
                 />
             )}
         </div>

@@ -44,6 +44,7 @@ const RequestTable: React.FC = () => {
                   }
                   return 0;
               });
+        setCurrentRequest(null);
         setTableData(sortedData);
     };
 
