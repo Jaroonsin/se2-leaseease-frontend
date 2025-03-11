@@ -27,7 +27,7 @@ const RequestTable: React.FC = () => {
         };
 
         fetchData();
-    }, []);
+    }, [currentRequest]);
     const handleSort = (column: 'name' | 'requestedAt') => {
         const newOrder = sortColumn === column && sortOrder === 'asc' ? 'desc' : 'asc';
         setSortColumn(column);

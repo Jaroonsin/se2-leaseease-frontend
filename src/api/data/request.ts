@@ -7,6 +7,7 @@ export type requestData = {
     purpose: string;
     propertyName: string;
     imageURL: string;
+    id: number;
 };
 
 export const convertToRequestData = (response: any): requestData[] => {
@@ -18,6 +19,7 @@ export const convertToRequestData = (response: any): requestData[] => {
             purpose: item.purpose,
             propertyName: item.propertyName,
             imageURL: item.imageURL,
+            id: item.id,
         }));
 };
 export const getRequestData = async (propID: number) => {
@@ -33,5 +35,20 @@ export const getRequestData = async (propID: number) => {
         console.error('Error fetching reservations:', error);
         return data; // Return default data in case of error
     }
-    return data;
+};
+export const acceptRequest = async (id: number) => {
+    try {
+        const response = await apiClient.post(`/lessor/accept/${id}`);
+        console.log(response.data);
+    } catch (error) {
+        console.error('Error fetching reservations:', error);
+    }
+};
+export const rejectRequest = async (id: number) => {
+    try {
+        const response = await apiClient.post(`/lessor/decline/${id}`);
+        console.log(response.data);
+    } catch (error) {
+        console.error('Error fetching reservations:', error);
+    }
 };

@@ -5,7 +5,7 @@ import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import NearMeOutlinedIcon from '@mui/icons-material/NearMeOutlined';
 import AcceptRequest from '../AcceptRequest';
 import RejectRequest from '../RejectRequest';
-import { requestData } from '@/src/api/data/request';
+import { acceptRequest, rejectRequest, requestData } from '@/src/api/data/request';
 
 type RequestSliderProps = {
     id: string;
@@ -35,6 +35,7 @@ export default function RequestSlider({
     const requestTime = data.requestedAt;
     const purposeInfo = data.purpose;
     const imgPath = data.imageURL != '' ? data.imageURL : null;
+    const requestID = data.id;
 
     return (
         <div className="flex z-50 w-[32.5rem] h-[calc(100vh-4rem)] p-0 flex-col items-start absolute right-0 bottom-0 border-l border-slate-300 bg-white shadow-[0px_4px_6px_-4px_rgba(0,_0,_0,_0.10),_0px_10px_15px_-3px_rgba(0,_0,_0,_0.10)]  overflow-y-auto">
@@ -155,13 +156,19 @@ export default function RequestSlider({
             <div className="flex p-[16px] justify-center items-center gap-3 self-stretch border-t border-slate-300 fixed bottom-0 right-0 w-[32.5rem] bg-white">
                 <button
                     className="flex p-[12px] justify-center items-center gap-2 flex-1 rounded-[6px] bg-green-50 border border-green-700 text-green-700 hover:bg-green-200"
-                    onClick={() => setStatus('Accept')}
+                    onClick={async () => {
+                        await acceptRequest(requestID);
+                        setCurrentRequest(null);
+                    }}
                 >
                     Accept
                 </button>
                 <button
                     className="flex p-[12px] justify-center items-center gap-2 flex-1 rounded-[6px] bg-red-50 border border-red-700 text-red-700 hover:bg-red-200"
-                    onClick={() => setStatus('Reject')}
+                    onClick={async () => {
+                        await rejectRequest(requestID);
+                        setCurrentRequest(null);
+                    }}
                 >
                     Reject
                 </button>
