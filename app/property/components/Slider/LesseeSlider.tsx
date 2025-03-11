@@ -3,22 +3,29 @@
 import { Dispatch, SetStateAction, useState } from 'react';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import NearMeOutlinedIcon from '@mui/icons-material/NearMeOutlined';
+import { lesseeData } from '@/src/api/data/lessee';
 type LesseeSliderProps = {
     id: string;
     totalRequests: number;
     currentRequest: number;
     setCurrentRequest: Dispatch<SetStateAction<number | null>>;
+    tableData: lesseeData[];
 };
 
-export default function LesseeSlider({ id, totalRequests, currentRequest, setCurrentRequest }: LesseeSliderProps) {
+export default function LesseeSlider({
+    id,
+    totalRequests,
+    currentRequest,
+    setCurrentRequest,
+    tableData,
+}: LesseeSliderProps) {
     const [status, setStatus] = useState<'Accept' | 'Reject' | 'None'>('None'); //example
-    const [imgPath, setImgPath] = useState('/avatar.png');
-    const [userName, setUserName] = useState('John Doe');
-    const [requestTime, setRequestTime] = useState('29 Oct 2024 22:45');
-    const [propertyInfo, setPropertyInfo] = useState('Lorem ipsum dolor sit amet');
-    const [purposeInfo, setPurposeInfo] = useState(
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ullamcorper quam ac risus ornare...'
-    );
+    const data = tableData[currentRequest];
+    const propertyInfo = data.propertyName;
+    const userName = data.name;
+    const requestTime = data.lastResponse;
+    const purposeInfo = data.purpose;
+    const imgPath = data.imageURL != '' ? data.imageURL : null;
     const [lesseeStatus, setLesseeStatus] = useState('Active');
     return (
         <div className="flex z-50 w-[32.5rem] h-[calc(100vh-4rem)] p-0 flex-col items-start absolute right-0 bottom-0 border-l border-slate-300 bg-white shadow-[0px_4px_6px_-4px_rgba(0,_0,_0,_0.10),_0px_10px_15px_-3px_rgba(0,_0,_0,_0.10)]  overflow-y-auto">

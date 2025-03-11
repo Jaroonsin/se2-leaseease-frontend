@@ -2,6 +2,7 @@ import { getLesseeData, lesseeData } from '@/src/api/data/lessee';
 import React, { useState, useEffect } from 'react';
 import Footer from '../Footer';
 import LesseeSlider from '../Slider/LesseeSlider';
+import { useAppSelector } from '@/store/hooks';
 
 const LesseeTable: React.FC = () => {
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -10,12 +11,13 @@ const LesseeTable: React.FC = () => {
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
     const [tableData, setTableData] = useState<lesseeData[]>([]);
     const [currentRequest, setCurrentRequest] = useState<number | null>(null);
-    const totalPages = tableData ? tableData.length : 1 / rowsPerPage;
+    const totalPages = tableData ? Math.ceil(tableData.length / rowsPerPage) : 1;
+    const { selectedProperty } = useAppSelector((state) => state.property);
     // Fetch all data when component mounts
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const requestDatas = await getLesseeData();
+                const requestDatas = await getLesseeData(selectedProperty ? selectedProperty.id : -1);
                 setTableData(requestDatas);
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -108,6 +110,7 @@ const LesseeTable: React.FC = () => {
                     totalRequests={tableData.length}
                     currentRequest={currentRequest}
                     setCurrentRequest={setCurrentRequest}
+                    tableData={tableData}
                 />
             )}
         </div>

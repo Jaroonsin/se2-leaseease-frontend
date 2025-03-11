@@ -11,7 +11,7 @@ const RequestTable: React.FC = () => {
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
     const [tableData, setTableData] = useState<requestData[]>([]);
     const [currentRequest, setCurrentRequest] = useState<number | null>(null);
-    const totalPages = tableData ? tableData.length / rowsPerPage : 1;
+    const totalPages = tableData ? Math.ceil(tableData.length / rowsPerPage) : 1;
     const { selectedProperty } = useAppSelector((state) => state.property);
     // Fetch all data when component mounts
     useEffect(() => {
