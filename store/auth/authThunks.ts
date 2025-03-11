@@ -2,15 +2,20 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { apiClient } from '@/src/api/axios';
 import { AsyncThunkConfig } from '../store';
 
-export const login = createAsyncThunk<ApiResponse<User>, { email: string; password: string }, AsyncThunkConfig>(
+type token = {
+    token: string;
+};
+
+export const login = createAsyncThunk<string, { email: string; password: string }, AsyncThunkConfig>(
     'auth/login',
     async (credentials, { rejectWithValue }) => {
         try {
-            const response = await apiClient.post<ApiResponse<User>>('auth/login', {
+            const response = await apiClient.post<ApiResponse<token>>('auth/login', {
                 email: credentials.email,
                 password: credentials.password,
             });
-            return response.data;
+
+            return response.data.data?.token?.toString() || '';
         } catch (error: any) {
             return rejectWithValue(error.message);
         }

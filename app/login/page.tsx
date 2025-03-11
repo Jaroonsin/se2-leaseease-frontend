@@ -1,10 +1,11 @@
 'use client';
 import { useState } from 'react';
-import LoadPage from '@/components/ui/loadpage';
 
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { useAppDispatch } from '@/store/hooks';
 import { login } from '@/store/auth/authThunks';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/hooks/useAuth';
+import { fetchUserInfo } from '@/store/auth/userThunks';
 
 const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault(); // Prevent default form submission
@@ -15,19 +16,19 @@ export default function SignIn() {
     const [password, setPassword] = useState<string>('');
 
     const dispatch = useAppDispatch();
-    const { user, loading } = useAppSelector((state) => state.auth);
+    const { user, loading, isAuthenticated } = useAuth();
     const [errors, setErrors] = useState('');
     const router = useRouter();
-    const [click, setClick] = useState<boolean>(false);
 
     const handleLogin = async () => {
         try {
             const resultAction = await dispatch(login({ email, password }));
-
+            dispatch(fetchUserInfo());
             if (login.fulfilled.match(resultAction)) {
-                setTimeout(() => {
-                    router.push('/property');
-                }, 500);
+                if (user?.role === 'lessor') router.replace('/property');
+                else {
+                    router.replace('/lessee_center');
+                }
             } else if (login.rejected.match(resultAction)) {
                 // Handle errors and validate the error message
                 console.error('Login failed:', resultAction.payload || resultAction.error);
@@ -39,9 +40,7 @@ export default function SignIn() {
         }
     };
 
-    return loading || click ? (
-        <LoadPage />
-    ) : (
+    return (
         <div className="flex flex-col items-center justify-center">
             <div className="flex w-full h-screen">
                 <div
@@ -103,10 +102,22 @@ export default function SignIn() {
                             <div className="flex flex-col gap-2">
                                 <button
                                     type="submit"
-                                    className="w-full bg-blue-900 text-white p-3.5 rounded-lg"
+                                    className={`w-full bg-blue-900 text-white p-3.5 rounded-lg ${
+                                        loading ? 'opacity-70 pointer-events-none relative' : ''
+                                    }`}
                                     onClick={() => handleLogin()}
+                                    disabled={loading}
                                 >
-                                    Sign in
+                                    {loading ? (
+                                        <>
+                                            <div className="absolute inset-0 flex items-center justify-center">
+                                                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                            </div>
+                                            <span className="opacity-0">Sign in</span>
+                                        </>
+                                    ) : (
+                                        'Sign in'
+                                    )}
                                 </button>
 
                                 <p className="text-center text-slate-700">

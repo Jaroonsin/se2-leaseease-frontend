@@ -53,27 +53,19 @@ export const uploadImage = createAsyncThunk<string, FormData, AsyncThunkConfig>(
             const userId = getState().auth.user?.id;
             if (!file) throw new Error('No file provided');
             const filePath = `${userId}/profile.jpg`;
-            const token = getState().auth.token;
 
-            const existingFilePath = getState().auth.user?.image_url;
-            if (existingFilePath) {
-                await supabase.storage.from('user').remove([filePath]);
-            }
-
-            const { error } = await supabase.storage.from('user').upload(filePath, file, {
-                cacheControl: '3600',
-                upsert: false,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+            const { data, error } = await supabase.storage.from('user').update(filePath, file, {
+                cacheControl: 'no-cache',
+                upsert: true,
             });
 
+            console.log('data', data?.fullPath);
             if (error) {
                 console.error('Upload failed:', error.message);
                 throw error;
             }
 
-            return supabase.storage.from('user').getPublicUrl(filePath).data.publicUrl;
+            return supabase.storage.from('user').getPublicUrl(filePath).data.publicUrl + '?version=1';
         } catch (error: any) {
             return rejectWithValue(error.message);
         }

@@ -1,4 +1,4 @@
-import { createSlice, isRejected, isPending } from '@reduxjs/toolkit';
+import { createSlice, isRejected, isAnyOf } from '@reduxjs/toolkit';
 import { fetchUserInfo, updateUserInfo, updateUserImage, uploadImage } from './userThunks';
 import { login, logout, register, verifyOTP } from './authThunks';
 
@@ -32,7 +32,7 @@ const authSlice = createSlice({
                 state.isAuthenticated = true;
             })
             .addCase(login.fulfilled, (state, action) => {
-                state.user = action.payload.data!;
+                state.token = action.payload;
                 state.isAuthenticated = true;
                 state.loading = false;
             })
@@ -59,19 +59,43 @@ const authSlice = createSlice({
             .addCase(updateUserImage.fulfilled, (state) => {
                 state.loading = false;
             })
-            .addMatcher(isPending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addMatcher(isRejected, (state, action) => {
-                state.loading = false;
-                // Use action.payload if available (for rejectWithValue), otherwise fallback to action.error.message
-                state.error = action.payload
-                    ? typeof action.payload === 'string'
-                        ? action.payload
-                        : JSON.stringify(action.payload)
-                    : action.error.message || null;
-            });
+            .addMatcher(
+                isAnyOf(
+                    fetchUserInfo.pending,
+                    login.pending,
+                    logout.pending,
+                    register.pending,
+                    verifyOTP.pending,
+                    uploadImage.pending,
+                    updateUserInfo.pending,
+                    updateUserImage.pending
+                ),
+                (state) => {
+                    state.loading = true;
+                    state.error = null;
+                }
+            )
+            .addMatcher(
+                isAnyOf(
+                    fetchUserInfo.rejected,
+                    login.rejected,
+                    logout.rejected,
+                    register.rejected,
+                    verifyOTP.rejected,
+                    uploadImage.rejected,
+                    updateUserInfo.rejected,
+                    updateUserImage.rejected
+                ),
+                (state, action) => {
+                    state.loading = false;
+                    // Use action.payload if available (for rejectWithValue), otherwise fallback to action.error.message
+                    state.error = action.payload
+                        ? typeof action.payload === 'string'
+                            ? action.payload
+                            : JSON.stringify(action.payload)
+                        : action.error.message || null;
+                }
+            );
     },
 });
 
