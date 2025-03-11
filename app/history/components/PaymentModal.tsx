@@ -4,56 +4,62 @@ import { AppDispatch } from '@/store/store'
 import { createPayment, updateReservationStatus } from '@/store/historySlice'
 import { OmiseInstance } from '@/type/omise'
 
-export default function PaymentModal({ showModal, onClose, reservationId, }: { showModal: boolean; onClose: () => void; reservationId: number; }) {
+type PaymentModalProps = {
+	showModal: boolean
+	onClose: () => void
+	reservationId: number
+}
+
+export default function PaymentModal({ showModal, onClose, reservationId, }: PaymentModalProps) {
 	const dispatch = useDispatch<AppDispatch>()
-	const [cardName, setCardName] = useState('')
-	const [cardNumber, setCardNumber] = useState('')
-	const [expiryMonth, setExpiryMonth] = useState('')
-	const [expiryYear, setExpiryYear] = useState('')
-	const [securityCode, setSecurityCode] = useState('')
-	const [omise, setOmise] = useState<OmiseInstance | null>(null);
-	const [errors, setErrors] = useState<Record<string, boolean>>({});
+	const [cardName, setCardName] = useState<string>('')
+	const [cardNumber, setCardNumber] = useState<string>('')
+	const [expiryMonth, setExpiryMonth] = useState<string>('')
+	const [expiryYear, setExpiryYear] = useState<string>('')
+	const [securityCode, setSecurityCode] = useState<string>('')
+	const [omise, setOmise] = useState<OmiseInstance | null>(null)
+	const [errors, setErrors] = useState<Record<string, boolean>>({})
 
 
 	useEffect(() => {
 		if (typeof window !== 'undefined' && !window.Omise) {
-			const script = document.createElement('script');
-			script.src = 'https://cdn.omise.co/omise.js';
-			script.async = true;
+			const script = document.createElement('script')
+			script.src = 'https://cdn.omise.co/omise.js'
+			script.async = true
 			script.onload = () => {
 				if (window.Omise) {
-					window.Omise.setPublicKey(process.env.NEXT_PUBLIC_OMISE_PUBLIC_KEY!);
-					setOmise(window.Omise);
+					window.Omise.setPublicKey(process.env.NEXT_PUBLIC_OMISE_PUBLIC_KEY!)
+					setOmise(window.Omise)
 				}
-			};
-			document.body.appendChild(script);
+			}
+			document.body.appendChild(script)
 		} else if (window.Omise) {
-			setOmise(window.Omise);
+			setOmise(window.Omise)
 		}
-	}, []);
+	}, [])
 
-	const isValidCard = () => {
-		const newErrors: Record<string, boolean> = {};
+	const isValidCard = (): boolean => {
+		const newErrors: Record<string, boolean> = {}
 
-		if (!cardName) newErrors.cardName = true;
-		if (!/^\d{16}$/.test(cardNumber)) newErrors.cardNumber = true;
-		if (!/^\d{2}$/.test(expiryMonth) || parseInt(expiryMonth) < 1 || parseInt(expiryMonth) > 12) newErrors.expiryMonth = true;
-		if (!/^\d{4}$/.test(expiryYear) || parseInt(expiryYear) < new Date().getFullYear()) newErrors.expiryYear = true;
-		if (!/^\d{3,4}$/.test(securityCode)) newErrors.securityCode = true;
+		if (!cardName) newErrors.cardName = true
+		if (!/^\d{16}$/.test(cardNumber)) newErrors.cardNumber = true
+		if (!/^\d{2}$/.test(expiryMonth) || parseInt(expiryMonth) < 1 || parseInt(expiryMonth) > 12) newErrors.expiryMonth = true
+		if (!/^\d{4}$/.test(expiryYear) || parseInt(expiryYear) < new Date().getFullYear()) newErrors.expiryYear = true
+		if (!/^\d{3,4}$/.test(securityCode)) newErrors.securityCode = true
 
-		setErrors(newErrors);
+		setErrors(newErrors)
 
 		if (Object.keys(newErrors).length > 0) {
-			return false;
+			return false
 		}
 
-		return true;
-	};
+		return true
+	}
 
 
 
-	const handleSubmit = () => {
-		if (!isValidCard()) return;
+	const handleSubmit = async () => {
+		if (!isValidCard()) return
 
 		if (omise) {
 			const tokenParameters = {
@@ -62,11 +68,11 @@ export default function PaymentModal({ showModal, onClose, reservationId, }: { s
 				expiration_month: parseInt(expiryMonth),
 				expiration_year: parseInt(expiryYear),
 				security_code: parseInt(securityCode),
-			};
+			}
 
-			omise.createToken('card', tokenParameters, async (statusCode, response) => {
+			omise.createToken('card', tokenParameters, async (statusCode: number, response: any) => {
 				if (statusCode === 200) {
-					console.log('Token created:', response.id);
+					console.log('Token created:', response.id)
 					try {
 						// Step 1: Dispatch payment
 						const paymentResult = await dispatch(
@@ -75,25 +81,25 @@ export default function PaymentModal({ showModal, onClose, reservationId, }: { s
 								reservationId: reservationId,
 								tokenData: response.id,
 							})
-						);
+						)
 
 						if (createPayment.fulfilled.match(paymentResult)) {
-							console.log('✅ Payment Successful');
+							console.log('Payment Successful')
 
 
-							onClose(); // Close modal on success
+							onClose() // Close modal on success
 						}
 					} catch (error) {
-						console.error('Payment or status update failed:', error);
+						console.error('Payment or status update failed:', error)
 					}
 				} else {
-					console.error('Token creation failed:', response.message);
+					console.error('Token creation failed:', response.message)
 				}
-			});
+			})
 		} else {
-			console.error('Omise is not loaded');
+			console.error('Omise is not loaded')
 		}
-	};
+	}
 
 
 	if (!showModal) return null
