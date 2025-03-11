@@ -82,9 +82,17 @@ export default function RequestSlider({
                         height="16"
                         viewBox="0 0 16 16"
                         fill="none"
-                        className="w-[16px] h-[16px] border bg-slate-100 border-s-slate-300 g-8 rounded-sm"
+                        className={`w-[16px] h-[16px] border border-s-slate-300 g-8 rounded-sm ${
+                            currentRequest === 0 ? 'bg-slate-100' : 'bg-white'
+                        }`}
+                        onClick={() => setCurrentRequest(Math.max(0, currentRequest - 1))}
                     >
-                        <path d="M12 10L8 6L4 10" stroke="#CBD5E1" strokeLinecap="round" strokeLinejoin="round" />
+                        <path
+                            d="M12 10L8 6L4 10"
+                            stroke={`${currentRequest === 0 ? '#CBD5E1' : '#000000'}`}
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        />
                     </svg>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -92,9 +100,17 @@ export default function RequestSlider({
                         height="16"
                         viewBox="0 0 16 16"
                         fill="none"
-                        className="w-[16px] h-[16px] border bg-slate-100 border-s-slate-300 g-8 rounded-sm"
+                        className={`w-[16px] h-[16px] border border-s-slate-300 g-8 rounded-sm ${
+                            currentRequest + 1 === totalRequests ? 'bg-slate-100' : 'bg-white'
+                        }`}
+                        onClick={() => setCurrentRequest(Math.min(totalRequests - 1, currentRequest + 1))}
                     >
-                        <path d="M4 6L8 10L12 6" stroke="#CBD5E1" strokeLinecap="round" strokeLinejoin="round" />
+                        <path
+                            d="M4 6L8 10L12 6"
+                            stroke={`${currentRequest + 1 === totalRequests ? '#CBD5E1' : '#000000'}`}
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        />
                     </svg>
                 </div>
             </div>
@@ -104,7 +120,11 @@ export default function RequestSlider({
 
                 {/* User Profile Section */}
                 <div className="flex items-center gap-4">
-                    <img src={imgPath} alt="User Avatar" className="w-[80px] h-[80px] rounded-full border" />
+                    <img
+                        src={imgPath || '/user.svg'}
+                        alt="User Avatar"
+                        className="w-[80px] h-[80px] rounded-full border"
+                    />
                     <div>
                         <h2 className="text-slate-600 text-sm font-normal">{userName}</h2>
                         <p className="text-slate-400 text-sm font-normal">Requested at {requestTime}</p>
