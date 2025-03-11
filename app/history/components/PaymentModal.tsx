@@ -71,8 +71,8 @@ export default function PaymentModal({ showModal, onClose, reservationId, }: { s
 						// Step 1: Dispatch payment
 						const paymentResult = await dispatch(
 							createPayment({
-								amount: 1000,
-								userId: 1,
+								amount: 20,
+								reservationId: reservationId,
 								tokenData: response.id,
 							})
 						);

@@ -41,6 +41,11 @@ export default function Page() {
 				? { ...reservation, status: 'payment' }
 				: reservation
 		)
+		.map((reservation) =>
+			reservation.status === 'accept'
+				? { ...reservation, status: 'active' }
+				: reservation
+		)
 		.filter(
 			(reservation) =>
 				status === 'all' || reservation.status === status
