@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import Header from '../property/components/Header'
 import SingleHistory from './components/SingleHistory'
-import { fetchUserInfo } from '@/store/authSlice'
+// import { fetchUserInfo } from '@/store/authSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState, AppDispatch } from '@/store/store'
 import { fetchReservations } from '@/store/historySlice'

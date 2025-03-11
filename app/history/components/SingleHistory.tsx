@@ -3,6 +3,7 @@ import { deleteReservation } from "@/store/historySlice"
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from "@/store/store"
 import PaymentModal from './PaymentModal'
+import { useRouter } from "next/navigation"
 
 type ReservationProps = {
 	reservation: {
@@ -22,6 +23,7 @@ export default function SingleHistory({ reservation }: ReservationProps) {
 	const dispatch = useDispatch<AppDispatch>()
 	const [showModal, setShowModal] = useState<boolean>(false)
 	const [showPaymentModal, setShowPaymentModal] = useState<boolean>(false)
+	const router = useRouter()
 	const { successMessage, error, loading } = useSelector(
 		(state: RootState) => state.reservations
 	)
@@ -76,8 +78,8 @@ export default function SingleHistory({ reservation }: ReservationProps) {
 				<div className="flex w-[42rem] py-[0.75rem] px-[1rem] flex-col justify-center items-start gap-[0.625rem] self-stretch">
 					<div className="flex items-center gap-[0.625rem] self-stretch">
 						<p className="text-slate-600 text-sm font-medium leading-[1.25rem]">
-							{/* {reservation.propertyName} */}
-							{reservation.id}
+							{reservation.propertyName}
+							{/* {reservation.id} */}
 						</p>
 						{(reservation.status === 'pending' || reservation.status === 'payment') && (
 							<button onClick={() => setShowModal(true)}>
@@ -139,7 +141,10 @@ export default function SingleHistory({ reservation }: ReservationProps) {
 
 				<div className="flex py-[0.75rem] px-[1rem] flex-col justify-center items-start gap-[0.625rem] self-stretch">
 					<div className="flex justify-between items-center self-stretch">
-						<button className="flex py-[0.375rem] px-[0.5rem] flex-col justify-center items-center gap-[0.625rem] rounded-md border border-[#1E3A8A] hover:border-blue-900 hover:bg-blue-50">
+						<button
+							className="flex py-[0.375rem] px-[0.5rem] flex-col justify-center items-center gap-[0.625rem] rounded-md border border-[#1E3A8A] hover:border-blue-900 hover:bg-blue-50"
+							onClick={() => router.push(`/lessee_center/${reservation.interestedProperty}`)}
+						>
 							<div className="flex justify-center items-center gap-[0.625rem]">
 								<p className="text-[#1E3A8A] text-xs font-medium leading-[1rem]">
 									View Property
