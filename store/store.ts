@@ -2,6 +2,7 @@ import { configureStore, Middleware } from '@reduxjs/toolkit';
 import authReducer from './authSlice';
 import propertyReducer from './propertySlice';
 import autocompleteReducer from './autocompleteSlice';
+import eachpropertyReduce from './eachpropertySlice';
 
 const loggerMiddleware: Middleware = (storeAPI) => (next) => (action) => {
     console.log('Dispatching action:', action);
@@ -15,6 +16,7 @@ export const store = configureStore({
         auth: authReducer,
         property: propertyReducer,
 		autocompleteReducer: autocompleteReducer,
+		eachproperty : eachpropertyReduce,
     },
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(loggerMiddleware),
 });

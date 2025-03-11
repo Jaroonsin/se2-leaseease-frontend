@@ -122,7 +122,7 @@ export default function SignIn() {
                         </div>
                     </form>
                     {errors && (
-                        <div className="mb-4 text-red-500 text-center text-1xl font-semibold">
+                        <div className="mb-4 text-red-500 text-center text-xs">
                             <p>{errors}</p>
                         </div>
                     )}
