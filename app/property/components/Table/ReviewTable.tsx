@@ -3,7 +3,7 @@ import Rating from '@mui/material/Rating';
 import React, { useState, useEffect } from 'react';
 import Footer from '../Footer';
 import ReviewSlider from '../Slider/ReviewSlider';
-
+import { useAppSelector } from '@/store/hooks';
 const ReviewTable: React.FC = () => {
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [currentPage, setCurrentPage] = useState(1);
@@ -120,6 +120,3 @@ const ReviewTable: React.FC = () => {
 };
 
 export default ReviewTable;
-function useAppSelector(arg0: (state: any) => any): { selectedProperty: any } {
-    throw new Error('Function not implemented.');
-}

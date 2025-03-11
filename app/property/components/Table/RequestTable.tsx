@@ -17,8 +17,10 @@ const RequestTable: React.FC = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const requestDatas = await getRequestData();
+                const requestDatas = await getRequestData(selectedProperty ? selectedProperty.id : -1);
                 setTableData(requestDatas);
+                console.log(requestDatas);
+                console.log(requestDatas[0]);
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -77,7 +79,7 @@ const RequestTable: React.FC = () => {
                                 <div className="px-6 w-w-[12.5%]">
                                     <button
                                         className="px-4 py-2 text-sm text-blue-900 bg-blue-50 rounded-lg hover:bg-blue-100 border-blue-900 border"
-                                        onClick={() => setCurrentRequest(0)}
+                                        onClick={() => setCurrentRequest(index)}
                                     >
                                         View Detail
                                     </button>
@@ -107,6 +109,7 @@ const RequestTable: React.FC = () => {
                     totalRequests={tableData.length}
                     currentRequest={currentRequest}
                     setCurrentRequest={setCurrentRequest}
+                    tableData={tableData}
                 />
             )}
         </div>

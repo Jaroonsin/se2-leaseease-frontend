@@ -5,24 +5,36 @@ import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import NearMeOutlinedIcon from '@mui/icons-material/NearMeOutlined';
 import AcceptRequest from '../AcceptRequest';
 import RejectRequest from '../RejectRequest';
-import Rating from '@mui/material/Rating';
+import { requestData } from '@/src/api/data/request';
 
 type RequestSliderProps = {
     id: string;
     totalRequests: number;
     currentRequest: number;
     setCurrentRequest: Dispatch<SetStateAction<number | null>>;
+    tableData: requestData[];
 };
 
-export default function RequestSlider({ id, totalRequests, currentRequest, setCurrentRequest }: RequestSliderProps) {
+export default function RequestSlider({
+    id,
+    totalRequests,
+    currentRequest,
+    setCurrentRequest,
+    tableData,
+}: RequestSliderProps) {
     const [status, setStatus] = useState<'Accept' | 'Reject' | 'None'>('None'); //example
-    const [imgPath, setImgPath] = useState('/avatar.png');
-    const [userName, setUserName] = useState('John Doe');
-    const [requestTime, setRequestTime] = useState('29 Oct 2024 22:45');
-    const [propertyInfo, setPropertyInfo] = useState('Lorem ipsum dolor sit amet');
-    const [purposeInfo, setPurposeInfo] = useState(
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ullamcorper quam ac risus ornare...'
-    );
+    const data = tableData[currentRequest];
+    // const [userName, setUserName] = useState('John Doe');
+    // const [requestTime, setRequestTime] = useState('29 Oct 2024 22:45');
+    // const [propertyInfo, setPropertyInfo] = useState('Lorem ipsum dolor sit amet');
+    // const [purposeInfo, setPurposeInfo] = useState(
+    //     'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ullamcorper quam ac risus ornare...'
+    // );
+    const propertyInfo = data.propertyName;
+    const userName = data.name;
+    const requestTime = data.requestedAt;
+    const purposeInfo = data.purpose;
+    const imgPath = data.imageURL != '' ? data.imageURL : null;
 
     return (
         <div className="flex z-50 w-[32.5rem] h-[calc(100vh-4rem)] p-0 flex-col items-start absolute right-0 bottom-0 border-l border-slate-300 bg-white shadow-[0px_4px_6px_-4px_rgba(0,_0,_0,_0.10),_0px_10px_15px_-3px_rgba(0,_0,_0,_0.10)]  overflow-y-auto">
@@ -62,7 +74,7 @@ export default function RequestSlider({ id, totalRequests, currentRequest, setCu
 
                 <div className="flex center gap-2 absolute right-2">
                     <p className="text-slate-600 text-sm font-normal">
-                        {currentRequest} of {totalRequests} Request
+                        {currentRequest + 1} of {totalRequests} Request
                     </p>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -96,10 +108,6 @@ export default function RequestSlider({ id, totalRequests, currentRequest, setCu
                     <div>
                         <h2 className="text-slate-600 text-sm font-normal">{userName}</h2>
                         <p className="text-slate-400 text-sm font-normal">Requested at {requestTime}</p>
-                        <div className="flex items-center text-slate-400 text-sm">
-                            <p>4.5</p>
-                            <Rating name="read-only" value={4.5} readOnly size="small" />
-                        </div>
                     </div>
                 </div>
 
