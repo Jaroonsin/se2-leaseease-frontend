@@ -42,7 +42,7 @@ const initialState: ReservationsState = {
 
 interface PaymentPayload {
 	amount: number;
-	userId: number;
+	reservationId: number;
 	tokenData: string
 }
 
@@ -52,25 +52,25 @@ export const createPayment = createAsyncThunk<
 	AsyncThunkConfig // Custom configuration
 >(
 	'reservations/createPayment',
-	async ({ amount, userId, tokenData }, { rejectWithValue }) => {
+	async ({ amount, reservationId, tokenData }, { rejectWithValue }) => {
 		try {
 			// Step 2: Send token and payment data to backend
 			const paymentResponse = await apiClient.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}api/v2/payments/process`, {
 				amount: Math.round(amount * 100), // Convert THB to satang
 				currency: 'THB',
 				token: tokenData,
-				user_id: userId,
+				reservation_id: reservationId,
 			});
 
 			if (paymentResponse.data.status_code === 200) {
-				console.log('✅ Payment successful:', paymentResponse.data);
+				console.log('Payment successful:', paymentResponse.data);
 				return paymentResponse.data.message; // Return success message
 			} else {
-				console.error('❌ Payment failed:', paymentResponse.data.message);
+				console.error('Payment failed:', paymentResponse.data.message);
 				return rejectWithValue(paymentResponse.data.message ?? 'Payment failed');
 			}
 		} catch (error: any) {
-			console.error('❌ Payment error:', error.message);
+			console.error('Payment error:', error.message);
 			return rejectWithValue(error.message);
 		}
 	}
@@ -90,13 +90,13 @@ export const updateReservationStatus = createAsyncThunk<
 			);
 
 			if (response.data.status_code === 200) {
-				console.log('✅ Status updated:', response.data.message);
+				console.log('Status updated:', response.data.message);
 				return response.data.message;
 			} else {
 				return rejectWithValue(response.data.message ?? 'Failed to update status');
 			}
 		} catch (error: any) {
-			console.error('❌ Status update error:', error.message);
+			console.error('Status update error:', error.message);
 			return rejectWithValue(error.message);
 		}
 	}

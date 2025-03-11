@@ -4,7 +4,6 @@ import propertyReducer from './propertySlice';
 import autocompleteReducer from './autocompleteSlice';
 import eachpropertyReduce from './eachpropertySlice';
 import reservationsReducer from './historySlice';
-import paymentReducer from './paymentSlice'
 
 const loggerMiddleware: Middleware = (storeAPI) => (next) => (action) => {
 	console.log('Dispatching action:', action);
