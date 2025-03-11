@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { AxiosResponse } from 'axios';
 import { apiClient } from '@/src/api/axios';
 import { AsyncThunkConfig, RootState } from './store';
+import { supabase } from '@/utils/supabase';
 
 interface Data {
     properties: Property[];
@@ -25,7 +26,7 @@ export type Property = {
     size: number;
     price: number;
     date: string;
-    image: string;
+    image_url: string;
     reviews: number;
     status: string;
     detail: string;
@@ -64,9 +65,7 @@ export const fetchProperties = createAsyncThunk<Data, void, AsyncThunkConfig>(
             if (data) {
                 const data_random: Property[] = data.properties.map((property, index) => ({
                     ...property,
-                    rating: parseFloat((Math.random() * (5 - 3.5) + 3.5).toFixed(1)),
-                    reviews: Math.floor(Math.random() * 500) + 1,
-                    image: `https://loremflickr.com/2048/1280?random=${index + 1}`,
+                    rating: parseFloat(property.rating.toFixed(1)),
                     date: new Date(property.date).toLocaleString('en-GB', {
                         day: '2-digit',
                         month: 'short',
@@ -127,6 +126,32 @@ export const deleteProperty = createAsyncThunk<number, void, AsyncThunkConfig>(
     }
 );
 
+// export const uploadPropertyImage = createAsyncThunk<string, FormData, AsyncThunkConfig>(
+//     'auth/uploadImage',
+//     async (formData, { getState, rejectWithValue }) => {
+//         try {
+//             const file = formData.get('file') as File;
+//             const userId = getState().auth.user?.id;
+//             if (!file) throw new Error('No file provided');
+//             const filePath = `${userId}/${Date.now().toString()}/image.jpg`;
+//             const { data, error } = await supabase.storage.from('property').update(filePath, file, {
+//                 cacheControl: 'no-cache',
+//                 upsert: true,
+//             });
+
+//             console.log('data', data?.fullPath);
+//             if (error) {
+//                 console.error('Upload failed:', error.message);
+//                 throw error;
+//             }
+
+//             return supabase.storage.from('user').getPublicUrl(filePath).data.publicUrl + '?version=1';
+//         } catch (error: any) {
+//             return rejectWithValue(error.message);
+//         }
+//     }
+// );
+
 const propertiesSlice = createSlice({
     name: 'properties',
     initialState,
@@ -143,7 +168,7 @@ const propertiesSlice = createSlice({
                 state.error = null;
             })
             .addCase(fetchProperties.fulfilled, (state, action) => {
-                // console.log(action.payload)
+                console.log(action.payload);
                 state.loading = false;
                 state.properties = action.payload.properties || [];
                 state.totalRecords = action.payload.total_records || 0;

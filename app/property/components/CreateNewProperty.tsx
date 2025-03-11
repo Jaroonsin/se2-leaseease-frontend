@@ -15,6 +15,8 @@ export default function CreateNewProperty({ setIsCreateNewPropertyVisible }: Cre
     const [detail, setDetail] = useState<string | null>(null);
     const [size, setSize] = useState<number | null>(null);
     const [price, setPrice] = useState<number | null>(null);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [File, setFile] = useState<File | null>(null);
 
     const [errors, setErrors] = useState<{
         name?: boolean;
@@ -27,7 +29,30 @@ export default function CreateNewProperty({ setIsCreateNewPropertyVisible }: Cre
         const file = event.target.files?.[0];
         if (file) {
             setSelectedFile(file.name);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+            setFile(file);
         }
+    };
+    const handleUpload = async () => {
+        const formData = new FormData();
+        if (File) {
+            formData.append('file', File);
+        }
+
+        // try {
+        //     const resultAction = await dispatch(uploadImage(formData));
+        //     if (uploadImage.fulfilled.match(resultAction)) {
+        //         await dispatch(updateUserImage());
+        //     }
+        //     router.push('/property');
+        // } catch (error) {
+        //     console.error('Upload error:', error);
+        //     alert('Upload failed!');
+        // }
     };
 
     const handleSubmit = async () => {
@@ -50,7 +75,7 @@ export default function CreateNewProperty({ setIsCreateNewPropertyVisible }: Cre
                 detail: detail ?? '',
                 rating: 0,
                 reviews: 0,
-                image: `https://loremflickr.com/2048/1280?random=${Math.floor(Math.random() * 1000) + 1}`,
+                image_url: `https://loremflickr.com/2048/1280?random=${Math.floor(Math.random() * 1000) + 1}`,
                 date: new Date().toISOString(),
                 status: 'available',
             };
@@ -95,8 +120,12 @@ export default function CreateNewProperty({ setIsCreateNewPropertyVisible }: Cre
 
             <div className="flex h-[52.5rem] p-[1.25rem] [1.5rem] flex-col items-start gap-[0.625rem] self-stretch">
                 <div className="flex flex-col items-start gap-[16px] self-stretch">
-                    <div className="flex h-[280px] p-[28px] flex-col items-start gap-[10px] self-stretch rounded-[6px] bg-slate-200">
-                        {/* <div className="flex-1 self-stretch bg-[url('https://loremflickr.com/400/200?random=2')] bg-lightgray bg-[50%] bg-cover bg-no-repeat"></div> */}
+                    <div className="flex h-[280px] p-[28px] flex-col items-center justify-center gap-[10px] self-stretch rounded-[6px] bg-slate-200 relative overflow-hidden">
+                        <img
+                            src={imagePreview || 'https://loremflickr.com/500/300?random=1'}
+                            alt="Property preview"
+                            className="object-cover w-full h-full absolute inset-0"
+                        />
                     </div>
                     <div className="flex flex-col items-start gap-[4px] self-stretch">
                         <div className="flex items-start gap-[10px] self-stretch">

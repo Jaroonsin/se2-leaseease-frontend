@@ -16,7 +16,7 @@ export default function EditProperty({ setIsEditPropertyVisible }: EditPropertyP
 
     // const [editProperty, setEditProperty] = useState<Property | null>(selectedProperty ?? null);
     const selectedProperty = useAppSelector((state) => state.property.selectedProperty);
-    const [selectedFile, setSelectedFile] = useState<string | null>(selectedProperty?.image ?? null);
+    const [selectedFile, setSelectedFile] = useState<string | null>(selectedProperty?.image_url ?? null);
     const [name, setName] = useState<string | null>(selectedProperty?.name || '');
     const [location, setLocation] = useState<string | null>(selectedProperty?.location || '');
     const [size, setSize] = useState<number | null>(selectedProperty?.size || 0);
@@ -56,7 +56,7 @@ export default function EditProperty({ setIsEditPropertyVisible }: EditPropertyP
             id: selectedProperty?.id || 0,
             rating: selectedProperty?.rating || 0,
             date: selectedProperty?.date || new Date().toISOString(),
-            image: selectedProperty?.image || '',
+            image_url: selectedProperty?.image_url || '',
             reviews: selectedProperty?.reviews || 0,
             status: selectedProperty?.status || 'Available',
             detail: selectedProperty?.detail || '',

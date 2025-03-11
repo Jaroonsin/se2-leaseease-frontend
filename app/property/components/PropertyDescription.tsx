@@ -19,7 +19,7 @@ export default function PropertyDescription() {
         <div className="flex items-start gap-5 w-[67.78vw] h-[27.92vh] rounded-md">
             {/* Image */}
             <img
-                src={selectedProperty.image}
+                src={selectedProperty.image_url}
                 alt={selectedProperty.name}
                 className="w-[29.17vw] h-full rounded-md object-cover"
             />

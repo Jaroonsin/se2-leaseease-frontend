@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useAppDispatch } from '@/store/hooks';
-import { forgotPassword } from '@/store/authSlice';
+import { forgotPassword } from '@/store/auth/authThunks';
 import { useState } from 'react';
 
 export default function Page() {
