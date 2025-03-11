@@ -25,11 +25,11 @@ export default function PropertyPage() {
     const debounceTimeout2 = useRef<NodeJS.Timeout | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
-    const totalPages = 10; //back given
 
     const dispatch = useAppDispatch();
     const suggestions = useAppSelector((state) => state.autocompleteReducer?.suggestions || []);
     const searchProperties = useAppSelector((state) => state.autocompleteReducer.searchResults);
+    const totalPages = useAppSelector((state) => state.autocompleteReducer.lastPage || 1);
 
     // Fetch autocomplete suggestions after 2 seconds of inactivity
     useEffect(() => {
@@ -254,7 +254,7 @@ export default function PropertyPage() {
                                 />
                             </div>
                             <div className="flex w-[450px] p-2.5 flex-col justify-between items-start self-stretch">
-                                <div className="flex items-start gap-2 self-stretch justify-between align-center items-center">
+                                <div className="flex items-start gap-2 self-stretch justify-between align-center">
                                     <p className="text-4xl">{property.name}</p>
                                     <div className="flex items-center gap-1">
                                         <p>{property.rating}</p>
