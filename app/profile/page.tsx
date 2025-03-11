@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useAppDispatch } from '@/store/hooks';
-import { updateUserImage, updateUserInfo, uploadImage } from '@/store/authSlice'; // Assuming these actions exist
+import { updateUserImage, updateUserInfo, uploadImage } from '@/store/auth/userThunks'; // Assuming these actions exist
 import { useRouter } from 'next/navigation';
 import LoadPage from '@/components/ui/loadpage';
 import { useAuth } from '@/hooks/useAuth';
@@ -21,6 +21,7 @@ export default function UserProfile() {
     const [errors, setErrors] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [uploadButton, setUploadButton] = useState<boolean>(false);
 
     useEffect(() => {
         if (user) {
@@ -44,6 +45,7 @@ export default function UserProfile() {
             };
             reader.readAsDataURL(file);
         }
+        setUploadButton(true);
     };
     const handleUpload = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -54,7 +56,7 @@ export default function UserProfile() {
             if (uploadImage.fulfilled.match(resultAction)) {
                 await dispatch(updateUserImage());
             }
-            alert('Upload successful!');
+            router.push('/property');
         } catch (error) {
             console.error('Upload error:', error);
             alert('Upload failed!');
@@ -140,7 +142,13 @@ export default function UserProfile() {
                         </label>
                         {/* Submit Button */}
                         <div className="flex justify-center py-2">
-                            <button type="submit" className="text-xs px-2 py-1 bg-green-500 text-white rounded-3xl">
+                            <button
+                                type="submit"
+                                disabled={!uploadButton}
+                                className={`text-xs px-2 py-1 ${
+                                    uploadButton ? 'bg-green-500' : 'bg-gray-300'
+                                } text-white rounded-3xl`}
+                            >
                                 Upload
                             </button>
                         </div>
@@ -172,7 +180,7 @@ export default function UserProfile() {
                             id="email"
                             value={userDetails.email}
                             onChange={(e) => setUserDetails({ ...userDetails, email: e.target.value })}
-                            className="w-full p-3 border rounded-3xl text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                            className="bg-gray-200 w-full p-3 border rounded-3xl text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
                             required
                             disabled
                         />
@@ -202,6 +210,7 @@ export default function UserProfile() {
                             <input
                                 type="password"
                                 id="newPassword"
+                                autoComplete="new-password"
                                 value={newPassword}
                                 onChange={(e) => setNewPassword(e.target.value)}
                                 className="w-full p-3 border rounded-3xl text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
@@ -215,6 +224,7 @@ export default function UserProfile() {
                             <input
                                 type="password"
                                 id="confirmPassword"
+                                autoComplete="new-password"
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                 className="w-full p-3 border rounded-3xl text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
@@ -243,19 +253,35 @@ export default function UserProfile() {
                         <button
                             type="button"
                             onClick={handlePasswordChange}
-                            className="text-sm text-center bg-blue-600 text-white p-3 rounded-2xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                            disabled={!newPassword || !confirmPassword || newPassword !== confirmPassword}
+                            className={`text-sm text-center ${
+                                !newPassword || !confirmPassword || newPassword !== confirmPassword
+                                    ? 'bg-blue-300 cursor-not-allowed'
+                                    : 'bg-blue-600 hover:bg-blue-700'
+                            } text-white p-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-600`}
                         >
                             Reset Password
                         </button>
                     </div>
 
                     {/* Save Changes Button */}
-                    <button
-                        type="submit"
-                        className="w-full bg-green-600 text-white p-3 rounded-3xl hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-600 mt-4"
-                    >
-                        Save Changes
-                    </button>
+                    {/* Check if there are any changes in the user details */}
+                    {(() => {
+                        const hasChanges =
+                            user && (userDetails.name !== user.name || userDetails.address !== user.address);
+
+                        return (
+                            <button
+                                type="submit"
+                                disabled={!hasChanges}
+                                className={`w-full ${
+                                    hasChanges ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-400 cursor-not-allowed'
+                                } text-white p-3 rounded-3xl focus:outline-none focus:ring-2 focus:ring-green-600 mt-4`}
+                            >
+                                {hasChanges ? 'Save Changes' : 'No Changes to Save'}
+                            </button>
+                        );
+                    })()}
                 </form>
             </div>
         </div>

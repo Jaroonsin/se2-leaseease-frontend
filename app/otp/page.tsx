@@ -3,7 +3,7 @@
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
-import { requestOTP, verifyOTP } from '@/store/authSlice';
+import { requestOTP, verifyOTP } from '@/store/auth/authThunks';
 import LoadPage from '@/components/ui/loadpage';
 
 export default function Page() {
@@ -71,7 +71,9 @@ export default function Page() {
                             key={index}
                             maxLength={1}
                             pattern="[0-9]"
-                            className={`flex flex-col justify-center items-center w-16 h-20 gap-[0.625rem] rounded bg-slate-100 text-center text-black text-4xl font-normal outline-none leading-[2.5rem] ${inputError ? 'border border-red-500' : ''}`}
+                            className={`flex flex-col justify-center items-center w-16 h-20 gap-[0.625rem] rounded bg-slate-100 text-center text-black text-4xl font-normal outline-none leading-[2.5rem] ${
+                                inputError ? 'border border-red-500' : ''
+                            }`}
                             ref={(el) => {
                                 inputRefs.current[index] = el!;
                             }}
