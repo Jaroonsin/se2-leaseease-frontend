@@ -9,6 +9,7 @@ import 'rc-slider/assets/index.css';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { fetchAutocomplete, fetchSearchProperties } from '@/store/autocompleteSlice';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 import LoadPage from '@/components/ui/loadpage';
 
@@ -25,6 +26,7 @@ export default function PropertyPage() {
     const debounceTimeout2 = useRef<NodeJS.Timeout | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
+    const router = useRouter();
 
     const dispatch = useAppDispatch();
     const suggestions = useAppSelector((state) => state.autocompleteReducer?.suggestions || []);
@@ -55,21 +57,21 @@ export default function PropertyPage() {
         }
 
         debounceTimeout2.current = setTimeout(() => {
-            if (search.trim()) {
-                dispatch(
-                    fetchSearchProperties({
-                        name: search,
-                        minprice: minPrice,
-                        maxprice: maxPrice,
-                        minsize: minArea,
-                        maxsize: maxArea,
-                        sortby: 'price',
-                        order: 'asc',
-                        page: currentPage,
-                        pagesize: rowsPerPage,
-                    })
-                );
-            }
+            // if (search.trim()) {
+            dispatch(
+                fetchSearchProperties({
+                    name: search,
+                    minprice: minPrice,
+                    maxprice: maxPrice,
+                    minsize: minArea,
+                    maxsize: maxArea,
+                    sortby: 'price',
+                    order: 'asc',
+                    page: currentPage,
+                    pagesize: rowsPerPage,
+                })
+            );
+            // }
         }, 2000);
 
         return () => {
@@ -245,6 +247,7 @@ export default function PropertyPage() {
                         <div
                             key={property.id}
                             className="flex p-5 items-center gap-2 rounded-xl border-2 border-slate-100 w-full"
+                            onClick={() => router.push(`/lessee_center/${property.id}`)}
                         >
                             <div className="w-[382px] h-[160px] rounded-md">
                                 <img

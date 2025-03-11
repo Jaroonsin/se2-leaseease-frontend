@@ -1,70 +1,107 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import Header from '../../property/components/Header';
+import { useAuth } from '@/hooks/useAuth';
+import LoadPage from '@/components/ui/loadpage';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { fetchPropertyById, createLeaseReservation } from '@/store/eachpropertySlice';
 
-const PropertyPage: React.FC = () => {
+function EachPropertyPage({ params }: { params: Promise<{ id: string }> }) {
     const [showModal, setShowModal] = useState(false);
     const [purpose, setPurpose] = useState('');
     const [error, setError] = useState('');
+    const { loading } = useAuth();
+    const dispatch = useAppDispatch();
+    const { selectedProperty } = useAppSelector((state) => state.eachproperty);
+    const [propertyId, setPropertyId] = useState<number | null>(null);
+    const { id } = use(params);
 
-    const handleRequestReservation = () => {
+    useEffect(() => {
+        const fetchParams = async () => {
+            if (id) {
+                setPropertyId(Number(id));
+            }
+        };
+
+        fetchParams();
+    }, [params]);
+
+    useEffect(() => {
+        if (!propertyId) return;
+        dispatch(fetchPropertyById(propertyId));
+    }, [dispatch, propertyId]);
+
+    const handleRequestReservation = async () => {
         if (!purpose.trim()) {
             setError('*fill in the blank*');
             return;
         }
         // Handle reservation logic here
-        setShowModal(false);
-        setPurpose('');
-        setError('');
+        // setShowModal(false);
+        // setPurpose('');
+        // setError('');
+
+        const reservationData = {
+            interestedProperty: propertyId,
+            proposedMessage: null,
+            purpose: purpose,
+            question: null,
+        };
+
+        try {
+            await dispatch(createLeaseReservation(reservationData)).unwrap();
+            setShowModal(false);
+            setPurpose('');
+            setError('');
+            // Optionally, show a success message or redirect the user
+        } catch (error) {
+            setError('Failed to create reservation. Please try again.');
+        }
     };
 
-    return (
+    return loading ? (
+        <LoadPage />
+    ) : (
         <div className="flex flex-col justify-center items-start">
             <Header />
             <div className="flex justify-center items-center self-stretch">
-                <div className="flex flex-col items-center self-stretch w-3/4">
+                <div className="flex flex-col items-center self-stretch w-3/5">
                     <div className="flex p-5 items-start w-[580px] h-[370px] bg-cover">
-                        <img src="/bg-condo.jpg" alt="bg condo" />
+                        <img
+                            src={
+                                selectedProperty?.image_url && selectedProperty.image_url.trim() !== ''
+                                    ? selectedProperty.image_url
+                                    : '/bg-condo.jpg'
+                            }
+                        />
                     </div>
-                    <div className="flex py-2.5 px-10 items-start gap-10">
+                    <div className="flex py-2.5 px-10 items-start gap-10 w-full">
                         <div className="w-1/2 flex flex-col gap-2">
-                            <h2 className="text-3xl font-medium">Core Udomsuk by Uni Living</h2>
-                            <p>
-                                254 Phaya Thai Rd, Khwaeng Wang Mai, Pathum Wan, Krung Thep Maha Nakhon 10330 254 Phaya
-                                Thai Rd, Khwaeng Wang Mai, Pathum Wan, Krung Thep Maha Nakhon 10330 254 Phaya Thai Rd,
-                                Khwaeng Wang Mai, Pathum Wan, Krung Thep Maha Nakhon 10330
-                            </p>
+                            <h2 className="text-3xl font-medium">{selectedProperty?.name}</h2>
+                            <p>{selectedProperty?.location}</p>
                             <hr className="border-t border-gray-300"></hr>
                             <div className="flex justify-between items-center self-stretch">
                                 <div>
                                     <p>Price</p>
-                                    <p>B 10,000</p>
+                                    <p>B {selectedProperty?.price}</p>
                                 </div>
                                 <div>
                                     <p>Size</p>
-                                    <p>4,000 m^2</p>
+                                    <p>{selectedProperty?.size} m^2</p>
                                 </div>
                             </div>
                             <hr className="border-t border-gray-300"></hr>
                             <p className="text-xl font-medium">About Property</p>
-                            <p>
-                                Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum
-                                has been the industry's standard dummy text ever since the 1500s, when an unknown
-                                printer took a galley of type and scrambled it to make a type specimen book. It has
-                                survived not only five centuries, but also the leap into electronic typesetting,
-                                remaining essentially unchanged. It was popularised in the 1960s with the release of
-                                Letraset sheets containing Lorem Ipsum passages, and more recently with desktop
-                                publishing software like Aldus PageMaker including versions of Lorem Ipsum
-                            </p>
+                            <p>{selectedProperty?.detail}</p>
                         </div>
                         <div className="flex flex-col self-stretch w-1/2 gap-2.5">
                             <div className="flex w-[221px] flex-col items-start gap-[10px]">
                                 <p className="text-xl font-medium">Rating</p>
                                 <div className="flex gap-1">
-                                    <p className="text-xl font-normal">4.5 / 5</p>
+                                    <p className="text-xl font-normal">{selectedProperty?.rating} / 5</p>
                                     <p className="text-xl font-normal">⭐</p>
-                                    <p className="text-xl font-normal">(99)</p>
+                                    <p className="text-xl font-normal">({selectedProperty?.review_count})</p>
                                 </div>
                             </div>
                             <div className="flex flex-col p-[12px] justify-center items-start gap-[10px] self-stretch border border-slate-100">
@@ -132,6 +169,6 @@ const PropertyPage: React.FC = () => {
             </div>
         </div>
     );
-};
+}
 
-export default PropertyPage;
+export default EachPropertyPage;
