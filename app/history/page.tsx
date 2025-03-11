@@ -7,10 +7,23 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState, AppDispatch } from '@/store/store'
 import { fetchReservations } from '@/store/historySlice'
 
+type Reservation = {
+	id: number
+	purpose: string
+	proposedMessage: string
+	question: string
+	status: string
+	interestedProperty: number
+	lesseeID: number
+	propertyName: string
+	lastModified: string
+}
+
+
 export default function Page() {
 	const dispatch = useDispatch<AppDispatch>()
 	const { reservations, loading, error } = useSelector((state: RootState) => state.reservations)
-	const [status, setStatus] = useState('all')
+	const [status, setStatus] = useState<string>('all')
 	const [sortBy, setSortBy] = useState<'propertyName' | 'lastModified'>('propertyName')
 	useEffect(() => {
 		// const fetchData = async () => {
@@ -35,7 +48,7 @@ export default function Page() {
 	// if (loading) return <div>Loading...</div>
 	// if (error) return <div>Error: {error}</div>
 
-	const filteredReservationsTmp = reservations
+	const filteredReservationsTmp: Reservation[] = reservations
 		.map((reservation) =>
 			reservation.status === 'waiting'
 				? { ...reservation, status: 'payment' }
@@ -52,12 +65,12 @@ export default function Page() {
 		);
 
 
-	const filteredReservations = filteredReservationsTmp.filter(
+	const filteredReservations: Reservation[] = filteredReservationsTmp.filter(
 		(reservation) =>
 			status === 'all' || reservation.status === status
 	)
 
-	const sortedReservations = filteredReservations.sort((a, b) => {
+	const sortedReservations: Reservation[] = filteredReservations.sort((a, b) => {
 		if (sortBy === 'propertyName') {
 			return a.propertyName.localeCompare(b.propertyName) // Sort alphabetically by property name
 		} else {
