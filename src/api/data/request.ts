@@ -1,4 +1,3 @@
-import { useAppSelector } from '@/store/hooks';
 import { apiClient } from '../axios';
 
 export type requestData = {
