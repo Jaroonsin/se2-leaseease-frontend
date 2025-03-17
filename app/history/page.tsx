@@ -66,7 +66,7 @@ export default function Page() {
     });
 
     return (
-        <div className="flex w-full flex-col items-center rounded-md">
+        <div className=" flex w-full flex-col items-center rounded-md">
             <Header />
             <div className="flex h-[53rem] p-[0.625rem] flex-col items-start gap-[0.625rem] flex-shrink-0">
                 <div className="flex h-[2.25rem] p-[0.25rem] justify-center items-center flex-shrink-0 rounded-lg bg-zinc-100">

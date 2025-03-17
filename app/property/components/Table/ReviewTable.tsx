@@ -25,7 +25,7 @@ const ReviewTable: React.FC = () => {
         };
 
         fetchData();
-    }, []);
+    }, [selectedProperty]);
 
     const handleSort = (column: 'name' | 'rating' | 'reviewedAt') => {
         const newOrder = sortColumn === column && sortOrder === 'asc' ? 'desc' : 'asc';
@@ -82,11 +82,21 @@ const ReviewTable: React.FC = () => {
                                     <p>{row.rating.toFixed(1)}</p>
                                     <Rating name="read-only" value={row.rating} readOnly size="small" />
                                 </div>
-                                <div className="px-6 w-[25%]">{row.reviewedAt}</div>
+                                <div className="px-6 w-[25%]">
+                                    {' '}
+                                    {new Date(row.reviewedAt).toLocaleString('en-GB', {
+                                        day: '2-digit',
+                                        month: 'short',
+                                        year: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                        timeZone: 'UTC',
+                                    })}
+                                </div>
                                 <div className="px-6 w-[15%]">
                                     <button
                                         className="px-4 py-2 text-sm text-blue-900 bg-blue-50 rounded-lg hover:bg-blue-100 border-blue-900 border"
-                                        onClick={() => setCurrentRequest(0)}
+                                        onClick={() => setCurrentRequest(index)}
                                     >
                                         View Detail
                                     </button>

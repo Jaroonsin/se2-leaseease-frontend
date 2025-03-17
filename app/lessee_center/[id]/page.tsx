@@ -5,7 +5,7 @@ import Header from '../components/Header';
 import { useAuth } from '@/hooks/useAuth';
 import LoadPage from '@/components/ui/loadpage';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { fetchPropertyById, createLeaseReservation } from '@/store/eachpropertySlice';
+import { fetchPropertyById, createLeaseReservation, fetchUserById } from '@/store/eachpropertySlice';
 
 function EachPropertyPage({ params }: { params: Promise<{ id: string }> }) {
     const [showModal, setShowModal] = useState(false);
@@ -13,7 +13,7 @@ function EachPropertyPage({ params }: { params: Promise<{ id: string }> }) {
     const [error, setError] = useState('');
     const { loading } = useAuth();
     const dispatch = useAppDispatch();
-    const { selectedProperty } = useAppSelector((state) => state.eachproperty);
+    const { selectedProperty, user } = useAppSelector((state) => state.eachproperty);
     const [propertyId, setPropertyId] = useState<number | null>(null);
     const { id } = use(params);
 
@@ -29,7 +29,14 @@ function EachPropertyPage({ params }: { params: Promise<{ id: string }> }) {
 
     useEffect(() => {
         if (!propertyId) return;
-        dispatch(fetchPropertyById(propertyId));
+        dispatch(fetchPropertyById(propertyId))
+            .unwrap()
+            .then(() => {
+                dispatch(fetchUserById());
+            })
+            .catch((error) => {
+                console.error('Failed to fetch property:', error);
+            });
     }, [dispatch, propertyId]);
 
     const handleRequestReservation = async () => {
@@ -108,12 +115,18 @@ function EachPropertyPage({ params }: { params: Promise<{ id: string }> }) {
                                     <p className="text-xl font-normal">({selectedProperty?.review_count})</p>
                                 </div>
                             </div>
-                            <div className="flex flex-col p-[12px] justify-center items-start gap-[10px] self-stretch border border-slate-100">
-                                <div className="flex p-[10px] justify-center items-center gap-[20px]">
-                                    <img src="/Avatar.png" alt="avatar" />
-                                    <div className="flex flex-col items-start gap-1">
-                                        <p>Lnwza 007</p>
-                                        <p>MAHARACHA</p>
+                            <div className="flex flex-col p-[15px] justify-center items-start gap-[10px] self-stretch border border-slate-100">
+                                <div className="flex p-3 justify-start items-center gap-4 w-full border-b border-gray-100 pb-3">
+                                    <img
+                                        className="w-14 h-14 rounded-full object-cover border border-gray-200"
+                                        src={user?.image_url || '/default-avatar.png'}
+                                        alt="user avatar"
+                                    />
+                                    <div className="flex flex-col items-start gap-0.5">
+                                        <p className="font-semibold text-gray-800">{user?.name || 'User Name'}</p>
+                                        <p className="text-sm text-gray-600">
+                                            {user?.address || 'No address provided'}
+                                        </p>
                                     </div>
                                 </div>
                                 <div className="flex flex-col justify-center gap-2 w-full">

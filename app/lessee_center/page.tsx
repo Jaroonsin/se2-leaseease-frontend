@@ -74,6 +74,7 @@ export default function PropertyPage() {
                     maxsize: maxArea,
                     sortby: 'price',
                     order: 'asc',
+                    rating: rating,
                     page: currentPage,
                     pagesize: rowsPerPage,
                 })
@@ -231,7 +232,8 @@ export default function PropertyPage() {
                         {[1, 2, 3, 4, 5].map((item) => (
                             <label key={item} className="flex items-center gap-2 cursor-pointer">
                                 <input
-                                    type="checkbox"
+                                    type="radio"
+                                    name="rating"
                                     className="w-5 h-5 accent-blue-500"
                                     onClick={() => setRating(item)}
                                 />
@@ -239,7 +241,12 @@ export default function PropertyPage() {
                             </label>
                         ))}
                         <label className="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" className="w-5 h-5 accent-blue-500" />
+                            <input
+                                type="radio"
+                                name="rating"
+                                className="w-5 h-5 accent-blue-500"
+                                onClick={() => setRating(0)}
+                            />
                             <span className="text-sm text-gray-700">No Rating</span>
                         </label>
                     </div>

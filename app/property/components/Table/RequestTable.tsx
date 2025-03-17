@@ -27,7 +27,7 @@ const RequestTable: React.FC = () => {
         };
 
         fetchData();
-    }, [currentRequest]);
+    }, [currentRequest, selectedProperty]);
     const handleSort = (column: 'name' | 'requestedAt') => {
         const newOrder = sortColumn === column && sortOrder === 'asc' ? 'desc' : 'asc';
         setSortColumn(column);
@@ -58,13 +58,13 @@ const RequestTable: React.FC = () => {
         <div className="w-full h-full flex flex-col">
             <div className="w-full h-full rounded-lg bg-slate-50">
                 <div className="flex w-full bg-white rounded-t-lg text-slate-400 border-b border-gray-200">
-                    <div className="px-6 py-3 text-left w-[62.5%]" onClick={() => handleSort('name')}>
+                    <div className="px-6 py-3 text-left w-[55%]" onClick={() => handleSort('name')}>
                         Name {sortColumn === 'name' ? (sortOrder === 'asc' ? '▲' : '▼') : ''}
                     </div>
-                    <div className="px-6 py-3 text-left w-[25%]" onClick={() => handleSort('requestedAt')}>
+                    <div className="px-6 py-3 text-left w-[30%]" onClick={() => handleSort('requestedAt')}>
                         Requested At {sortColumn === 'requestedAt' ? (sortOrder === 'asc' ? '▲' : '▼') : ''}
                     </div>
-                    <div className="px-6 py-3 text-left w-[12.5%]">Detail</div>
+                    <div className="px-6 py-3 text-left w-[15%]">Detail</div>
                 </div>
 
                 {/* Table Body */}
@@ -75,9 +75,18 @@ const RequestTable: React.FC = () => {
                                 key={index}
                                 className="flex w-full bg-white h-[56px] items-center border border-gray-200"
                             >
-                                <div className="px-6 w-[62.5%]">{row.name}</div>
-                                <div className="px-6 w-[25%]">{row.requestedAt}</div>
-                                <div className="px-6 w-w-[12.5%]">
+                                <div className="px-6 w-[55%]">{row.name}</div>
+                                <div className="px-6 w-[30%]">
+                                    {new Date(row.requestedAt).toLocaleString('en-GB', {
+                                        day: '2-digit',
+                                        month: 'short',
+                                        year: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                        timeZone: 'UTC',
+                                    })}
+                                </div>
+                                <div className="px-6 w-w-[15%]">
                                     <button
                                         className="px-4 py-2 text-sm text-blue-900 bg-blue-50 rounded-lg hover:bg-blue-100 border-blue-900 border"
                                         onClick={() => setCurrentRequest(index)}
