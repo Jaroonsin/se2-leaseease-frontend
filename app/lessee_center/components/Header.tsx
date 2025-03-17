@@ -32,7 +32,7 @@ export default function PropertyHeader() {
     return (
         <div className="flex w-full h-16 px-5 justify-between items-center border-b border-slate-300 bg-slate-50">
             <div className="flex items-center gap-7">
-                <p className="text-black font-lexend text-2xl font-normal leading-[36px] cursor-pointer">LEASEEASE</p>
+                <p className="text-black font-lexend text-2xl font-normal leading-[36px]">LEASEEASE</p>
                 <p
                     className="text-black font-lexend text-base font-normal leading-[36px] cursor-pointer"
                     onClick={() => {
@@ -52,7 +52,7 @@ export default function PropertyHeader() {
                 >
                     History
                 </div>
-                <p className="text-slate-900 text-sm font-medium leading-5 p-4">John Doe</p>
+                <p className="text-slate-900 text-sm font-medium leading-5 p-4">{user?.name}</p>
                 <div
                     className="w-[40px] h-[40px] rounded-full bg-cover bg-center cursor-pointer"
                     style={{

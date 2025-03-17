@@ -23,7 +23,14 @@ export default function ReviewSlider({
 }: ReviewSliderProps) {
     const data = tableData[currentRequest];
     const userName = data.name;
-    const requestTime = data.reviewedAt;
+    const requestTime = new Date(data.reviewedAt).toLocaleString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: 'UTC',
+    });
     const rating = data.rating;
     const detail = data.message;
     const imgPath = data.imageURL != '' ? data.imageURL : null;

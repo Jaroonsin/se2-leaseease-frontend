@@ -56,7 +56,7 @@ export default function PropertyDescription() {
                         <span className="flex items-center">{selectedProperty.rating.toFixed(1)}</span>
                         <Rating name="read-only" value={selectedProperty.rating} readOnly size="small" />
                     </div>
-                    <span className="ml-1">({selectedProperty.reviews})</span>
+                    <span className="ml-1">({selectedProperty.review_count})</span>
                 </div>
 
                 {/* Property Details */}
@@ -68,11 +68,13 @@ export default function PropertyDescription() {
                     <p className="text-gray-700">
                         <strong>Size:</strong>
                     </p>
-                    <p className="text-gray-700">{selectedProperty.size}</p>
+                    <p className="text-gray-700">{selectedProperty.size} m²</p>
                     <p className="text-gray-700">
                         <strong>Price:</strong>
                     </p>
-                    <p className="text-gray-700">{selectedProperty.price}</p>
+                    <p className="text-gray-700">
+                        {new Intl.NumberFormat('th-TH').format(selectedProperty?.price || 0)} Baht/Month
+                    </p>
                 </div>
             </div>
             {isEditPropertyVisible && <EditProperty setIsEditPropertyVisible={setIsEditPropertyVisible} />}

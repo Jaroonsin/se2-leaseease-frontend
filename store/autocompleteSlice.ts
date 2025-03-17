@@ -44,6 +44,7 @@ interface SearchParams {
     minsize?: number;
     maxsize?: number;
     sortby?: string;
+    rating?: number;
     order?: 'asc' | 'desc';
     page?: number;
     pagesize?: number;

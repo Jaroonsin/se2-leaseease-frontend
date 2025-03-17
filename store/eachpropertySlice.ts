@@ -19,6 +19,7 @@ interface ApiResponse<T> {
 
 export type Property = {
     id: number;
+    lessor_id: number;
     name: string;
     rating: number;
     location: string;
@@ -38,12 +39,14 @@ interface EachPropertyState {
     totalPages: number;
     currentPage: number;
     pageSize: number;
+    user: User | null;
     selectedProperty: Property | null;
     loading: boolean;
     error: string | null;
 }
 
 const initialState: EachPropertyState = {
+    user: null,
     properties: [],
     totalRecords: 0,
     totalPages: 0,
@@ -67,7 +70,7 @@ interface LeaseReservationResponse {
 }
 
 export const fetchPropertyById = createAsyncThunk<Property, number, AsyncThunkConfig>(
-    'properties/getById',
+    'eachproperty/getById',
     async (id, { rejectWithValue }) => {
         try {
             const res: AxiosResponse<ApiResponse<Property>> = await apiClient.get(`properties/get/${id}`);
@@ -79,11 +82,24 @@ export const fetchPropertyById = createAsyncThunk<Property, number, AsyncThunkCo
     }
 );
 
+export const fetchUserById = createAsyncThunk<User, void, AsyncThunkConfig>(
+    'eachproperty/getUserById',
+    async (_, { getState, rejectWithValue }) => {
+        try {
+            const id = getState().eachproperty.selectedProperty?.lessor_id;
+            const res: AxiosResponse<ApiResponse<User>> = await apiClient.get(`user/get/${id}`);
+            return res.data.data!;
+        } catch (error: any) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
 export const createLeaseReservation = createAsyncThunk<
     LeaseReservationResponse,
     LeaseReservationRequest,
     AsyncThunkConfig
->('leaseReservation/create', async (reservationData, { rejectWithValue }) => {
+>('eachproperty/create', async (reservationData, { rejectWithValue }) => {
     try {
         const res: AxiosResponse<LeaseReservationResponse> = await apiClient.post('lessee/create', reservationData, {
             headers: {
@@ -97,7 +113,7 @@ export const createLeaseReservation = createAsyncThunk<
     }
 });
 
-const propertiesSlice = createSlice({
+const eachpropertySlice = createSlice({
     name: 'properties',
     initialState,
     reducers: {
@@ -132,10 +148,18 @@ const propertiesSlice = createSlice({
             .addCase(createLeaseReservation.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
+            })
+            .addCase(fetchUserById.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchUserById.fulfilled, (state, action) => {
+                state.loading = false;
+                state.user = action.payload;
             });
     },
 });
 
-export const { setSelectedProperty } = propertiesSlice.actions;
+export const { setSelectedProperty } = eachpropertySlice.actions;
 
-export default propertiesSlice.reducer;
+export default eachpropertySlice.reducer;

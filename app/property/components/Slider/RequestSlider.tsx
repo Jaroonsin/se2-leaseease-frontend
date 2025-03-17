@@ -32,7 +32,14 @@ export default function RequestSlider({
     // );
     const propertyInfo = data.propertyName;
     const userName = data.name;
-    const requestTime = data.requestedAt;
+    const requestTime = new Date(data.requestedAt).toLocaleString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: 'UTC',
+    });
     const purposeInfo = data.purpose;
     const imgPath = data.imageURL != '' ? data.imageURL : null;
     const requestID = data.id;

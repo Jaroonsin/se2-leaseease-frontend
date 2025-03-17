@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/store/store';
 import { createPayment, updateReservationStatus } from '@/store/historySlice';
 import { OmiseInstance } from '@/type/omise';
+import { useRouter } from 'next/navigation';
 
 type PaymentModalProps = {
     showModal: boolean;
@@ -19,6 +20,7 @@ export default function PaymentModal({ showModal, onClose, reservationId }: Paym
     const [securityCode, setSecurityCode] = useState<string>('');
     const [omise, setOmise] = useState<OmiseInstance | null>(null);
     const [errors, setErrors] = useState<Record<string, boolean>>({});
+    const router = useRouter();
 
     useEffect(() => {
         if (typeof window !== 'undefined' && !window.Omise) {
@@ -90,6 +92,7 @@ export default function PaymentModal({ showModal, onClose, reservationId }: Paym
 
                             onClose(); // Close modal on success
                         }
+                        router.replace(router.asPath, undefined, { scroll: false });
                     } catch (error) {
                         console.error('Payment or status update failed:', error);
                     }

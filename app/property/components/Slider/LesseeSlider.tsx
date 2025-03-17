@@ -23,7 +23,14 @@ export default function LesseeSlider({
     const data = tableData[currentRequest];
     const propertyInfo = data.propertyName;
     const userName = data.name;
-    const requestTime = data.lastResponse;
+    const requestTime = new Date(data.lastResponse).toLocaleString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: 'UTC',
+    });
     const purposeInfo = data.purpose;
     const imgPath = data.imageURL != '' ? data.imageURL : null;
     const [lesseeStatus, setLesseeStatus] = useState('Active');
