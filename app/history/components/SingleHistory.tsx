@@ -127,7 +127,7 @@ export default function SingleHistory({ reservation }: ReservationProps) {
 							</button>
 						) : (
 							<button
-								className="flex py-[0.375rem] px-[0.5rem] flex-col justify-center items-center gap-[0.625rem] rounded-md border border-[#1E3A8A] hover:border-blue-900 hover:bg-blue-50"
+								className="hidden flex py-[0.375rem] px-[0.5rem] flex-col justify-center items-center gap-[0.625rem] rounded-md border border-[#1E3A8A] hover:border-blue-900 hover:bg-blue-50"
 							>
 								<div className="flex justify-center items-center gap-[0.625rem]">
 									<p className="text-blue-900 text-xs font-medium leading-[1rem]">

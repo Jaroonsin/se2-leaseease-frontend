@@ -27,9 +27,9 @@ export type Property = {
     date: string;
     image_url: string;
     reviews: number;
-	review_count : number;
+    review_count: number;
     status: string;
-    detail: string;
+    details: string;
 };
 
 interface EachPropertyState {
@@ -66,12 +66,12 @@ interface LeaseReservationResponse {
     status: string;
 }
 
-
 export const fetchPropertyById = createAsyncThunk<Property, number, AsyncThunkConfig>(
     'properties/getById',
     async (id, { rejectWithValue }) => {
         try {
             const res: AxiosResponse<ApiResponse<Property>> = await apiClient.get(`properties/get/${id}`);
+            res.data.data!.rating = parseFloat(res.data.data!.rating.toFixed(1));
             return res.data.data!;
         } catch (error: any) {
             return rejectWithValue(error.message);
@@ -79,26 +79,23 @@ export const fetchPropertyById = createAsyncThunk<Property, number, AsyncThunkCo
     }
 );
 
-export const createLeaseReservation = createAsyncThunk<LeaseReservationResponse, LeaseReservationRequest, AsyncThunkConfig>(
-    'leaseReservation/create',
-    async (reservationData, { rejectWithValue }) => {
-        try {
-            const res: AxiosResponse<LeaseReservationResponse> = await apiClient.post(
-                'lessee/create',
-                reservationData,
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        // Add other headers if necessary
-                    },
-                }
-            );
-            return res.data;
-        } catch (error: any) {
-            return rejectWithValue(error.message);
-        }
+export const createLeaseReservation = createAsyncThunk<
+    LeaseReservationResponse,
+    LeaseReservationRequest,
+    AsyncThunkConfig
+>('leaseReservation/create', async (reservationData, { rejectWithValue }) => {
+    try {
+        const res: AxiosResponse<LeaseReservationResponse> = await apiClient.post('lessee/create', reservationData, {
+            headers: {
+                'Content-Type': 'application/json',
+                // Add other headers if necessary
+            },
+        });
+        return res.data;
+    } catch (error: any) {
+        return rejectWithValue(error.message);
     }
-);
+});
 
 const propertiesSlice = createSlice({
     name: 'properties',
@@ -111,32 +108,31 @@ const propertiesSlice = createSlice({
     extraReducers: (builder) => {
         builder
 
-			// fetch property by id
-			.addCase(fetchPropertyById.pending, (state) => {
-				state.loading = true;
-				state.error = null;
-			})
-			.addCase(fetchPropertyById.fulfilled, (state, action) => {
-				state.loading = false;
-				state.selectedProperty = action.payload;
-			})
-			.addCase(fetchPropertyById.rejected, (state, action) => {
-				state.loading = false;
-				state.error = action.payload as string;
-			})
-			
-			.addCase(createLeaseReservation.pending, (state) => {
-				state.loading = true;
-				state.error = null;
-			})
-			.addCase(createLeaseReservation.fulfilled, (state, action) => {
-				state.loading = false;
-				
-			})
-			.addCase(createLeaseReservation.rejected, (state, action) => {
-				state.loading = false;
-				state.error = action.payload as string;
-			})
+            // fetch property by id
+            .addCase(fetchPropertyById.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchPropertyById.fulfilled, (state, action) => {
+                state.loading = false;
+                state.selectedProperty = action.payload;
+            })
+            .addCase(fetchPropertyById.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            })
+
+            .addCase(createLeaseReservation.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(createLeaseReservation.fulfilled, (state, action) => {
+                state.loading = false;
+            })
+            .addCase(createLeaseReservation.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            });
     },
 });
 

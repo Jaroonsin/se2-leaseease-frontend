@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import Header from '../property/components/Header';
+import Header from './components/Header';
 import { useAuth } from '@/hooks/useAuth';
 // import { CRangeSlider } from '@coreui/react-pro';
 import Slider from 'rc-slider';
@@ -18,20 +18,27 @@ export default function PropertyPage() {
     const [search, setSearch] = useState('');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [minPrice, setMinPrice] = useState<number>(0);
-    const [maxPrice, setMaxPrice] = useState<number>(5000000);
+    const [maxPrice, setMaxPrice] = useState<number>(100000);
     const [minArea, setminArea] = useState<number>(0);
-    const [maxArea, setmaxArea] = useState<number>(5000);
+    const [maxArea, setmaxArea] = useState<number>(1000);
     const [rating, setRating] = useState<number>(0);
     const debounceTimeout1 = useRef<NodeJS.Timeout | null>(null);
     const debounceTimeout2 = useRef<NodeJS.Timeout | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [click, setClick] = useState(false);
     const router = useRouter();
 
     const dispatch = useAppDispatch();
     const suggestions = useAppSelector((state) => state.autocompleteReducer?.suggestions || []);
     const searchProperties = useAppSelector((state) => state.autocompleteReducer.searchResults);
     const totalPages = useAppSelector((state) => state.autocompleteReducer.lastPage || 1);
+
+    const handleClick = (path: string) => {
+        setClick(true);
+        router.push(path);
+        setClick(false);
+    };
 
     // Fetch autocomplete suggestions after 2 seconds of inactivity
     useEffect(() => {
@@ -101,7 +108,7 @@ export default function PropertyPage() {
         }
     };
 
-    return loading ? (
+    return loading || click ? (
         <LoadPage />
     ) : (
         <div className="flex w-full min-h-screen flex-col items-center rounded-[0.375rem] bg-white">
@@ -154,7 +161,7 @@ export default function PropertyPage() {
                         <Slider
                             range
                             min={0}
-                            max={5000000}
+                            max={100000}
                             value={[minPrice, maxPrice]}
                             onChange={handleSliderPriceChange}
                             step={1}
@@ -190,7 +197,7 @@ export default function PropertyPage() {
                         <Slider
                             range
                             min={0}
-                            max={5000}
+                            max={1000}
                             value={[minArea, maxArea]}
                             onChange={handleSliderAreaChange}
                             step={1}
@@ -246,8 +253,8 @@ export default function PropertyPage() {
                     {searchProperties.map((property) => (
                         <div
                             key={property.id}
-                            className="flex p-5 items-center gap-2 rounded-xl border-2 border-slate-100 w-full"
-                            onClick={() => router.push(`/lessee_center/${property.id}`)}
+                            className="flex p-5 items-center gap-2 rounded-xl border-2 border-slate-100 w-full cursor-pointer"
+                            onClick={() => handleClick(`/lessee_center/${property.id}`)}
                         >
                             <div className="w-[382px] h-[160px] rounded-md">
                                 <img
@@ -258,7 +265,7 @@ export default function PropertyPage() {
                             </div>
                             <div className="flex w-[450px] p-2.5 flex-col justify-between items-start self-stretch">
                                 <div className="flex items-start gap-2 self-stretch justify-between align-center">
-                                    <p className="text-4xl">{property.name}</p>
+                                    <p className="text-2xl font-bold">{property.name}</p>
                                     <div className="flex items-center gap-1">
                                         <p>{property.rating}</p>
                                         <svg
@@ -273,13 +280,18 @@ export default function PropertyPage() {
                                                 fill="#FACC15"
                                             />
                                         </svg>
-                                        <p>({property.reviews})</p>
+                                        <p>({property.review_count})</p>
                                     </div>
                                 </div>
                                 <p>Location: {property.location}</p>
                                 <div className="flex justify-between items-end self-stretch">
-                                    <p>Size: {property.size}</p>
-                                    <p className="text-2xl">{property.price}</p>
+                                    <p>Size: {property.size} m²</p>
+                                    <p>
+                                        <div className="text-2xl">
+                                            {new Intl.NumberFormat('th-TH').format(property.price)}
+                                        </div>{' '}
+                                        <div>Baht/Month</div>{' '}
+                                    </p>
                                 </div>
                             </div>
                         </div>

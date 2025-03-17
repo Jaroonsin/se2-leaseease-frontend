@@ -10,7 +10,7 @@ export type lesseeData = {
 
 export const convertToLesseeData = (response: any): lesseeData[] => {
     return response.data
-        .filter((item: any) => item.status === 'active')
+        .filter((item: any) => item.status === 'accept')
         .map((item: any) => ({
             name: item.lesseeName, // Assuming propertyName is the name
             lastResponse: item.lastModified,

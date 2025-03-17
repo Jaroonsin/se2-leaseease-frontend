@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, use } from 'react';
-import Header from '../../property/components/Header';
+import Header from '../components/Header';
 import { useAuth } from '@/hooks/useAuth';
 import LoadPage from '@/components/ui/loadpage';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
@@ -69,6 +69,7 @@ function EachPropertyPage({ params }: { params: Promise<{ id: string }> }) {
                 <div className="flex flex-col items-center self-stretch w-3/5">
                     <div className="flex p-5 items-start w-[580px] h-[370px] bg-cover">
                         <img
+                            className="w-full h-full rounded-md object-cover"
                             src={
                                 selectedProperty?.image_url && selectedProperty.image_url.trim() !== ''
                                     ? selectedProperty.image_url
@@ -84,16 +85,19 @@ function EachPropertyPage({ params }: { params: Promise<{ id: string }> }) {
                             <div className="flex justify-between items-center self-stretch">
                                 <div>
                                     <p>Price</p>
-                                    <p>B {selectedProperty?.price}</p>
+                                    <div className="text-2xl">
+                                        {new Intl.NumberFormat('th-TH').format(selectedProperty?.price || 0)}
+                                    </div>{' '}
+                                    <div>Baht/Month</div>
                                 </div>
                                 <div>
-                                    <p>Size</p>
-                                    <p>{selectedProperty?.size} m^2</p>
+                                    <p>Size </p>
+                                    <p>{selectedProperty?.size} m²</p>
                                 </div>
                             </div>
                             <hr className="border-t border-gray-300"></hr>
                             <p className="text-xl font-medium">About Property</p>
-                            <p>{selectedProperty?.detail}</p>
+                            <p>{selectedProperty?.details}</p>
                         </div>
                         <div className="flex flex-col self-stretch w-1/2 gap-2.5">
                             <div className="flex w-[221px] flex-col items-start gap-[10px]">
@@ -138,7 +142,7 @@ function EachPropertyPage({ params }: { params: Promise<{ id: string }> }) {
                                 <div className="bg-white p-6 rounded-lg w-96">
                                     <h2 className="text-xl font-bold mb-4 text-center">Confirm Reservation</h2>
                                     <textarea
-                                        className="w-full items-start border rounded-lg p-2 h-72 bg-slate-200 text-black placeholder-gray-400"
+                                        className="resize-none w-full h-5 items-start border rounded-lg p-2 h-72 bg-slate-200 text-black placeholder-gray-400"
                                         placeholder="Type your purpose..."
                                         value={purpose}
                                         onChange={(e) => setPurpose(e.target.value)}
