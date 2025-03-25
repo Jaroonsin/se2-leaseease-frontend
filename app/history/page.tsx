@@ -6,6 +6,7 @@ import SingleHistory from './components/SingleHistory';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '@/store/store';
 import { fetchReservations } from '@/store/historySlice';
+import ReservationSlider from './components/Slider';
 
 type Reservation = {
     id: number;
@@ -95,6 +96,8 @@ export default function Page() {
     const [reservations, setReservations] = useState(mockReservations);
     const [status, setStatus] = useState<string>('all');
     const [sortBy, setSortBy] = useState<'propertyName' | 'lastModified'>('propertyName');
+    const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null);
+
     useEffect(() => {
         // const fetchData = async () => {
         // 	const action = await dispatch(fetchUserInfo())
@@ -372,12 +375,19 @@ export default function Page() {
                     ) : (
                         <div className="w-full h-full">
                             {sortedReservations.map((reservation) => (
-                                <SingleHistory key={reservation.id} reservation={reservation} />
+                                <SingleHistory
+                                    key={reservation.id}
+                                    reservation={reservation}
+                                    onShowSlider={() => setSelectedReservation(reservation)}
+                                />
                             ))}
                         </div>
                     )}
                 </div>
             </div>
+            {selectedReservation && (
+                <ReservationSlider reservation={selectedReservation} onClose={() => setSelectedReservation(null)} />
+            )}
         </div>
     );
 }
