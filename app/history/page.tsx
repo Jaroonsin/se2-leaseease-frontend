@@ -75,6 +75,18 @@ const mockReservations = [
         propertyName: 'Suburban House',
         lastModified: '2025-03-16T18:15:00Z',
     },
+    {
+        id: 6,
+        purpose: 'Test Active Reservation',
+        proposedMessage: 'This reservation should be marked as expired after update.',
+        question: 'Is this a test?',
+        status: 'active', // initial status is active
+        interestedProperty: 106,
+        lesseeID: 6,
+        propertyName: 'Test Property',
+        // Set lastModified to 31 days ago
+        lastModified: new Date(Date.now() - 31 * 24 * 60 * 60 * 1000).toISOString(),
+    },
 ];
 
 export default function Page() {
@@ -327,35 +339,23 @@ export default function Page() {
                                 </div>
                             </div>
                             <div className="flex w-[7rem] py-[0.75rem] px-[1rem] flex-col justify-center items-center gap-[0.625rem]">
-                                <div className="flex items-center rounded-md">
-                                    <div className="flex justify-center items-center gap-[0.625rem]">
-                                        <p className="text-slate-400 text-sm font-medium leading-[1.25rem]">Status</p>
-                                    </div>
-                                    <div className="flex pl-[0.5rem] justify-center items-center gap-[0.625rem]">
-                                        <div className="flex pl-[0.5rem] justify-center items-center gap-[0.625rem]"></div>
-                                    </div>
+                                <div className="flex justify-center items-center gap-[0.625rem]">
+                                    <p className="text-slate-400 text-sm font-medium leading-[1.25rem] text-center">
+                                        Status
+                                    </p>
+                                </div>
+                                <div className="flex pl-[0.5rem] justify-center items-center gap-[0.625rem]">
+                                    <div className="flex pl-[0.5rem] justify-center items-center gap-[0.625rem]"></div>
                                 </div>
                             </div>
-                            {/* <div className="flex w-[7rem] py-[0.75rem] px-[1rem] flex-col justify-center items-center gap-[0.625rem]">
-                                <div className="flex items-center rounded-md">
-                                    <div className="flex justify-center items-center gap-[0.625rem]">
-                                        <p className="text-slate-400 text-sm font-medium leading-[1.25rem]">Action</p>
-                                    </div>
-                                    <div className="flex pl-[0.5rem] justify-center items-center gap-[0.625rem]">
-                                        <div className="flex pl-[0.5rem] justify-center items-center gap-[0.625rem]"></div>
-                                    </div>
-                                </div>
-                            </div> */}
                             <div className="flex py-[0.75rem] px-[1rem] flex-col justify-center items-center gap-[0.625rem] flex-[1_0_0]">
-                                <div className="flex items-center rounded-md">
-                                    <div className="flex justify-center items-center gap-[0.625rem]">
-                                        <p className="text-slate-400 text-sm font-medium leading-[1.25rem]">
-                                            View Property
-                                        </p>
-                                    </div>
-                                    <div className="flex pl-[0.5rem] justify-center items-center gap-[0.625rem]">
-                                        <div className="flex pl-[0.5rem] justify-center items-center gap-[0.625rem]"></div>
-                                    </div>
+                                <div className="flex justify-center items-center gap-[0.625rem]">
+                                    <p className="text-slate-400 text-sm font-medium leading-[1.25rem]">
+                                        View Property
+                                    </p>
+                                </div>
+                                <div className="flex pl-[0.5rem] justify-center items-center gap-[0.625rem]">
+                                    <div className="flex pl-[0.5rem] justify-center items-center gap-[0.625rem]"></div>
                                 </div>
                             </div>
                         </div>
