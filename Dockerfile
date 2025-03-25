@@ -12,7 +12,7 @@
     COPY . .
     
     # Build the Next.js app
-    COPY .env .env  
+    
     RUN npm run build --no-cache
     
     # ---- Production Stage ----
