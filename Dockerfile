@@ -12,23 +12,23 @@
     COPY . .
     
     # Build the Next.js app
+    
     RUN npm run build --no-cache
     
-    # Export the Next.js app as static files
-    RUN npm run export
-    
     # ---- Production Stage ----
-    FROM nginx:alpine
+    FROM node:18-alpine
     
     # Set working directory
     WORKDIR /app
     
-    # Copy only the static export files from the builder stage
-    COPY --from=builder /app/out /usr/share/nginx/html
+    # Copy only necessary files from the builder stage
+    COPY --from=builder /app/package.json ./ 
+    COPY --from=builder /app/.next .next
+    COPY --from=builder /app/node_modules node_modules
+    COPY --from=builder /app/public public
     
-    # Expose the default HTTP port
-    EXPOSE 80
+    # Expose the Next.js default port
+    EXPOSE 3000
     
-    # Start Nginx to serve the static files
-    CMD ["nginx", "-g", "daemon off;"]
-    
+    # Start the Next.js application
+    CMD ["npm", "run", "start"]
