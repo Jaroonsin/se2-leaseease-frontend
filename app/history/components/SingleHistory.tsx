@@ -111,30 +111,6 @@ export default function SingleHistory({ reservation }: ReservationProps) {
                         </div>
                     </div>
                 </div>
-                <div className="flex w-[7rem] py-[0.75rem] px-[1rem] flex-col justify-center items-start gap-[0.625rem] self-stretch">
-                    <div className="flex justify-center items-center self-stretch align-center">
-                        {reservation.status === 'payment' ? (
-                            <button
-                                className="flex py-[0.375rem] px-[0.5rem] flex-col justify-center items-center gap-[0.625rem] rounded-md border border-red-500 hover:border-red-500 hover:bg-red-50"
-                                onClick={() => {
-                                    // Add your payment handling logic here
-                                    setShowPaymentModal(true);
-                                    console.log('Proceed to payment for reservation:', reservation.id);
-                                }}
-                            >
-                                <div className="flex justify-center items-center gap-[0.625rem]">
-                                    <p className="text-red-500 text-xs font-medium leading-[1rem]">Pay Rental</p>
-                                </div>
-                            </button>
-                        ) : (
-                            <button className="hidden flex py-[0.375rem] px-[0.5rem] flex-col justify-center items-center gap-[0.625rem] rounded-md border border-[#1E3A8A] hover:border-blue-900 hover:bg-blue-50">
-                                <div className="flex justify-center items-center gap-[0.625rem]">
-                                    <p className="text-blue-900 text-xs font-medium leading-[1rem]">View detail</p>
-                                </div>
-                            </button>
-                        )}
-                    </div>
-                </div>
 
                 <div className="flex py-[0.75rem] px-[1rem] flex-col justify-center items-start gap-[0.625rem] self-stretch">
                     <div className="flex justify-between items-center self-stretch">

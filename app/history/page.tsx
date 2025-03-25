@@ -19,9 +19,68 @@ type Reservation = {
     lastModified: string;
 };
 
+const mockReservations = [
+    {
+        id: 1,
+        purpose: 'Rent apartment',
+        proposedMessage: 'I would like to rent this apartment.',
+        question: 'Is the apartment pet-friendly?',
+        status: 'active', // Will show as Active in UI
+        interestedProperty: 101,
+        lesseeID: 1,
+        propertyName: 'Sunny Apartments',
+        lastModified: '2025-03-20T10:00:00Z',
+    },
+    {
+        id: 2,
+        purpose: 'Rent condo',
+        proposedMessage: 'Interested in renting your condo.',
+        question: 'Is parking available?',
+        status: 'pending', // Will show as Pending
+        interestedProperty: 102,
+        lesseeID: 2,
+        propertyName: 'City Condo',
+        lastModified: '2025-03-19T15:30:00Z',
+    },
+    {
+        id: 3,
+        purpose: 'Rent house',
+        proposedMessage: 'Looking for a house to rent.',
+        question: 'Are there schools nearby?',
+        status: 'waiting', // Will be mapped to 'payment'
+        interestedProperty: 103,
+        lesseeID: 3,
+        propertyName: 'Cozy Cottage',
+        lastModified: '2025-03-18T12:45:00Z',
+    },
+    {
+        id: 4,
+        purpose: 'Rent apartment',
+        proposedMessage: 'Is this apartment still available?',
+        question: 'What is the rent?',
+        status: 'accept', // Will be mapped to 'active'
+        interestedProperty: 104,
+        lesseeID: 4,
+        propertyName: 'Downtown Loft',
+        lastModified: '2025-02-24T09:20:00Z',
+    },
+    {
+        id: 5,
+        purpose: 'Rent house',
+        proposedMessage: 'Interested in your rental property.',
+        question: 'What is the deposit amount?',
+        status: 'cancel', // Will show as Cancel
+        interestedProperty: 105,
+        lesseeID: 5,
+        propertyName: 'Suburban House',
+        lastModified: '2025-03-16T18:15:00Z',
+    },
+];
+
 export default function Page() {
     const dispatch = useDispatch<AppDispatch>();
-    const { reservations, loading, error } = useSelector((state: RootState) => state.reservations);
+    // const { reservations, loading, error } = useSelector((state: RootState) => state.reservations);
+    const [reservations, setReservations] = useState(mockReservations);
     const [status, setStatus] = useState<string>('all');
     const [sortBy, setSortBy] = useState<'propertyName' | 'lastModified'>('propertyName');
     useEffect(() => {
@@ -47,21 +106,43 @@ export default function Page() {
     // if (loading) return <div>Loading...</div>
     // if (error) return <div>Error: {error}</div>
 
-    const filteredReservationsTmp: Reservation[] = reservations
-        .map((reservation) => (reservation.status === 'waiting' ? { ...reservation, status: 'payment' } : reservation))
-        .map((reservation) => (reservation.status === 'accept' ? { ...reservation, status: 'active' } : reservation))
-        .filter((reservation) => status === 'all' || reservation.status === status);
+    const updatedReservations = reservations.map((reservation) => {
+        const updated = { ...reservation };
 
-    const filteredReservations: Reservation[] = filteredReservationsTmp.filter(
+        // First, map certain statuses as before.
+        if (updated.status === 'waiting') {
+            updated.status = 'payment';
+        } else if (updated.status === 'accept') {
+            updated.status = 'active';
+        }
+
+        // Now, if the status is active, apply the new logic based on lastModified date.
+        if (updated.status === 'active') {
+            // Calculate the difference in days between now and lastModified.
+            const diffDays = (Date.now() - new Date(updated.lastModified).getTime()) / (1000 * 60 * 60 * 24);
+
+            // Check if diffDays is between 30 and 32 days.
+            if (diffDays >= 30 && diffDays < 32) {
+                updated.status = 'expired';
+            } else if (diffDays >= 32) {
+                updated.status = 'cancel';
+            }
+        }
+
+        return updated;
+    });
+
+    // Then, filter the reservations based on the selected status (or 'all').
+    const filteredReservations = updatedReservations.filter(
         (reservation) => status === 'all' || reservation.status === status
     );
 
-    const sortedReservations: Reservation[] = filteredReservations.sort((a, b) => {
+    // And sort the reservations as needed.
+    const sortedReservations = filteredReservations.sort((a, b) => {
         if (sortBy === 'propertyName') {
-            return a.propertyName.localeCompare(b.propertyName); // Sort alphabetically by property name
+            return a.propertyName.localeCompare(b.propertyName);
         } else {
-            return new Date(b.lastModified).getTime() - new Date(a.lastModified).getTime(); // Sort by lastModified date
-            // return new Date(a.lastModified).getTime() - new Date(b.lastModified).getTime()
+            return new Date(b.lastModified).getTime() - new Date(a.lastModified).getTime();
         }
     });
 
@@ -142,6 +223,25 @@ export default function Page() {
                                 }`}
                             >
                                 Waiting
+                            </p>
+                        </button>
+                    </div>
+
+                    <div
+                        className={`flex w-[5rem] h-[1.75rem] py-[0.25rem] px-[0.75rem] flex-col justify-center items-center gap-[0.625rem] rounded-md ${
+                            status === 'pending' ? 'bg-white shadow-md' : ''
+                        }`}
+                    >
+                        <button
+                            className="flex justify-center items-center gap-[0.625rem]"
+                            onClick={() => setStatus('expired')}
+                        >
+                            <p
+                                className={`text-sm font-medium leading-[1.25rem] ${
+                                    status === 'expired' ? 'text-slate-900' : 'text-slate-500'
+                                }`}
+                            >
+                                Expired
                             </p>
                         </button>
                     </div>
@@ -236,7 +336,7 @@ export default function Page() {
                                     </div>
                                 </div>
                             </div>
-                            <div className="flex w-[7rem] py-[0.75rem] px-[1rem] flex-col justify-center items-center gap-[0.625rem]">
+                            {/* <div className="flex w-[7rem] py-[0.75rem] px-[1rem] flex-col justify-center items-center gap-[0.625rem]">
                                 <div className="flex items-center rounded-md">
                                     <div className="flex justify-center items-center gap-[0.625rem]">
                                         <p className="text-slate-400 text-sm font-medium leading-[1.25rem]">Action</p>
@@ -245,7 +345,7 @@ export default function Page() {
                                         <div className="flex pl-[0.5rem] justify-center items-center gap-[0.625rem]"></div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> */}
                             <div className="flex py-[0.75rem] px-[1rem] flex-col justify-center items-center gap-[0.625rem] flex-[1_0_0]">
                                 <div className="flex items-center rounded-md">
                                     <div className="flex justify-center items-center gap-[0.625rem]">
