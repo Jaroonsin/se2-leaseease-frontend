@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { apiClient } from '@/src/api/axios';
 import { AsyncThunkConfig } from '../store';
-import { supabase } from '@/utils/supabase';
+import { getSupabaseClient } from '@/utils/supabase';
 
 export const fetchUserInfo = createAsyncThunk<ApiResponse<User>, void, AsyncThunkConfig>(
     'auth/fetchUserInfo',
@@ -12,7 +12,7 @@ export const fetchUserInfo = createAsyncThunk<ApiResponse<User>, void, AsyncThun
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || 'Error connecting to API');
         }
-    }
+    },
 );
 export const updateUserInfo = createAsyncThunk<null, { name: string; address: string }, AsyncThunkConfig>(
     'auth/updateUserInfo',
@@ -26,7 +26,7 @@ export const updateUserInfo = createAsyncThunk<null, { name: string; address: st
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || 'Error connecting to API');
         }
-    }
+    },
 );
 
 export const updateUserImage = createAsyncThunk<null, void, AsyncThunkConfig>(
@@ -41,7 +41,7 @@ export const updateUserImage = createAsyncThunk<null, void, AsyncThunkConfig>(
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || 'Error connecting to API');
         }
-    }
+    },
 );
 export const updateUserPassword = () => {};
 
@@ -53,7 +53,7 @@ export const uploadImage = createAsyncThunk<string, FormData, AsyncThunkConfig>(
             const userId = getState().auth.user?.id;
             if (!file) throw new Error('No file provided');
             const filePath = `${userId}/profile.jpg`;
-
+            const supabase = getSupabaseClient();
             const { data, error } = await supabase.storage.from('user').update(filePath, file, {
                 cacheControl: 'no-cache',
                 upsert: true,
@@ -69,5 +69,5 @@ export const uploadImage = createAsyncThunk<string, FormData, AsyncThunkConfig>(
         } catch (error: any) {
             return rejectWithValue(error.message);
         }
-    }
+    },
 );
