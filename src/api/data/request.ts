@@ -7,6 +7,7 @@ export type requestData = {
     propertyName: string;
     imageURL: string;
     id: number;
+    lesseeID: number;
 };
 
 export const convertToRequestData = (response: any): requestData[] => {
@@ -19,6 +20,7 @@ export const convertToRequestData = (response: any): requestData[] => {
             propertyName: item.propertyName,
             imageURL: item.imageURL,
             id: item.id,
+            lesseeID: item.lesseeID,
         }));
 };
 export const getRequestData = async (propID: number) => {
