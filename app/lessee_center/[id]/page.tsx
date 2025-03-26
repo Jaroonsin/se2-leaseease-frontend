@@ -6,8 +6,9 @@ import { useAuth } from '@/hooks/useAuth';
 import LoadPage from '@/components/ui/loadpage';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { fetchPropertyById, createLeaseReservation, fetchUserById } from '@/store/eachpropertySlice';
+import { useRouter } from 'next/router';
 
-function EachPropertyPage({ params }: { params: Promise<{ id: string }> }) {
+function EachPropertyPage() {
     const [showModal, setShowModal] = useState(false);
     const [purpose, setPurpose] = useState('');
     const [error, setError] = useState('');
@@ -15,17 +16,24 @@ function EachPropertyPage({ params }: { params: Promise<{ id: string }> }) {
     const dispatch = useAppDispatch();
     const { selectedProperty, user } = useAppSelector((state) => state.eachproperty);
     const [propertyId, setPropertyId] = useState<number | null>(null);
-    const { id } = use(params);
-
+    // const { id } = use(params);
+    const router = useRouter();
+    const { id } = router.query;
     useEffect(() => {
-        const fetchParams = async () => {
-            if (id) {
-                setPropertyId(Number(id));
-            }
-        };
+        if (id) {
+            setPropertyId(Number(id));
+        }
+    }, [id]);
 
-        fetchParams();
-    }, [params]);
+    // useEffect(() => {
+    //     const fetchParams = async () => {
+    //         if (id) {
+    //             setPropertyId(Number(id));
+    //         }
+    //     };
+
+    //     fetchParams();
+    // }, [params]);
 
     useEffect(() => {
         if (!propertyId) return;

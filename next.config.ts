@@ -1,7 +1,7 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-    output: 'export',
+    // output: 'export',
     reactStrictMode: true,
     eslint: {
         // Disables ESLint during the build process
