@@ -106,9 +106,9 @@ export const createReview = createAsyncThunk<
     string, // Success type
     ReviewPayload, // Payload type
     AsyncThunkConfig // Config type
->('propertyReview/create', async ({ property_id, rating, review_message }, { rejectWithValue }) => {
+>('propertyReview/create/', async ({ property_id, rating, review_message }, { rejectWithValue }) => {
     try {
-        const response = await apiClient.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}api/v2/propertyReview/create`, {
+        const response = await apiClient.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}api/v2/propertyReview/create/`, {
             property_id,
             rating,
             review_message,
