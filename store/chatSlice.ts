@@ -23,7 +23,7 @@ const initialState: ChatState = {
 
 // Modify WebSocket connection logic to use `getState` from thunk
 const connectWebSocket = (dispatch: any, senderId: number, receiverId: number, getState: any): WebSocket => {
-    const ws = new WebSocket(`ws://${baseURL}/chat/ws?senderID=${senderId}&receiverID=${receiverId}`);
+    const ws = new WebSocket(`ws://${baseURL}chat/ws?senderID=${senderId}&receiverID=${receiverId}`);
 
     ws.onopen = () => {
         console.log('WebSocket connected');
