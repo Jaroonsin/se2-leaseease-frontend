@@ -2,7 +2,7 @@ import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import NearMeOutlinedIcon from '@mui/icons-material/NearMeOutlined';
 import { AppDispatch, RootState } from '@/store/store';
 import { useRouter } from 'next/navigation';
-import { deleteReservation } from '@/store/historySlice';
+import { createReview, deleteReservation } from '@/store/historySlice';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PaymentModal from './PaymentModal';
@@ -71,13 +71,28 @@ export default function ReservationSlider({ reservation, onClose }: SliderProps)
         setShowModalCancle(false);
     };
 
-    const handleReview = () => {
-        if (!rating || rating === 0) {
-            setError('You have to give score.');
-            return;
+    const handleReview = async () => {
+        try {
+            const resultAction = await dispatch(
+                createReview({
+                    property_id: reservation.interestedProperty,
+                    rating,
+                    review_message: review,
+                })
+            );
+
+            if (createReview.fulfilled.match(resultAction)) {
+                console.log('good');
+                console.log('Review created successfully:', resultAction.payload);
+            } else {
+                console.error('Review creation failed:', resultAction.payload);
+            }
+        } catch (error) {
+            console.error('Error creating review:', error);
         }
-        console.log('Review text:', review);
-        console.log('Rating:', rating);
+        // console.log(reservation.interestedProperty);
+        // console.log('Review text:', review);
+        // console.log('Rating:', rating);
         setError('');
         setShowModalReview(false);
     };
