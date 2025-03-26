@@ -144,7 +144,11 @@ export default function RequestSlider({
 
                 {/* Buttons */}
                 <div className="flex flex-col justify-end gap-2 mt-4 absolute top-10 right-4">
-                    <button className="h-[28px] px-4 py-1 border border-gray-300 rounded-lg text-slate-600 text-sm font-normal bg-white hover:bg-gray-100 shadow-md flex gap-x-2">
+                    <button
+                        className="h-[28px] px-4 py-1 border border-gray-300 rounded-lg text-slate-600 text-sm font-normal bg-white hover:bg-gray-100 shadow-md flex gap-x-2"
+                        onClick={() => router.push(`/profile/${data.lesseeID}`)}
+                    >
+                        {' '}
                         <VisibilityOutlinedIcon fontSize="small" />
                         View Profile
                     </button>

@@ -5,6 +5,7 @@ import { Dispatch, SetStateAction, useState } from 'react';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import NearMeOutlinedIcon from '@mui/icons-material/NearMeOutlined';
 import { reviewData } from '@/src/api/data/review';
+import { useRouter } from 'next/navigation';
 
 type ReviewSliderProps = {
     id: string;
@@ -34,6 +35,8 @@ export default function ReviewSlider({
     const rating = data.rating;
     const detail = data.message;
     const imgPath = data.imageURL != '' ? data.imageURL : null;
+
+    const router = useRouter();
 
     return (
         <div className="flex z-50 w-[32.5rem] h-[calc(100vh-4rem)] p-0 flex-col items-start absolute right-0 bottom-0 border-l border-slate-300 bg-white shadow-[0px_4px_6px_-4px_rgba(0,_0,_0,_0.10),_0px_10px_15px_-3px_rgba(0,_0,_0,_0.10)]  overflow-y-auto">
@@ -132,11 +135,18 @@ export default function ReviewSlider({
 
                 {/* Buttons */}
                 <div className="flex flex-col justify-end gap-2 mt-4 absolute top-10 right-4">
-                    <button className="h-[28px] px-4 py-1 border border-gray-300 rounded-lg text-slate-600 text-sm font-normal bg-white hover:bg-gray-100 shadow-md flex gap-x-2">
+                    <button
+                        className="h-[28px] px-4 py-1 border border-gray-300 rounded-lg text-slate-600 text-sm font-normal bg-white hover:bg-gray-100 shadow-md flex gap-x-2"
+                        onClick={() => router.push(`/profile/${data.lesseeID}`)}
+                    >
+                        {' '}
                         <VisibilityOutlinedIcon fontSize="small" />
                         View Profile
                     </button>
-                    <button className="h-[28px] px-4 py-1 border border-blue-500 rounded-lg text-slate-600 text-sm font-normal bg-blue-100 hover:bg-blue-200 shadow-md flex gap-x-2">
+                    <button
+                        className="h-[28px] px-4 py-1 border border-blue-500 rounded-lg text-slate-600 text-sm font-normal bg-blue-100 hover:bg-blue-200 shadow-md flex gap-x-2"
+                        onClick={() => router.push(`/chat/${data.lesseeID}`)}
+                    >
                         <NearMeOutlinedIcon fontSize="small" />
                         Send Message
                     </button>
