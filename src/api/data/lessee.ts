@@ -6,6 +6,7 @@ export type lesseeData = {
     purpose: string;
     propertyName: string;
     imageURL: string;
+	id: number;
 };
 
 export const convertToLesseeData = (response: any): lesseeData[] => {
@@ -17,6 +18,7 @@ export const convertToLesseeData = (response: any): lesseeData[] => {
             purpose: item.purpose,
             propertyName: item.propertyName,
             imageURL: item.imageURL,
+			id: item.id,
         }));
 };
 export const getLesseeData = async (propID: number) => {

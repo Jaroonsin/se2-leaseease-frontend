@@ -1,9 +1,11 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { useAppDispatch } from '@/store/hooks';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState, AppDispatch } from '@/store/store';
 import { updateUserImage, updateUserInfo, uploadImage } from '@/store/auth/userThunks';
 import { useRouter, useParams } from 'next/navigation';
 import LoadPage from '@/components/ui/loadpage';
+import { fetchUserById } from '@/store/userSlice';
 
 export default function UserProfile() {
     const [userDetails, setUserDetails] = useState({
@@ -12,44 +14,26 @@ export default function UserProfile() {
         address: '',
         picture: '', // Field for image_url
     });
-    const [loading, setLoading] = useState(true);
+    // const [loading, setLoading] = useState(true);
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const dispatch = useAppDispatch();
+    // const dispatch = useAppDispatch();
     const router = useRouter();
     const { id } = useParams(); // Get user ID from route params
     const [errors, setErrors] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [uploadButton, setUploadButton] = useState<boolean>(false);
-
+    const dispatch = useDispatch<AppDispatch>();
+    const { user, loading, error } = useSelector((state: RootState) => state.user);
     useEffect(() => {
-        const fetchUserData = async () => {
-            try {
-                const response = await fetch(`http://localhost:5000/api/v2/user/get/${id}`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch user data');
-                }
-                const userData = await response.json();
-                setUserDetails({
-                    name: userData.name || '',
-                    email: userData.email || '',
-                    address: userData.address || '',
-                    picture: userData.image_url || '',
-                });
-                setImagePreview(userData.image_url || '');
-            } catch (error) {
-                console.error('Error fetching user:', error);
-                setErrors('Failed to load user data');
-            } finally {
-                setLoading(false);
-            }
-        };
+        if (!id) return;
 
-        if (id) {
-            fetchUserData();
-        }
-    }, [id]);
+        const numericId = Number(id);
+        if (isNaN(numericId)) return;
+
+        dispatch(fetchUserById(numericId)).unwrap();
+    }, [dispatch, id]);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -109,37 +93,15 @@ export default function UserProfile() {
                     <div className="flex flex-col items-center mb-6">
                         <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-200">
                             <img
-                                src={imagePreview || 'https://loremflickr.com/40/40?random=1'}
+                                src={user?.image_url || 'https://loremflickr.com/40/40?random=1'}
                                 alt="Profile"
                                 className="w-full h-full object-cover"
                             />
                         </div>
-                        <label className="text-blue-600 cursor-pointer mt-2">
-                            Change Picture
-                            <input
-                                type="file"
-                                name="file"
-                                accept="image/*"
-                                onChange={handleImageChange}
-                                className="hidden"
-                            />
-                        </label>
-                        {/* Submit Button */}
-                        <div className="flex justify-center py-2">
-                            <button
-                                type="submit"
-                                disabled={!uploadButton}
-                                className={`text-xs px-2 py-1 ${
-                                    uploadButton ? 'bg-green-500' : 'bg-gray-300'
-                                } text-white rounded-3xl`}
-                            >
-                                Upload
-                            </button>
-                        </div>
                     </div>
                 </form>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="space-y-6">
                     {/* Name Field */}
                     <div>
                         <label htmlFor="name" className="block text-gray-700">
@@ -148,7 +110,7 @@ export default function UserProfile() {
                         <input
                             type="text"
                             id="name"
-                            value={userDetails.name}
+                            value={user?.name}
                             onChange={(e) => setUserDetails({ ...userDetails, name: e.target.value })}
                             className="w-full p-3 border rounded-3xl text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
                             required
@@ -156,19 +118,19 @@ export default function UserProfile() {
                     </div>
 
                     {/* Email Field */}
-                    <div>
+                    {/* <div>
                         <label htmlFor="email" className="block text-gray-700">
                             Email
                         </label>
                         <input
                             type="email"
                             id="email"
-                            value={userDetails.email}
+                            value={''}
                             className="bg-gray-200 w-full p-3 border rounded-3xl text-gray-700"
                             required
                             disabled
                         />
-                    </div>
+                    </div> */}
 
                     {/* Address Field */}
                     <div>
@@ -178,22 +140,12 @@ export default function UserProfile() {
                         <input
                             type="text"
                             id="address"
-                            value={userDetails.address}
+                            value={user?.address}
                             onChange={(e) => setUserDetails({ ...userDetails, address: e.target.value })}
                             className="w-full p-3 border rounded-3xl text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
                         />
                     </div>
-
-                    {/* Submit Button */}
-                    <div className="flex justify-center">
-                        <button
-                            type="submit"
-                            className="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-600"
-                        >
-                            Save Changes
-                        </button>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
     );
