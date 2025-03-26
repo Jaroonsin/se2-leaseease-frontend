@@ -204,7 +204,7 @@ export default function Chat() {
 
 		const initializeWebSocketConnection = async () => {
 			await fetchData();
-			dispatch(initializeWebSocket());
+			dispatch(initializeWebSocket(Number(id)));
 		};
 
 		initializeWebSocketConnection();
