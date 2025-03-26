@@ -1,31 +1,28 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { error } from 'console';
 
 interface Message {
 	sender_id: number;
 	receiver_id: number;
-	content: string;  // Optional, add based on your actual message format
+	content: string;
 }
 
 interface ChatState {
 	messages: Message[];
 	connected: boolean;
 	ws: WebSocket | null;
-	senderId: number | null
+	senderId: number | null;
 }
 
 const initialState: ChatState = {
 	messages: [],
 	connected: false,
 	ws: null,
-	senderId: null
+	senderId: null,
 };
 
-const connectWebSocket = (dispatch: any, senderId: number): WebSocket => {
-	const receiverID = 2 // hard-peace
-
-	// You can pass the token in the URL or use it after connection
-	const ws = new WebSocket(`ws://localhost:5000/api/v2/chat/ws?senderID=${senderId}&receiverID=${receiverID}`);
+// Modify WebSocket connection logic to use `getState` from thunk
+const connectWebSocket = (dispatch: any, senderId: number, receiverId: number, getState: any): WebSocket => {
+	const ws = new WebSocket(`ws://localhost:5000/api/v2/chat/ws?senderID=${senderId}&receiverID=${receiverId}`);
 
 	ws.onopen = () => {
 		console.log('WebSocket connected');
@@ -34,8 +31,21 @@ const connectWebSocket = (dispatch: any, senderId: number): WebSocket => {
 
 	ws.onmessage = (event: MessageEvent) => {
 		const message: Message = JSON.parse(event.data);
-		console.log('this is message from socket:', message)
-		dispatch(addMessage(message));  // Add message to Redux store
+		console.log('this is message from socket:', message);
+
+		// Access Redux state here (within the correct context of the thunk)
+		const { messages } = getState().chat;
+
+		// Prevent duplicates
+		const messageExists = messages.some((msg: Message) =>
+			msg.content === message.content &&
+			msg.sender_id === message.sender_id &&
+			msg.receiver_id === message.receiver_id
+		);
+
+		if (!messageExists) {
+			dispatch(addMessage(message));  // Add message to Redux store
+		}
 	};
 
 	ws.onerror = (error) => {
@@ -62,24 +72,26 @@ const chatSlice = createSlice({
 			state.messages.push(action.payload);
 		},
 		setWebSocket(state, action: PayloadAction<WebSocket | null>) {
-			state.ws = action.payload; // Store the WebSocket connection in the state
+			state.ws = action.payload;
 		},
-		setSenderId(state, action: PayloadAction<number>) {  // New reducer to set senderId
+		setSenderId(state, action: PayloadAction<number>) {
 			state.senderId = action.payload;
 		},
 	},
 });
 
-// Async action to initialize WebSocket connection
-export const initializeWebSocket = () => (dispatch: any, getState: any) => {
-	const { senderId } = getState().chat
+// Async action to initialize WebSocket connection with getState properly used
+export const initializeWebSocket = (receiverId: number) => (dispatch: any, getState: any) => {
+	const { senderId } = getState().chat;
 	if (senderId === null) {
-		console.error('senderId is null, from chatSlice')
+		console.error('senderId is null, from chatSlice');
+		return;
 	}
-	const ws = connectWebSocket(dispatch, senderId);
+	const ws = connectWebSocket(dispatch, senderId, receiverId, getState); // Pass `getState`
 	dispatch(setWebSocket(ws));
 };
 
+// Send message through WebSocket (no need to addMessage in this action)
 export const sendMessage = (message: Message) => (dispatch: any, getState: any) => {
 	const { ws, connected } = getState().chat;
 
@@ -87,10 +99,9 @@ export const sendMessage = (message: Message) => (dispatch: any, getState: any) 
 		// Send the message over the WebSocket
 		ws.send(JSON.stringify(message));
 
-		// Dispatch to add the message to Redux store
 		dispatch(addMessage(message));
 	} else {
-		console.log("WebSocket is not connected");
+		console.log('WebSocket is not connected');
 	}
 };
 
