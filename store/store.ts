@@ -5,6 +5,7 @@ import autocompleteReducer from './autocompleteSlice';
 import eachpropertyReducer from './eachpropertySlice';
 import reservationsReducer from './historySlice';
 import chatReducer from './chatSlice'
+import userReducer from './userSlice'
 
 const loggerMiddleware: Middleware = (storeAPI) => (next) => (action) => {
 	console.log('Dispatching action:', action);
@@ -20,7 +21,8 @@ export const store = configureStore({
 		autocompleteReducer: autocompleteReducer,
 		eachproperty: eachpropertyReducer,
 		reservations: reservationsReducer,
-		chat: chatReducer
+		chat: chatReducer,
+		user: userReducer
 	},
 	middleware: (getDefaultMiddleware) => getDefaultMiddleware({
 		serializableCheck: {

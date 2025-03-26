@@ -6,6 +6,7 @@ import { RootState, AppDispatch } from '@/store/store'
 import Header from '../../lessee_center/components/Header'
 import { fetchUserInfo } from '@/store/auth/userThunks'
 import { useParams } from 'next/navigation'
+import { fetchUserById } from '@/store/userSlice'
 
 interface Message {
 	sender_id: number
@@ -21,8 +22,18 @@ interface ApiResponse<T> {
 export default function Chat() {
 	const dispatch = useDispatch<AppDispatch>()
 	const [messageContent, setMessageContent] = useState<string>("")
+	const { user, loading, error } = useSelector((state: RootState) => state.user)
 	const { messages, connected, senderId } = useSelector((state: RootState) => state.chat)
 	const { id } = useParams()
+
+	useEffect(() => {
+		if (!id) return;
+
+		const numericId = Number(id);
+		if (isNaN(numericId)) return;
+
+		dispatch(fetchUserById(numericId)).unwrap()
+	}, [dispatch, id]);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -45,6 +56,7 @@ export default function Chat() {
 
 		// console.log('this is message from socket:', messages)
 	}, [dispatch])
+
 
 	const handleSendMessage = () => {
 		if (messageContent.trim() === "") return // Don't send empty messages
@@ -86,10 +98,13 @@ export default function Chat() {
 					<div className="flex h-full flex-col items-start self-stretch rounded-[0.5rem] bg-slate-100">
 						<div className="flex h-[5rem] items-center gap-[0.625rem] self-stretch p-[1rem] gap-[0.625rem] border-b-[3px] border-b-white">
 							<div
-								className="w-[2.5rem] h-[2.5rem] rounded-full bg-[url('https://loremflickr.com/40/40?random=3')] bg-lightgray bg-[size:199.261%_100%] bg-no-repeat">
-							</div>
+								className="w-[2.5rem] h-[2.5rem] rounded-full bg-lightgray bg-[size:199.261%_100%] bg-no-repeat"
+								style={{
+									backgroundImage: user?.image_url ? `url(${user.image_url})` : "url('https://loremflickr.com/40/40?random=3')",
+								}}
+							></div>
 							<div className="flex flex-col items-start flex-[1_0_0] rounded-md text-sm font-medium leading-[1.25rem]">
-								UserLnwZa 1234
+								{user?.name || 'username'}
 							</div>
 						</div>
 
