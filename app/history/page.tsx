@@ -244,7 +244,7 @@ export default function Page() {
 
                     <div
                         className={`flex w-[5rem] h-[1.75rem] py-[0.25rem] px-[0.75rem] flex-col justify-center items-center gap-[0.625rem] rounded-md ${
-                            status === 'pending' ? 'bg-white shadow-md' : ''
+                            status === 'expired' ? 'bg-white shadow-md' : ''
                         }`}
                     >
                         <button

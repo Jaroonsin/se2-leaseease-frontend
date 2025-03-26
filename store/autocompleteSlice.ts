@@ -69,7 +69,9 @@ export const fetchSearchProperties = createAsyncThunk<
     AsyncThunkConfig
 >('properties/fetchSearchProperties', async (params, { rejectWithValue }) => {
     try {
-        const response = await apiClient.get<ApiResponse<Property[]>>('properties/search', { params });
+        // const response = await apiClient.get<ApiResponse<Property[]>>('properties/search', { params });
+        const response = await apiClient.get<ApiResponse<Property[]>>('properties/search?page=1&pagesize=10');
+        // const properties = response.data?.data?.properties || [];
 
         const properties = response.data?.data?.properties || [];
         const mappedProperties = properties.map((property) => ({

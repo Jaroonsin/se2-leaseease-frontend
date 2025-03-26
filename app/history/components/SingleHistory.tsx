@@ -17,7 +17,7 @@ type ReservationProps = {
         propertyName: string;
         lastModified: string;
     };
-    onShowSlider: () => void;
+    onShowSlider: (show: boolean) => void;
 };
 
 export default function SingleHistory({ reservation, onShowSlider }: ReservationProps) {
@@ -73,8 +73,13 @@ export default function SingleHistory({ reservation, onShowSlider }: Reservation
     };
 
     return (
-        <div className="flex w-full flex-col items-start bg-white cursor-pointer" onClick={onShowSlider}>
-            <div className="flex w-full flex-col items-start bg-white">
+        <div className="flex w-full flex-col items-start bg-white ">
+            <div
+                className="flex w-full flex-col items-start bg-white cursor-pointer"
+                onClick={() => {
+                    onShowSlider(true);
+                }}
+            >
                 <div className="flex w-full h-[3.5rem] px-[0.5rem] items-start">
                     <div className="flex w-[42rem] py-[0.75rem] px-[1rem] flex-col justify-center items-start gap-[0.625rem] self-stretch">
                         <div className="flex items-center gap-[0.625rem] self-stretch">
@@ -82,13 +87,17 @@ export default function SingleHistory({ reservation, onShowSlider }: Reservation
                                 {reservation.propertyName}
                                 {/* {reservation.id} */}
                             </p>
-                            {(reservation.status === 'pending' || reservation.status === 'payment') && (
-                                <button onClick={() => setShowModal(true)}>
-                                    <p className="text-slate-400 text-xs font-thin leading-[1rem] underline decoration-solid decoration-[1.5%] underline-offset-auto">
-                                        cancel
-                                    </p>
+                            {/* {(reservation.status === 'pending' || reservation.status === 'payment') && (
+                                <button
+                                    onClick={(e) => {
+                                        onShowSlider(false);
+                                        e.stopPropagation();
+                                        setShowModal(true);
+                                    }}
+                                >
+                                    <p className="text-slate-400 text-xs font-thin leading-[1rem] underline">cancel</p>
                                 </button>
-                            )}
+                            )} */}
                         </div>
                     </div>
                     <div className="flex w-[17rem] py-[0.75rem] px-[1rem] flex-col justify-center items-start gap-[0.625rem] self-stretch">
@@ -118,7 +127,10 @@ export default function SingleHistory({ reservation, onShowSlider }: Reservation
                         <div className="flex justify-between items-center self-stretch">
                             <button
                                 className="flex py-[0.375rem] px-[0.5rem] flex-col justify-center items-center gap-[0.625rem] rounded-md border border-[#1E3A8A] hover:border-blue-900 hover:bg-blue-50"
-                                onClick={() => router.push(`/lessee_center/${reservation.interestedProperty}`)}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    router.push(`/lessee_center/${reservation.interestedProperty}`);
+                                }}
                             >
                                 <div className="flex justify-center items-center gap-[0.625rem]">
                                     <p className="text-[#1E3A8A] text-xs font-medium leading-[1rem]">View Property</p>
