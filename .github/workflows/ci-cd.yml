@@ -8,6 +8,13 @@ on:
 jobs:
     build-and-test:
         runs-on: ubuntu-latest
+
+        env:
+            NEXT_PUBLIC_API_BASE_URL: ${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
+            NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+            NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+            NEXT_PUBLIC_OMISE_PUBLIC_KEY: ${{ secrets.NEXT_PUBLIC_OMISE_PUBLIC_KEY }}
+
         steps:
             - name: Checkout Repository
               uses: actions/checkout@v4
@@ -18,15 +25,19 @@ jobs:
                   node-version: '18'
 
             - name: Install Dependencies
-              run: npm install --frozen-lockfile
+              run: npm ci
 
-            # Uncomment to enable testing
+            - name: Build Next.js app
+              run: npm run build
+
+            # ถ้าต้องการ test
             # - name: Run Tests
             #   run: npm test
 
     build-and-push-docker:
         needs: build-and-test
         runs-on: ubuntu-latest
+
         steps:
             - name: Checkout Repository
               uses: actions/checkout@v4
@@ -39,5 +50,11 @@ jobs:
 
             - name: Build and Push Docker Image
               run: |
+                  # สร้างไฟล์ .env ให้ Docker อ่าน
+                  echo "NEXT_PUBLIC_API_BASE_URL=${{ secrets.NEXT_PUBLIC_API_BASE_URL }}" > .env
+                  echo "NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}" >> .env
+                  echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}" >> .env
+                  echo "NEXT_PUBLIC_OMISE_PUBLIC_KEY=${{ secrets.NEXT_PUBLIC_OMISE_PUBLIC_KEY }}" >> .env
+
                   docker build -t ${{ secrets.DOCKER_USERNAME }}/leaseease-frontend:latest .
                   docker push ${{ secrets.DOCKER_USERNAME }}/leaseease-frontend:latest
