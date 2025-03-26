@@ -92,7 +92,6 @@ export default function PaymentModal({ showModal, onClose, reservationId }: Paym
 
                             onClose(); // Close modal on success
                         }
-                        router.replace(router.asPath, undefined, { scroll: false });
                     } catch (error) {
                         console.error('Payment or status update failed:', error);
                     }

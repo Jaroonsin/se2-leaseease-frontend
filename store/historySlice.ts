@@ -134,7 +134,7 @@ export const fetchReservations = createAsyncThunk<
 >('reservations/fetch', async (_, { rejectWithValue }) => {
     try {
         const response: AxiosResponse<ApiResponse<Reservation[]>> = await apiClient.get(
-            'http://localhost:5000/api/v2/lessee/reservations'
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}api/v2/lessee/reservations`
         );
         return response.data; // Return the data if successful
     } catch (error: any) {
@@ -148,7 +148,7 @@ export const deleteReservation = createAsyncThunk<
     AsyncThunkConfig // Custom configuration
 >('reservations/delete', async (id, { rejectWithValue }) => {
     try {
-        const response = await apiClient.delete(`http://localhost:5000/api/v2/lessee/delete/${id}`);
+        const response = await apiClient.delete(`${process.env.NEXT_PUBLIC_API_BASE_URL}api/v2/lessee/delete/${id}`);
         if (response.data.status_code === 200) {
             return id; // Return the id directly
         }

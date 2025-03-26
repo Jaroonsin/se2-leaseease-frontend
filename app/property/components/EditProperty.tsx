@@ -57,9 +57,9 @@ export default function EditProperty({ setIsEditPropertyVisible }: EditPropertyP
             rating: selectedProperty?.rating || 0,
             date: selectedProperty?.date || new Date().toISOString(),
             image_url: selectedProperty?.image_url || '',
-            reviews: selectedProperty?.reviews || 0,
             status: selectedProperty?.status || 'Available',
             detail: selectedProperty?.detail || '',
+            review_count: selectedProperty?.review_count || 0,
         };
         try {
             await dispatch(updateProperty(editProperty)).unwrap(); // Unwraps the promise to handle errors properly

@@ -7,5 +7,5 @@ export type Property = {
     price: number;
     date: string;
     image_url: string;
-    reviews: number;
+    review_count: number;
 };

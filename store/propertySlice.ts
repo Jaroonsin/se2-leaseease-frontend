@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { AxiosResponse } from 'axios';
 import { apiClient } from '@/src/api/axios';
 import { AsyncThunkConfig, RootState } from './store';
-import { supabase } from '@/utils/supabase';
+import { getSupabaseClient } from '@/utils/supabase';
 
 interface Data {
     properties: Property[];
