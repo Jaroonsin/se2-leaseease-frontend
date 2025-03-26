@@ -46,6 +46,12 @@ interface PaymentPayload {
     tokenData: string;
 }
 
+interface ReviewPayload {
+    property_id: number;
+    rating: number | null;
+    review_message: string;
+}
+
 export const createPayment = createAsyncThunk<
     string, // Success type: payment success message
     PaymentPayload, // Payload type
@@ -83,6 +89,30 @@ export const updateReservationStatus = createAsyncThunk<
             `${process.env.NEXT_PUBLIC_API_BASE_URL}api/v2/reservations/${reservationId}`,
             { status }
         );
+
+        if (response.data.status_code === 200) {
+            console.log('Status updated:', response.data.message);
+            return response.data.message;
+        } else {
+            return rejectWithValue(response.data.message ?? 'Failed to update status');
+        }
+    } catch (error: any) {
+        console.error('Status update error:', error.message);
+        return rejectWithValue(error.message);
+    }
+});
+
+export const createReview = createAsyncThunk<
+    string, // Success type
+    ReviewPayload, // Payload type
+    AsyncThunkConfig // Config type
+>('propertyReview/create/', async ({ property_id, rating, review_message }, { rejectWithValue }) => {
+    try {
+        const response = await apiClient.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}api/v2/propertyReview/create/`, {
+            property_id,
+            rating,
+            review_message,
+        });
 
         if (response.data.status_code === 200) {
             console.log('Status updated:', response.data.message);

@@ -6,6 +6,7 @@ import SingleHistory from './components/SingleHistory';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '@/store/store';
 import { fetchReservations } from '@/store/historySlice';
+import ReservationSlider from './components/Slider';
 
 type Reservation = {
     id: number;
@@ -22,8 +23,11 @@ type Reservation = {
 export default function Page() {
     const dispatch = useDispatch<AppDispatch>();
     const { reservations, loading, error } = useSelector((state: RootState) => state.reservations);
+    // const [reservations, setReservations] = useState(mockReservations);
     const [status, setStatus] = useState<string>('all');
     const [sortBy, setSortBy] = useState<'propertyName' | 'lastModified'>('propertyName');
+    const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null);
+
     useEffect(() => {
         // const fetchData = async () => {
         // 	const action = await dispatch(fetchUserInfo())
@@ -47,21 +51,43 @@ export default function Page() {
     // if (loading) return <div>Loading...</div>
     // if (error) return <div>Error: {error}</div>
 
-    const filteredReservationsTmp: Reservation[] = reservations
-        .map((reservation) => (reservation.status === 'waiting' ? { ...reservation, status: 'payment' } : reservation))
-        .map((reservation) => (reservation.status === 'accept' ? { ...reservation, status: 'active' } : reservation))
-        .filter((reservation) => status === 'all' || reservation.status === status);
+    const updatedReservations = reservations.map((reservation) => {
+        const updated = { ...reservation };
 
-    const filteredReservations: Reservation[] = filteredReservationsTmp.filter(
+        // First, map certain statuses as before.
+        if (updated.status === 'waiting') {
+            updated.status = 'payment';
+        } else if (updated.status === 'accept') {
+            updated.status = 'active';
+        }
+
+        // Now, if the status is active, apply the new logic based on lastModified date.
+        if (updated.status === 'active') {
+            // Calculate the difference in days between now and lastModified.
+            const diffDays = (Date.now() - new Date(updated.lastModified).getTime()) / (1000 * 60 * 60 * 24);
+
+            // Check if diffDays is between 30 and 32 days.
+            if (diffDays >= 30 && diffDays < 32) {
+                updated.status = 'expired';
+            } else if (diffDays >= 32) {
+                updated.status = 'cancel';
+            }
+        }
+
+        return updated;
+    });
+
+    // Then, filter the reservations based on the selected status (or 'all').
+    const filteredReservations = updatedReservations.filter(
         (reservation) => status === 'all' || reservation.status === status
     );
 
-    const sortedReservations: Reservation[] = filteredReservations.sort((a, b) => {
+    // And sort the reservations as needed.
+    const sortedReservations = filteredReservations.sort((a, b) => {
         if (sortBy === 'propertyName') {
-            return a.propertyName.localeCompare(b.propertyName); // Sort alphabetically by property name
+            return a.propertyName.localeCompare(b.propertyName);
         } else {
-            return new Date(b.lastModified).getTime() - new Date(a.lastModified).getTime(); // Sort by lastModified date
-            // return new Date(a.lastModified).getTime() - new Date(b.lastModified).getTime()
+            return new Date(b.lastModified).getTime() - new Date(a.lastModified).getTime();
         }
     });
 
@@ -148,6 +174,25 @@ export default function Page() {
 
                     <div
                         className={`flex w-[5rem] h-[1.75rem] py-[0.25rem] px-[0.75rem] flex-col justify-center items-center gap-[0.625rem] rounded-md ${
+                            status === 'expired' ? 'bg-white shadow-md' : ''
+                        }`}
+                    >
+                        <button
+                            className="flex justify-center items-center gap-[0.625rem]"
+                            onClick={() => setStatus('expired')}
+                        >
+                            <p
+                                className={`text-sm font-medium leading-[1.25rem] ${
+                                    status === 'expired' ? 'text-slate-900' : 'text-slate-500'
+                                }`}
+                            >
+                                Expired
+                            </p>
+                        </button>
+                    </div>
+
+                    <div
+                        className={`flex w-[5rem] h-[1.75rem] py-[0.25rem] px-[0.75rem] flex-col justify-center items-center gap-[0.625rem] rounded-md ${
                             status === 'cancel' ? 'bg-white shadow-md' : ''
                         }`}
                     >
@@ -227,35 +272,23 @@ export default function Page() {
                                 </div>
                             </div>
                             <div className="flex w-[7rem] py-[0.75rem] px-[1rem] flex-col justify-center items-center gap-[0.625rem]">
-                                <div className="flex items-center rounded-md">
-                                    <div className="flex justify-center items-center gap-[0.625rem]">
-                                        <p className="text-slate-400 text-sm font-medium leading-[1.25rem]">Status</p>
-                                    </div>
-                                    <div className="flex pl-[0.5rem] justify-center items-center gap-[0.625rem]">
-                                        <div className="flex pl-[0.5rem] justify-center items-center gap-[0.625rem]"></div>
-                                    </div>
+                                <div className="flex justify-center items-center gap-[0.625rem]">
+                                    <p className="text-slate-400 text-sm font-medium leading-[1.25rem] text-center">
+                                        Status
+                                    </p>
                                 </div>
-                            </div>
-                            <div className="flex w-[7rem] py-[0.75rem] px-[1rem] flex-col justify-center items-center gap-[0.625rem]">
-                                <div className="flex items-center rounded-md">
-                                    <div className="flex justify-center items-center gap-[0.625rem]">
-                                        <p className="text-slate-400 text-sm font-medium leading-[1.25rem]">Action</p>
-                                    </div>
-                                    <div className="flex pl-[0.5rem] justify-center items-center gap-[0.625rem]">
-                                        <div className="flex pl-[0.5rem] justify-center items-center gap-[0.625rem]"></div>
-                                    </div>
+                                <div className="flex pl-[0.5rem] justify-center items-center gap-[0.625rem]">
+                                    <div className="flex pl-[0.5rem] justify-center items-center gap-[0.625rem]"></div>
                                 </div>
                             </div>
                             <div className="flex py-[0.75rem] px-[1rem] flex-col justify-center items-center gap-[0.625rem] flex-[1_0_0]">
-                                <div className="flex items-center rounded-md">
-                                    <div className="flex justify-center items-center gap-[0.625rem]">
-                                        <p className="text-slate-400 text-sm font-medium leading-[1.25rem]">
-                                            View Property
-                                        </p>
-                                    </div>
-                                    <div className="flex pl-[0.5rem] justify-center items-center gap-[0.625rem]">
-                                        <div className="flex pl-[0.5rem] justify-center items-center gap-[0.625rem]"></div>
-                                    </div>
+                                <div className="flex justify-center items-center gap-[0.625rem]">
+                                    <p className="text-slate-400 text-sm font-medium leading-[1.25rem]">
+                                        View Property
+                                    </p>
+                                </div>
+                                <div className="flex pl-[0.5rem] justify-center items-center gap-[0.625rem]">
+                                    <div className="flex pl-[0.5rem] justify-center items-center gap-[0.625rem]"></div>
                                 </div>
                             </div>
                         </div>
@@ -272,12 +305,19 @@ export default function Page() {
                     ) : (
                         <div className="w-full h-full">
                             {sortedReservations.map((reservation) => (
-                                <SingleHistory key={reservation.id} reservation={reservation} />
+                                <SingleHistory
+                                    key={reservation.id}
+                                    reservation={reservation}
+                                    onShowSlider={() => setSelectedReservation(reservation)}
+                                />
                             ))}
                         </div>
                     )}
                 </div>
             </div>
+            {selectedReservation && (
+                <ReservationSlider reservation={selectedReservation} onClose={() => setSelectedReservation(null)} />
+            )}
         </div>
     );
 }
