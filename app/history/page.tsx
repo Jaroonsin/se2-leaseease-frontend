@@ -20,80 +20,10 @@ type Reservation = {
     lastModified: string;
 };
 
-const mockReservations = [
-    {
-        id: 1,
-        purpose: 'Rent apartment',
-        proposedMessage: 'I would like to rent this apartment.',
-        question: 'Is the apartment pet-friendly?',
-        status: 'active', // Will show as Active in UI
-        interestedProperty: 101,
-        lesseeID: 1,
-        propertyName: 'Sunny Apartments',
-        lastModified: '2025-03-20T10:00:00Z',
-    },
-    {
-        id: 2,
-        purpose: 'Rent condo',
-        proposedMessage: 'Interested in renting your condo.',
-        question: 'Is parking available?',
-        status: 'pending', // Will show as Pending
-        interestedProperty: 102,
-        lesseeID: 2,
-        propertyName: 'City Condo',
-        lastModified: '2025-03-19T15:30:00Z',
-    },
-    {
-        id: 3,
-        purpose: 'Rent house',
-        proposedMessage: 'Looking for a house to rent.',
-        question: 'Are there schools nearby?',
-        status: 'waiting', // Will be mapped to 'payment'
-        interestedProperty: 103,
-        lesseeID: 3,
-        propertyName: 'Cozy Cottage',
-        lastModified: '2025-03-18T12:45:00Z',
-    },
-    {
-        id: 4,
-        purpose: 'Rent apartment',
-        proposedMessage: 'Is this apartment still available?',
-        question: 'What is the rent?',
-        status: 'accept', // Will be mapped to 'active'
-        interestedProperty: 104,
-        lesseeID: 4,
-        propertyName: 'Downtown Loft',
-        lastModified: '2025-02-24T09:20:00Z',
-    },
-    {
-        id: 5,
-        purpose: 'Rent house',
-        proposedMessage: 'Interested in your rental property.',
-        question: 'What is the deposit amount?',
-        status: 'cancel', // Will show as Cancel
-        interestedProperty: 105,
-        lesseeID: 5,
-        propertyName: 'Suburban House',
-        lastModified: '2025-03-16T18:15:00Z',
-    },
-    {
-        id: 6,
-        purpose: 'Test Active Reservation',
-        proposedMessage: 'This reservation should be marked as expired after update.',
-        question: 'Is this a test?',
-        status: 'active', // initial status is active
-        interestedProperty: 106,
-        lesseeID: 6,
-        propertyName: 'Test Property',
-        // Set lastModified to 31 days ago
-        lastModified: new Date(Date.now() - 31 * 24 * 60 * 60 * 1000).toISOString(),
-    },
-];
-
 export default function Page() {
     const dispatch = useDispatch<AppDispatch>();
-    // const { reservations, loading, error } = useSelector((state: RootState) => state.reservations);
-    const [reservations, setReservations] = useState(mockReservations);
+    const { reservations, loading, error } = useSelector((state: RootState) => state.reservations);
+    // const [reservations, setReservations] = useState(mockReservations);
     const [status, setStatus] = useState<string>('all');
     const [sortBy, setSortBy] = useState<'propertyName' | 'lastModified'>('propertyName');
     const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null);
