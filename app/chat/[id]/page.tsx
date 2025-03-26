@@ -3,8 +3,9 @@ import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { initializeWebSocket, sendMessage, setSenderId } from '@/store/chatSlice'
 import { RootState, AppDispatch } from '@/store/store'
-import Header from '../lessee_center/components/Header'
+import Header from '../../lessee_center/components/Header'
 import { fetchUserInfo } from '@/store/auth/userThunks'
+import { useParams } from 'next/navigation'
 
 interface Message {
 	sender_id: number
@@ -21,6 +22,7 @@ export default function Chat() {
 	const dispatch = useDispatch<AppDispatch>()
 	const [messageContent, setMessageContent] = useState<string>("")
 	const { messages, connected, senderId } = useSelector((state: RootState) => state.chat)
+	const { id } = useParams()
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -32,6 +34,7 @@ export default function Chat() {
 				console.log('sender Id:', senderId)
 			}
 		}
+
 
 		const initializeWebSocketConnection = async () => {
 			await fetchData();
@@ -49,7 +52,7 @@ export default function Chat() {
 		console.log('sender Id', senderId)
 		const newMessage: Message = {
 			sender_id: senderId,
-			receiver_id: 2, // hard-peace
+			receiver_id: Number(id), // hard-peace
 			content: messageContent,
 		}
 
@@ -65,7 +68,7 @@ export default function Chat() {
 		<div className="flex w-full h-full flex-col items-center rounded-md bg-white">
 			<Header />
 			<div className="flex justify-center items-center flex-1 self-stretch">
-				<div className="flex flex-col h-[calc(100vh-4rem)] items-start gap-[0.5rem] self-stretch w-[23rem] p-[1rem] bg-slate-100 overflow-y-auto">
+				{/* <div className="flex flex-col h-[calc(100vh-4rem)] items-start gap-[0.5rem] self-stretch w-[23rem] p-[1rem] bg-slate-100 overflow-y-auto">
 					<div className="flex items-center gap-[1.25rem] self-stretch h-[5rem] p-[0.625rem] rounded-[0.25rem] bg-slate-200">
 						<div
 							className="w-[3.75rem] h-[3.75rem] rounded-full bg-[url('https://loremflickr.com/40/40?random=1')] bg-lightgray bg-[size:199.261%_100%] bg-no-repeat">
@@ -78,7 +81,7 @@ export default function Chat() {
 							</div>
 						</div>
 					</div>
-				</div>
+				</div> */}
 				<div className="flex flex-1 h-[calc(100vh-4rem)] p-[1rem] flex-col items-start gap-[0.625rem] flex-1 self-stretch">
 					<div className="flex h-full flex-col items-start self-stretch rounded-[0.5rem] bg-slate-100">
 						<div className="flex h-[5rem] items-center gap-[0.625rem] self-stretch p-[1rem] gap-[0.625rem] border-b-[3px] border-b-white">
