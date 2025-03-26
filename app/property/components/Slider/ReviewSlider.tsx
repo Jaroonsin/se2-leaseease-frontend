@@ -137,7 +137,7 @@ export default function ReviewSlider({
                 <div className="flex flex-col justify-end gap-2 mt-4 absolute top-10 right-4">
                     <button
                         className="h-[28px] px-4 py-1 border border-gray-300 rounded-lg text-slate-600 text-sm font-normal bg-white hover:bg-gray-100 shadow-md flex gap-x-2"
-                        onClick={() => router.push(`/profile/${data.id}`)}
+                        onClick={() => router.push(`/profile/${data.lesseeID}`)}
                     >
                         {' '}
                         <VisibilityOutlinedIcon fontSize="small" />
@@ -145,7 +145,7 @@ export default function ReviewSlider({
                     </button>
                     <button
                         className="h-[28px] px-4 py-1 border border-blue-500 rounded-lg text-slate-600 text-sm font-normal bg-blue-100 hover:bg-blue-200 shadow-md flex gap-x-2"
-                        onClick={() => router.push(`/chat/${data.id}`)}
+                        onClick={() => router.push(`/chat/${data.lesseeID}`)}
                     >
                         <NearMeOutlinedIcon fontSize="small" />
                         Send Message

@@ -1,200 +1,201 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { useAppDispatch } from '@/store/hooks';
-import { updateUserImage, updateUserInfo, uploadImage } from '@/store/auth/userThunks';
-import { useRouter, useParams } from 'next/navigation';
-import LoadPage from '@/components/ui/loadpage';
 
-export default function UserProfile() {
-    const [userDetails, setUserDetails] = useState({
-        name: '',
-        email: '',
-        address: '',
-        picture: '', // Field for image_url
-    });
-    const [loading, setLoading] = useState(true);
-    const [newPassword, setNewPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
+import React, { useState, useEffect, use } from 'react';
+import Header from '../components/Header';
+import { useAuth } from '@/hooks/useAuth';
+import LoadPage from '@/components/ui/loadpage';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { fetchPropertyById, createLeaseReservation, fetchUserById } from '@/store/eachpropertySlice';
+import { useRouter } from 'next/navigation';
+
+function EachPropertyPage({ params }: { params: Promise<{ id: string }> }) {
+    const [showModal, setShowModal] = useState(false);
+    const [purpose, setPurpose] = useState('');
+    const [error, setError] = useState('');
+    const { loading } = useAuth();
     const dispatch = useAppDispatch();
+    const { selectedProperty, user } = useAppSelector((state) => state.eachproperty);
+    const [propertyId, setPropertyId] = useState<number | null>(null);
+    const { id } = use(params);
     const router = useRouter();
-    const { id } = useParams(); // Get user ID from route params
-    const [errors, setErrors] = useState('');
-    const [successMessage, setSuccessMessage] = useState('');
-    const [imagePreview, setImagePreview] = useState<string | null>(null);
-    const [uploadButton, setUploadButton] = useState<boolean>(false);
 
     useEffect(() => {
-        const fetchUserData = async () => {
-            try {
-                const response = await fetch(`http://localhost:5000/api/v2/user/get/${id}`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch user data');
-                }
-                const userData = await response.json();
-                setUserDetails({
-                    name: userData.name || '',
-                    email: userData.email || '',
-                    address: userData.address || '',
-                    picture: userData.image_url || '',
-                });
-                setImagePreview(userData.image_url || '');
-            } catch (error) {
-                console.error('Error fetching user:', error);
-                setErrors('Failed to load user data');
-            } finally {
-                setLoading(false);
+        const fetchParams = async () => {
+            if (id) {
+                setPropertyId(Number(id));
             }
         };
 
-        if (id) {
-            fetchUserData();
-        }
-    }, [id]);
+        fetchParams();
+    }, [params]);
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagePreview(reader.result as string);
-                setUserDetails({ ...userDetails, picture: reader.result as string });
-            };
-            reader.readAsDataURL(file);
-        }
-        setUploadButton(true);
-    };
+    useEffect(() => {
+        if (!propertyId) return;
+        dispatch(fetchPropertyById(propertyId))
+            .unwrap()
+            .then(() => {
+                dispatch(fetchUserById());
+            })
+            .catch((error) => {
+                console.error('Failed to fetch property:', error);
+            });
+    }, [dispatch, propertyId]);
 
-    const handleUpload = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        const formData = new FormData(event.currentTarget);
+    const handleRequestReservation = async () => {
+        if (!purpose.trim()) {
+            setError('*fill in the blank*');
+            return;
+        }
+        // Handle reservation logic here
+        // setShowModal(false);
+        // setPurpose('');
+        // setError('');
+
+        const reservationData = {
+            interestedProperty: propertyId,
+            proposedMessage: null,
+            purpose: purpose,
+            question: null,
+        };
 
         try {
-            const resultAction = await dispatch(uploadImage(formData));
-            if (uploadImage.fulfilled.match(resultAction)) {
-                await dispatch(updateUserImage());
-            }
-            router.push('/property');
+            await dispatch(createLeaseReservation(reservationData)).unwrap();
+            setShowModal(false);
+            setPurpose('');
+            setError('');
+            // Optionally, show a success message or redirect the user
         } catch (error) {
-            console.error('Upload error:', error);
-            alert('Upload failed!');
+            setError('Failed to create reservation. Please try again.');
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        const resultAction = await dispatch(updateUserInfo(userDetails));
-        if (updateUserInfo.fulfilled.match(resultAction)) {
-            router.push('/property');
-        } else {
-            setErrors('Failed to update profile');
-        }
-    };
+    console.log('Fetched User:', user);
 
-    if (loading) return <LoadPage />;
-
-    return (
-        <div className="flex min-h-screen items-center justify-center bg-gray-100">
-            <div className="w-full max-w-3xl bg-white shadow-lg rounded-3xl p-8">
-                <h2 className="text-2xl font-semibold text-gray-700 text-center">User Profile</h2>
-                <p className="text-gray-500 text-center mb-6">Manage your personal details.</p>
-
-                {errors && (
-                    <div className="mb-4 text-red-500 text-center text-xl font-semibold">
-                        <p>{errors}</p>
+    return loading ? (
+        <LoadPage />
+    ) : (
+        <div className="flex flex-col justify-center items-start">
+            <Header />
+            <div className="flex justify-center items-center self-stretch">
+                <div className="flex flex-col items-center self-stretch w-3/5">
+                    <div className="flex p-5 items-start w-[580px] h-[370px] bg-cover">
+                        <img
+                            className="w-full h-full rounded-md object-cover"
+                            src={
+                                selectedProperty?.image_url && selectedProperty.image_url.trim() !== ''
+                                    ? selectedProperty.image_url
+                                    : '/bg-condo.jpg'
+                            }
+                        />
                     </div>
-                )}
-
-                <form onSubmit={handleUpload} className="space-y-6">
-                    {/* Profile Picture */}
-                    <div className="flex flex-col items-center mb-6">
-                        <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-200">
-                            <img
-                                src={imagePreview || 'https://loremflickr.com/40/40?random=1'}
-                                alt="Profile"
-                                className="w-full h-full object-cover"
-                            />
+                    <div className="flex py-2.5 px-10 items-start gap-10 w-full">
+                        <div className="w-1/2 flex flex-col gap-2">
+                            <h2 className="text-3xl font-medium">{selectedProperty?.name}</h2>
+                            <p>{selectedProperty?.location}</p>
+                            <hr className="border-t border-gray-300"></hr>
+                            <div className="flex justify-between items-center self-stretch">
+                                <div>
+                                    <p>Price</p>
+                                    <div className="text-2xl">
+                                        {new Intl.NumberFormat('th-TH').format(selectedProperty?.price || 0)}
+                                    </div>{' '}
+                                    <div>Baht/Month</div>
+                                </div>
+                                <div>
+                                    <p>Size </p>
+                                    <p>{selectedProperty?.size} m²</p>
+                                </div>
+                            </div>
+                            <hr className="border-t border-gray-300"></hr>
+                            <p className="text-xl font-medium">About Property</p>
+                            <p>{selectedProperty?.details}</p>
                         </div>
-                        <label className="text-blue-600 cursor-pointer mt-2">
-                            Change Picture
-                            <input
-                                type="file"
-                                name="file"
-                                accept="image/*"
-                                onChange={handleImageChange}
-                                className="hidden"
-                            />
-                        </label>
-                        {/* Submit Button */}
-                        <div className="flex justify-center py-2">
-                            <button
-                                type="submit"
-                                disabled={!uploadButton}
-                                className={`text-xs px-2 py-1 ${
-                                    uploadButton ? 'bg-green-500' : 'bg-gray-300'
-                                } text-white rounded-3xl`}
-                            >
-                                Upload
-                            </button>
+                        <div className="flex flex-col self-stretch w-1/2 gap-2.5">
+                            <div className="flex w-[221px] flex-col items-start gap-[10px]">
+                                <p className="text-xl font-medium">Rating</p>
+                                <div className="flex gap-1">
+                                    <p className="text-xl font-normal">{selectedProperty?.rating} / 5</p>
+                                    <p className="text-xl font-normal">⭐</p>
+                                    <p className="text-xl font-normal">({selectedProperty?.review_count})</p>
+                                </div>
+                            </div>
+                            <div className="flex flex-col p-[15px] justify-center items-start gap-[10px] self-stretch border border-slate-100">
+                                <div className="flex p-3 justify-start items-center gap-4 w-full border-b border-gray-100 pb-3">
+                                    <img
+                                        className="w-14 h-14 rounded-full object-cover border border-gray-200"
+                                        src={user?.image_url || '/default-avatar.png'}
+                                        alt="user avatar"
+                                    />
+                                    <div className="flex flex-col items-start gap-0.5">
+                                        <p className="font-semibold text-gray-800">{user?.name || 'User Name'}</p>
+                                        <p className="text-sm text-gray-600">
+                                            {user?.address || 'No address provided'}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="flex flex-col justify-center gap-2 w-full">
+                                    <button
+                                        className=" border-blue-900 rounded-md border p-2 gap-2 flex justify-center items-center self-stretch w-full"
+                                        onClick={() => router.push(`/profile/${user?.id}`)}
+                                    >
+                                        <img src="/eye.svg" alt="eye icon" />
+                                        <p className="text-blue-900 text-xs">View Profile</p>
+                                    </button>
+                                    <button
+                                        className="border-blue-900 rounded-md border p-2 gap-2 flex justify-center items-center self-stretch w-full"
+                                        onClick={() => router.push(`/chat/${user?.id}`)}
+                                    >
+                                        <img src="/send.svg" alt="send icon" />
+                                        <p className="text-blue-900 text-xs">Send message</p>
+                                    </button>
+                                </div>
+                            </div>
+                            <div>
+                                <button
+                                    className="bg-blue-900 rounded-md border p-2 gap-2 flex justify-center items-center self-stretch w-full"
+                                    onClick={() => setShowModal(true)}
+                                >
+                                    <img src="/calendar-check.svg" alt="send icon" />
+                                    <p className="text-white text-xs font-medium">Request Reservation</p>
+                                </button>
+                            </div>
                         </div>
+                        {showModal && (
+                            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+                                <div className="bg-white p-6 rounded-lg w-96">
+                                    <h2 className="text-xl font-bold mb-4 text-center">Confirm Reservation</h2>
+                                    <textarea
+                                        className="resize-none w-full h-5 items-start border rounded-lg p-2 h-72 bg-slate-200 text-black placeholder-gray-400"
+                                        placeholder="Type your purpose..."
+                                        value={purpose}
+                                        onChange={(e) => setPurpose(e.target.value)}
+                                    />
+                                    <p className="text-sm font-light py-2.5 px-7 flex flex-column">
+                                        You have to type your purpose or contract for reserve property.
+                                    </p>
+                                    {error && <p className="text-red-500 text-sm mb-4 px-7">{error}</p>}
+                                    <div className="flex justify-end gap-2">
+                                        <button
+                                            className="bg-red-50 border-red-700 border text-red-700 px-4 py-2 rounded-lg w-1/2"
+                                            onClick={() => setShowModal(false)}
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            className="bg-green-50 border-green-700 border text-green-700 px-4 py-2 rounded-lg w-1/2"
+                                            onClick={handleRequestReservation}
+                                        >
+                                            Send Request
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
-                </form>
-
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Name Field */}
-                    <div>
-                        <label htmlFor="name" className="block text-gray-700">
-                            Name
-                        </label>
-                        <input
-                            type="text"
-                            id="name"
-                            value={userDetails.name}
-                            onChange={(e) => setUserDetails({ ...userDetails, name: e.target.value })}
-                            className="w-full p-3 border rounded-3xl text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
-                            required
-                        />
-                    </div>
-
-                    {/* Email Field */}
-                    <div>
-                        <label htmlFor="email" className="block text-gray-700">
-                            Email
-                        </label>
-                        <input
-                            type="email"
-                            id="email"
-                            value={userDetails.email}
-                            className="bg-gray-200 w-full p-3 border rounded-3xl text-gray-700"
-                            required
-                            disabled
-                        />
-                    </div>
-
-                    {/* Address Field */}
-                    <div>
-                        <label htmlFor="address" className="block text-gray-700">
-                            Address
-                        </label>
-                        <input
-                            type="text"
-                            id="address"
-                            value={userDetails.address}
-                            onChange={(e) => setUserDetails({ ...userDetails, address: e.target.value })}
-                            className="w-full p-3 border rounded-3xl text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
-                        />
-                    </div>
-
-                    {/* Submit Button */}
-                    <div className="flex justify-center">
-                        <button
-                            type="submit"
-                            className="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-600"
-                        >
-                            Save Changes
-                        </button>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
     );
 }
+
+export default EachPropertyPage;

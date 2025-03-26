@@ -80,7 +80,7 @@ export default function PropertyPage() {
                 })
             );
             // }
-        }, 2000);
+        }, 1000);
 
         return () => {
             if (debounceTimeout2.current) clearTimeout(debounceTimeout2.current);

@@ -7,6 +7,7 @@ export type reviewData = {
     message: string;
     imageURL: string;
 	id: number;
+	lesseeID: number;
 };
 
 export const convertToReviewData = (response: any): reviewData[] => {
@@ -17,6 +18,7 @@ export const convertToReviewData = (response: any): reviewData[] => {
         imageURL: item.imageURL,
         rating: item.rating,
 		id: item.id,
+		lesseeID: item.lesseeID,
     }));
 };
 export const getReviewData = async (propID: number) => {
