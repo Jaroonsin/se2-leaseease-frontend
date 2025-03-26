@@ -68,11 +68,9 @@ export default function Chat() {
 			content: messageContent,
 		}
 
-		// Dispatch send message action (it sends to the WebSocket and adds to Redux store)
+		setMessageContent("")
 		dispatch(sendMessage(newMessage))
 
-		// Clear input after sending
-		setMessageContent("")
 	}
 
 
@@ -135,6 +133,7 @@ export default function Chat() {
 						<div className="flex items-center gap-[0.625rem] self-stretch p-[1rem] 1.25rem">
 							<div className="flex justify-between items-center p-[0.625rem] flex-[1_0_0] rounded-lg bg-slate-200">
 								<input className="text-sm font-medium leading-[1.25rem] w-full bg-transparent outline-none" placeholder='Type a message'
+									value={messageContent}
 									onChange={(e) => { setMessageContent(e.target.value) }
 									}>
 
