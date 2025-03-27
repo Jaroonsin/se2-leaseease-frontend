@@ -5,6 +5,7 @@ import { Pencil, Trash2 } from 'lucide-react';
 import EditProperty from './EditProperty';
 import DeleteProperty from './DeleteProperty';
 import { useAppSelector } from '@/store/hooks';
+import Rating from '@mui/material/Rating';
 
 export default function PropertyDescription() {
     const { selectedProperty } = useAppSelector((state) => state.property);
@@ -50,9 +51,12 @@ export default function PropertyDescription() {
 
                 {/* Metadata */}
                 <p className="text-gray-500 text-sm mt-2">Updated at {selectedProperty.date}</p>
-                <div className="flex items-center text-yellow-500 mt-2">
-                    <span className="font-bold text-lg">{selectedProperty.rating} ⭐</span>
-                    <span className="ml-1 text-gray-500">({selectedProperty.reviews})</span>
+                <div className="flex justify-items-center items-center mt-2 text-gray-500">
+                    <div className="flex items-center justify-center">
+                        <span className="flex items-center">{selectedProperty.rating.toFixed(1)}</span>
+                        <Rating name="read-only" value={selectedProperty.rating} readOnly size="small" />
+                    </div>
+                    <span className="ml-1">({selectedProperty.review_count})</span>
                 </div>
 
                 {/* Property Details */}
@@ -64,11 +68,13 @@ export default function PropertyDescription() {
                     <p className="text-gray-700">
                         <strong>Size:</strong>
                     </p>
-                    <p className="text-gray-700">{selectedProperty.size}</p>
+                    <p className="text-gray-700">{selectedProperty.size} m²</p>
                     <p className="text-gray-700">
                         <strong>Price:</strong>
                     </p>
-                    <p className="text-gray-700">{selectedProperty.price}</p>
+                    <p className="text-gray-700">
+                        {new Intl.NumberFormat('th-TH').format(selectedProperty?.price || 0)} Baht/Month
+                    </p>
                 </div>
             </div>
             {isEditPropertyVisible && <EditProperty setIsEditPropertyVisible={setIsEditPropertyVisible} />}

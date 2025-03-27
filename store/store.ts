@@ -2,8 +2,10 @@ import { configureStore, Middleware } from '@reduxjs/toolkit';
 import authReducer from './auth/authSlice';
 import propertyReducer from './propertySlice';
 import autocompleteReducer from './autocompleteSlice';
-import eachpropertyReduce from './eachpropertySlice';
+import eachpropertyReducer from './eachpropertySlice';
 import reservationsReducer from './historySlice';
+import chatReducer from './chatSlice'
+import userReducer from './userSlice'
 
 const loggerMiddleware: Middleware = (storeAPI) => (next) => (action) => {
 	console.log('Dispatching action:', action);
@@ -17,10 +19,17 @@ export const store = configureStore({
 		auth: authReducer,
 		property: propertyReducer,
 		autocompleteReducer: autocompleteReducer,
-		eachproperty: eachpropertyReduce,
+		eachproperty: eachpropertyReducer,
 		reservations: reservationsReducer,
+		chat: chatReducer,
+		user: userReducer
 	},
-	middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(loggerMiddleware),
+	middleware: (getDefaultMiddleware) => getDefaultMiddleware({
+		serializableCheck: {
+			ignoredActions: ['chat/addMessage', 'chat/setWebSocket'],
+			ignoredPaths: ['chat.ws'],
+		}
+	}).concat(loggerMiddleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
@@ -30,5 +39,3 @@ export type AsyncThunkConfig = {
 	state: RootState;
 	rejectValue: string;
 };
-
-

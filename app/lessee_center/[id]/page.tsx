@@ -1,11 +1,12 @@
 'use client';
 
 import React, { useState, useEffect, use } from 'react';
-import Header from '../../property/components/Header';
+import Header from '../components/Header';
 import { useAuth } from '@/hooks/useAuth';
 import LoadPage from '@/components/ui/loadpage';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { fetchPropertyById, createLeaseReservation } from '@/store/eachpropertySlice';
+import { fetchPropertyById, createLeaseReservation, fetchUserById } from '@/store/eachpropertySlice';
+import { useRouter } from 'next/navigation';
 
 function EachPropertyPage({ params }: { params: Promise<{ id: string }> }) {
     const [showModal, setShowModal] = useState(false);
@@ -13,9 +14,10 @@ function EachPropertyPage({ params }: { params: Promise<{ id: string }> }) {
     const [error, setError] = useState('');
     const { loading } = useAuth();
     const dispatch = useAppDispatch();
-    const { selectedProperty } = useAppSelector((state) => state.eachproperty);
+    const { selectedProperty, user } = useAppSelector((state) => state.eachproperty);
     const [propertyId, setPropertyId] = useState<number | null>(null);
     const { id } = use(params);
+    const router = useRouter();
 
     useEffect(() => {
         const fetchParams = async () => {
@@ -29,7 +31,14 @@ function EachPropertyPage({ params }: { params: Promise<{ id: string }> }) {
 
     useEffect(() => {
         if (!propertyId) return;
-        dispatch(fetchPropertyById(propertyId));
+        dispatch(fetchPropertyById(propertyId))
+            .unwrap()
+            .then(() => {
+                dispatch(fetchUserById());
+            })
+            .catch((error) => {
+                console.error('Failed to fetch property:', error);
+            });
     }, [dispatch, propertyId]);
 
     const handleRequestReservation = async () => {
@@ -60,6 +69,8 @@ function EachPropertyPage({ params }: { params: Promise<{ id: string }> }) {
         }
     };
 
+    console.log('Fetched User:', user);
+
     return loading ? (
         <LoadPage />
     ) : (
@@ -69,6 +80,7 @@ function EachPropertyPage({ params }: { params: Promise<{ id: string }> }) {
                 <div className="flex flex-col items-center self-stretch w-3/5">
                     <div className="flex p-5 items-start w-[580px] h-[370px] bg-cover">
                         <img
+                            className="w-full h-full rounded-md object-cover"
                             src={
                                 selectedProperty?.image_url && selectedProperty.image_url.trim() !== ''
                                     ? selectedProperty.image_url
@@ -84,16 +96,19 @@ function EachPropertyPage({ params }: { params: Promise<{ id: string }> }) {
                             <div className="flex justify-between items-center self-stretch">
                                 <div>
                                     <p>Price</p>
-                                    <p>B {selectedProperty?.price}</p>
+                                    <div className="text-2xl">
+                                        {new Intl.NumberFormat('th-TH').format(selectedProperty?.price || 0)}
+                                    </div>{' '}
+                                    <div>Baht/Month</div>
                                 </div>
                                 <div>
-                                    <p>Size</p>
-                                    <p>{selectedProperty?.size} m^2</p>
+                                    <p>Size </p>
+                                    <p>{selectedProperty?.size} m²</p>
                                 </div>
                             </div>
                             <hr className="border-t border-gray-300"></hr>
                             <p className="text-xl font-medium">About Property</p>
-                            <p>{selectedProperty?.detail}</p>
+                            <p>{selectedProperty?.details}</p>
                         </div>
                         <div className="flex flex-col self-stretch w-1/2 gap-2.5">
                             <div className="flex w-[221px] flex-col items-start gap-[10px]">
@@ -104,20 +119,32 @@ function EachPropertyPage({ params }: { params: Promise<{ id: string }> }) {
                                     <p className="text-xl font-normal">({selectedProperty?.review_count})</p>
                                 </div>
                             </div>
-                            <div className="flex flex-col p-[12px] justify-center items-start gap-[10px] self-stretch border border-slate-100">
-                                <div className="flex p-[10px] justify-center items-center gap-[20px]">
-                                    <img src="/Avatar.png" alt="avatar" />
-                                    <div className="flex flex-col items-start gap-1">
-                                        <p>Lnwza 007</p>
-                                        <p>MAHARACHA</p>
+                            <div className="flex flex-col p-[15px] justify-center items-start gap-[10px] self-stretch border border-slate-100">
+                                <div className="flex p-3 justify-start items-center gap-4 w-full border-b border-gray-100 pb-3">
+                                    <img
+                                        className="w-14 h-14 rounded-full object-cover border border-gray-200"
+                                        src={user?.image_url || '/default-avatar.png'}
+                                        alt="user avatar"
+                                    />
+                                    <div className="flex flex-col items-start gap-0.5">
+                                        <p className="font-semibold text-gray-800">{user?.name || 'User Name'}</p>
+                                        <p className="text-sm text-gray-600">
+                                            {user?.address || 'No address provided'}
+                                        </p>
                                     </div>
                                 </div>
                                 <div className="flex flex-col justify-center gap-2 w-full">
-                                    <button className=" border-blue-900 rounded-md border p-2 gap-2 flex justify-center items-center self-stretch w-full">
+                                    <button
+                                        className=" border-blue-900 rounded-md border p-2 gap-2 flex justify-center items-center self-stretch w-full"
+                                        onClick={() => router.push(`/profile/${user?.id}`)}
+                                    >
                                         <img src="/eye.svg" alt="eye icon" />
                                         <p className="text-blue-900 text-xs">View Profile</p>
                                     </button>
-                                    <button className="border-blue-900 rounded-md border p-2 gap-2 flex justify-center items-center self-stretch w-full">
+                                    <button
+                                        className="border-blue-900 rounded-md border p-2 gap-2 flex justify-center items-center self-stretch w-full"
+                                        onClick={() => router.push(`/chat/${user?.id}`)}
+                                    >
                                         <img src="/send.svg" alt="send icon" />
                                         <p className="text-blue-900 text-xs">Send message</p>
                                     </button>
@@ -138,7 +165,7 @@ function EachPropertyPage({ params }: { params: Promise<{ id: string }> }) {
                                 <div className="bg-white p-6 rounded-lg w-96">
                                     <h2 className="text-xl font-bold mb-4 text-center">Confirm Reservation</h2>
                                     <textarea
-                                        className="w-full items-start border rounded-lg p-2 h-72 bg-slate-200 text-black placeholder-gray-400"
+                                        className="resize-none w-full h-5 items-start border rounded-lg p-2 h-72 bg-slate-200 text-black placeholder-gray-400"
                                         placeholder="Type your purpose..."
                                         value={purpose}
                                         onChange={(e) => setPurpose(e.target.value)}

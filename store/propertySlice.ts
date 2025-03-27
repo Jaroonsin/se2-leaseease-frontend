@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { AxiosResponse } from 'axios';
 import { apiClient } from '@/src/api/axios';
 import { AsyncThunkConfig, RootState } from './store';
-import { supabase } from '@/utils/supabase';
+import { getSupabaseClient } from '@/utils/supabase';
 
 interface Data {
     properties: Property[];
@@ -27,7 +27,7 @@ export type Property = {
     price: number;
     date: string;
     image_url: string;
-    reviews: number;
+    review_count: number;
     status: string;
     detail: string;
 };
@@ -72,6 +72,7 @@ export const fetchProperties = createAsyncThunk<Data, void, AsyncThunkConfig>(
                         year: 'numeric',
                         hour: '2-digit',
                         minute: '2-digit',
+                        timeZone: 'Asia/Bangkok',
                     }),
                 }));
 
