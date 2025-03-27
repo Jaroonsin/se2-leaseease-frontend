@@ -35,19 +35,7 @@ export function useAuth() {
         if (isAuthenticated && authCheckComplete && !loading) {
             // Current path
             const currentPath = window.location.pathname;
-
-            // Redirect based on role
-            if (user?.role === 'lessor') {
-                // Redirect to property if on login page or in lessee area
-                if (currentPath === ROUTES.AUTH.LOGIN || currentPath.includes('/lessee_center')) {
-                    router.replace('/property');
-                }
-            } else if (user?.role === 'lessee') {
-                // Redirect to lessee center if on login page or in property area
-                if (currentPath === ROUTES.AUTH.LOGIN || currentPath.includes('/property')) {
-                    router.replace('/lessee_center');
-                }
-            }
+            router.replace(ROUTES.DASHBOARD);
         }
     }, [isAuthenticated, authCheckComplete, loading, router, user?.role]);
 

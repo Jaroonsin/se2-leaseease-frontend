@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, use } from 'react';
-import Header from '../components/Header';
+import Header from '@/app/users/dashboard/lessee/components/Header';
 import { useAuth } from '@/src/hooks/useAuth';
 import LoadPage from '@/src/components/ui/loadpage';
 import { useAppDispatch, useAppSelector } from '@/src/store/hooks';

@@ -2,7 +2,7 @@
 
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import AccountOption from '@/app/property/components/AccountOption';
+import AccountOption from '../../lessor/components/AccountOption';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/src/hooks/useAuth';
 import { ROUTES } from '@/src/types/routes';

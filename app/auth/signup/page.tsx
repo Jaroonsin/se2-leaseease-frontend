@@ -267,7 +267,7 @@ const SignUp = () => {
                 </div>
                 <div
                     className="flex flex-col w-1/2 bg-cover bg-center rounded-tl-[24px] mt-14"
-                    style={{ backgroundImage: "url('bg-2.png')" }}
+                    style={{ backgroundImage: "url('/bg-2.png')" }}
                 />
             </div>
         </div>

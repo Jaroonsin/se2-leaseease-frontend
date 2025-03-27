@@ -7,7 +7,7 @@ import { useAuth } from '@/src/hooks/useAuth';
 
 import LoadPage from '@/src/components/ui/loadpage';
 
-export default function PropertyPage() {
+export default function LessorDashboard() {
     const { loading } = useAuth();
 
     return loading ? (

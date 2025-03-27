@@ -26,10 +26,8 @@ export default function SignIn() {
             const resultAction = await dispatch(login({ email, password }));
             dispatch(fetchUserInfo());
             if (login.fulfilled.match(resultAction)) {
-                if (user?.role === 'lessor') router.replace('/property');
-                else {
-                    router.replace('/lessee_center');
-                }
+                // Handle successful login
+                router.push(ROUTES.DASHBOARD);
             } else if (login.rejected.match(resultAction)) {
                 // Handle errors and validate the error message
                 console.error('Login failed:', resultAction.payload || resultAction.error);

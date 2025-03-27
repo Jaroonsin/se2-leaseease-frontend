@@ -13,7 +13,7 @@ import { useRouter } from 'next/navigation';
 
 import LoadPage from '@/src/components/ui/loadpage';
 
-export default function PropertyPage() {
+export default function LesseeDashboard() {
     const { loading } = useAuth();
     const [search, setSearch] = useState('');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -77,7 +77,7 @@ export default function PropertyPage() {
                     rating: rating,
                     page: currentPage,
                     pagesize: rowsPerPage,
-                }),
+                })
             );
             // }
         }, 1000);
