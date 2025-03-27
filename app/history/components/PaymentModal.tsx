@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { AppDispatch } from '@/store/store';
-import { createPayment, updateReservationStatus } from '@/store/historySlice';
-import { OmiseInstance } from '@/type/omise';
+import { AppDispatch } from '@/src/store/store';
+import { createPayment, updateReservationStatus } from '@/src/store/historySlice';
+import { OmiseInstance } from '@/src/types/omise';
 import { useRouter } from 'next/navigation';
 
 type PaymentModalProps = {
@@ -84,7 +84,7 @@ export default function PaymentModal({ showModal, onClose, reservationId }: Paym
                                 amount: 20,
                                 reservationId: reservationId,
                                 tokenData: response.id,
-                            })
+                            }),
                         );
 
                         if (createPayment.fulfilled.match(paymentResult)) {

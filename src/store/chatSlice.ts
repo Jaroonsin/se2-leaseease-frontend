@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { baseURL } from '@/src/api/axios';
+import { config } from '../config/config';
 
 interface Message {
     sender_id: number;
@@ -23,7 +23,7 @@ const initialState: ChatState = {
 
 // Modify WebSocket connection logic to use `getState` from thunk
 const connectWebSocket = (dispatch: any, senderId: number, receiverId: number, getState: any): WebSocket => {
-    const ws = new WebSocket(`ws://${baseURL}chat/ws?senderID=${senderId}&receiverID=${receiverId}`);
+    const ws = new WebSocket(`${config.wsBaseURL}/chat/ws?senderID=${senderId}&receiverID=${receiverId}`);
 
     ws.onopen = () => {
         console.log('WebSocket connected');

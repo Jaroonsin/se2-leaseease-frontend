@@ -1,6 +1,6 @@
 // properties active css
 
-import { Property } from '@/store/propertySlice';
+import { Property } from '@/src/store/propertySlice';
 
 type ChildProps = {
     property: Property;

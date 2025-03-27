@@ -3,8 +3,8 @@
 'use client';
 import { Dispatch, SetStateAction, use, useState } from 'react';
 // import { Property } from '../../../type/Property'
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { updateProperty, Property } from '@/store/propertySlice';
+import { useAppDispatch, useAppSelector } from '@/src/store/hooks';
+import { updateProperty, Property } from '@/src/store/propertySlice';
 type EditPropertyProps = {
     setIsEditPropertyVisible: Dispatch<SetStateAction<boolean>>;
 };

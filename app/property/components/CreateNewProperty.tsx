@@ -1,7 +1,7 @@
 'use client';
 import { Dispatch, SetStateAction, useState } from 'react';
-import { useAppDispatch } from '@/store/hooks';
-import { createProperty, Property } from '@/store/propertySlice';
+import { useAppDispatch } from '@/src/store/hooks';
+import { createProperty, Property } from '@/src/store/propertySlice';
 
 type CreateNewPropertyProps = {
     setIsCreateNewPropertyVisible: Dispatch<SetStateAction<boolean>>;

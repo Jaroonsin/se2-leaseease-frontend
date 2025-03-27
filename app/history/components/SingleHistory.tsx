@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { deleteReservation } from '@/store/historySlice';
+import { deleteReservation } from '@/src/store/historySlice';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '@/store/store';
+import { AppDispatch, RootState } from '@/src/store/store';
 import PaymentModal from './PaymentModal';
 import { useRouter } from 'next/navigation';
 
@@ -111,7 +111,7 @@ export default function SingleHistory({ reservation, onShowSlider }: Reservation
                         <div className="flex justify-between items-center self-stretch">
                             <div
                                 className={`flex py-[0.375rem] px-[0.5rem] flex-col justify-center items-center gap-[0.625rem] flex-[1_0_0] rounded-full cursor-default ${getStatusClasses(
-                                    reservation.status
+                                    reservation.status,
                                 )}`}
                             >
                                 <div className="flex justify-center items-center gap-[0.625rem]">

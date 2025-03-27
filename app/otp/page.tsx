@@ -1,10 +1,10 @@
 'use client';
 
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { useAppDispatch, useAppSelector } from '@/src/store/hooks';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
-import { requestOTP, verifyOTP } from '@/store/auth/authThunks';
-import LoadPage from '@/components/ui/loadpage';
+import { requestOTP, verifyOTP } from '@/src/store/auth/authThunks';
+import LoadPage from '@/src/components/ui/loadpage';
 
 export default function Page() {
     const dispatch = useAppDispatch();

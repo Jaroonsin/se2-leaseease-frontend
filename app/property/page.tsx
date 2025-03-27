@@ -3,9 +3,9 @@
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import MiddlePage from './components/MiddlePage';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/src/hooks/useAuth';
 
-import LoadPage from '@/components/ui/loadpage';
+import LoadPage from '@/src/components/ui/loadpage';
 
 export default function PropertyPage() {
     const { loading } = useAuth();

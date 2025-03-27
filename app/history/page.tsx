@@ -4,8 +4,8 @@ import Header from '../lessee_center/components/Header';
 import SingleHistory from './components/SingleHistory';
 // import { fetchUserInfo } from '@/store/authSlice'
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState, AppDispatch } from '@/store/store';
-import { fetchReservations } from '@/store/historySlice';
+import { RootState, AppDispatch } from '@/src/store/store';
+import { fetchReservations } from '@/src/store/historySlice';
 import ReservationSlider from './components/Slider';
 
 type Reservation = {
@@ -79,7 +79,7 @@ export default function Page() {
 
     // Then, filter the reservations based on the selected status (or 'all').
     const filteredReservations = updatedReservations.filter(
-        (reservation) => status === 'all' || reservation.status === status
+        (reservation) => status === 'all' || reservation.status === status,
     );
 
     // And sort the reservations as needed.

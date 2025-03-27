@@ -4,7 +4,7 @@
 import { useState, useEffect, useRef } from 'react';
 import AccountOption from '@/app/property/components/AccountOption';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/src/hooks/useAuth';
 export default function PropertyHeader() {
     const [isAccountOptionVisible, setIsAccountOptionVisible] = useState<boolean>(false);
     const accountOptionRef = useRef<HTMLDivElement>(null);

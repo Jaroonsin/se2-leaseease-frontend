@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Pencil, Trash2 } from 'lucide-react';
 import EditProperty from './EditProperty';
 import DeleteProperty from './DeleteProperty';
-import { useAppSelector } from '@/store/hooks';
+import { useAppSelector } from '@/src/store/hooks';
 import Rating from '@mui/material/Rating';
 
 export default function PropertyDescription() {

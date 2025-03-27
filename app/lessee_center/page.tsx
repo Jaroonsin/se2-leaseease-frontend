@@ -2,16 +2,16 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Header from './components/Header';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/src/hooks/useAuth';
 // import { CRangeSlider } from '@coreui/react-pro';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { fetchAutocomplete, fetchSearchProperties } from '@/store/autocompleteSlice';
+import { useAppDispatch, useAppSelector } from '@/src/store/hooks';
+import { fetchAutocomplete, fetchSearchProperties } from '@/src/store/autocompleteSlice';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
-import LoadPage from '@/components/ui/loadpage';
+import LoadPage from '@/src/components/ui/loadpage';
 
 export default function PropertyPage() {
     const { loading } = useAuth();
@@ -77,7 +77,7 @@ export default function PropertyPage() {
                     rating: rating,
                     page: currentPage,
                     pagesize: rowsPerPage,
-                })
+                }),
             );
             // }
         }, 1000);

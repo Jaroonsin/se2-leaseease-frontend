@@ -1,11 +1,11 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState, AppDispatch } from '@/store/store';
-import { updateUserImage, updateUserInfo, uploadImage } from '@/store/auth/userThunks';
+import { RootState, AppDispatch } from '@/src/store/store';
+import { updateUserImage, updateUserInfo, uploadImage } from '@/src/store/auth/userThunks';
 import { useRouter, useParams } from 'next/navigation';
-import LoadPage from '@/components/ui/loadpage';
-import { fetchUserById } from '@/store/userSlice';
+import LoadPage from '@/src/components/ui/loadpage';
+import { fetchUserById } from '@/src/store/userSlice';
 
 export default function UserProfile() {
     const [userDetails, setUserDetails] = useState({

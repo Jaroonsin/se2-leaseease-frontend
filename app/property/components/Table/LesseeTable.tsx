@@ -2,7 +2,7 @@ import { getLesseeData, lesseeData } from '@/src/api/data/lessee';
 import React, { useState, useEffect } from 'react';
 import Footer from '../Footer';
 import LesseeSlider from '../Slider/LesseeSlider';
-import { useAppSelector } from '@/store/hooks';
+import { useAppSelector } from '@/src/store/hooks';
 
 const LesseeTable: React.FC = () => {
     const [rowsPerPage, setRowsPerPage] = useState(10);

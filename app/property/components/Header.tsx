@@ -2,7 +2,7 @@
 
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { useAppSelector } from '@/store/hooks';
+import { useAppSelector } from '@/src/store/hooks';
 import AccountOption from './AccountOption';
 
 export default function PropertyHeader() {

@@ -1,11 +1,11 @@
 'use client';
 import { useState } from 'react';
 
-import { useAppDispatch } from '@/store/hooks';
-import { login } from '@/store/auth/authThunks';
+import { useAppDispatch } from '@/src/store/hooks';
+import { login } from '@/src/store/auth/authThunks';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/hooks/useAuth';
-import { fetchUserInfo } from '@/store/auth/userThunks';
+import { useAuth } from '@/src/hooks/useAuth';
+import { fetchUserInfo } from '@/src/store/auth/userThunks';
 
 const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault(); // Prevent default form submission

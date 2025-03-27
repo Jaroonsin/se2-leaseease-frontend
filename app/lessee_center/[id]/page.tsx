@@ -2,10 +2,10 @@
 
 import React, { useState, useEffect, use } from 'react';
 import Header from '../components/Header';
-import { useAuth } from '@/hooks/useAuth';
-import LoadPage from '@/components/ui/loadpage';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { fetchPropertyById, createLeaseReservation, fetchUserById } from '@/store/eachpropertySlice';
+import { useAuth } from '@/src/hooks/useAuth';
+import LoadPage from '@/src/components/ui/loadpage';
+import { useAppDispatch, useAppSelector } from '@/src/store/hooks';
+import { fetchPropertyById, createLeaseReservation, fetchUserById } from '@/src/store/eachpropertySlice';
 import { useRouter } from 'next/navigation';
 
 function EachPropertyPage({ params }: { params: Promise<{ id: string }> }) {

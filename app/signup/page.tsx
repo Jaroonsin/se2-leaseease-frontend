@@ -1,8 +1,8 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAppDispatch } from '@/store/hooks';
-import { register, requestOTP } from '@/store/auth/authThunks';
+import { useAppDispatch } from '@/src/store/hooks';
+import { register, requestOTP } from '@/src/store/auth/authThunks';
 
 const SignUp = () => {
     const router = useRouter();
@@ -50,7 +50,7 @@ const SignUp = () => {
                         image_url: 'https://www.gravatar.com/avatar/',
                     },
                     password,
-                })
+                }),
             );
             await dispatch(requestOTP());
             router.push('/otp');

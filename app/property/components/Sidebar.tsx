@@ -5,8 +5,8 @@ import { useState, useRef, useEffect, Dispatch, SetStateAction, use } from 'reac
 import SortOption from './SortOption';
 import PropertySingle from './PropertySingle';
 import CreateNewProperty from './CreateNewProperty';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { fetchProperties, Property, setSelectedProperty } from '@/store/propertySlice';
+import { useAppDispatch, useAppSelector } from '@/src/store/hooks';
+import { fetchProperties, Property, setSelectedProperty } from '@/src/store/propertySlice';
 
 export default function PropertySidebar() {
     const [isSortOptionVisible, setIsSortOptionVisible] = useState<boolean>(false);

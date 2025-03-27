@@ -1,4 +1,4 @@
-import LoadPage from '@/components/ui/loadpage';
+import LoadPage from '@/src/components/ui/loadpage';
 
 // app/loading.js
 export default function Loading() {

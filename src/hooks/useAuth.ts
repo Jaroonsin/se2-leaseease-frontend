@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { useAppSelector, useAppDispatch } from '@/src/store/hooks';
 import { useRouter } from 'next/navigation';
-import { fetchUserInfo } from '@/store/auth/userThunks';
+import { fetchUserInfo } from '@/src/store/auth/userThunks';
 
 export function useAuth() {
     const router = useRouter();

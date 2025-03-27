@@ -1,16 +1,16 @@
 import axios from 'axios';
+import { config } from '../config/config';
+
 axios.defaults.withCredentials = true;
 
-export const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL + 'api/v2/';
 export const apiClient = axios.create({
-    baseURL: "http://" + baseURL,
+    baseURL: config.apiBaseURL + '/api/v2/',
     timeout: 10000,
     headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
     },
 });
-
 
 // Request Interceptor
 apiClient.interceptors.request.use(

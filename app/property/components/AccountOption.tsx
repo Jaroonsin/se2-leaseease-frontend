@@ -2,8 +2,8 @@
 'use client';
 
 import { forwardRef } from 'react';
-import { useAppDispatch } from '@/store/hooks';
-import { logout } from '@/store/auth/authThunks';
+import { useAppDispatch } from '@/src/store/hooks';
+import { logout } from '@/src/store/auth/authThunks';
 import { useRouter } from 'next/navigation';
 
 type DrowdownProps = {

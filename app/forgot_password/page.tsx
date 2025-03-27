@@ -1,8 +1,8 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useAppDispatch } from '@/store/hooks';
-import { forgotPassword } from '@/store/auth/authThunks';
+import { useAppDispatch } from '@/src/store/hooks';
+import { forgotPassword } from '@/src/store/auth/authThunks';
 import { useState } from 'react';
 
 export default function Page() {
