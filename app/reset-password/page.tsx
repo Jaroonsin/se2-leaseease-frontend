@@ -4,6 +4,7 @@ import { useAppDispatch } from '@/src/store/hooks';
 import { resetPassword } from '@/src/store/auth/authThunks';
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { ROUTES } from '@/src/types/routes';
 
 export default function Page() {
     const dispatch = useAppDispatch();
@@ -47,7 +48,7 @@ export default function Page() {
         }
         try {
             await dispatch(resetPassword({ email, password, token })).unwrap();
-            router.push('/login');
+            router.push(ROUTES.AUTH.LOGIN);
         } catch (error) {
             console.error('Reset password failed:', error);
         }

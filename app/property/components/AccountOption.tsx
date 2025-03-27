@@ -5,6 +5,7 @@ import { forwardRef } from 'react';
 import { useAppDispatch } from '@/src/store/hooks';
 import { logout } from '@/src/store/auth/authThunks';
 import { useRouter } from 'next/navigation';
+import { ROUTES } from '@/src/types/routes';
 
 type DrowdownProps = {
     isAccountOptionVisible: boolean;
@@ -15,11 +16,11 @@ const AccountDetail = forwardRef<HTMLDivElement, DrowdownProps>(({ isAccountOpti
     const router = useRouter();
     const handleLogout = () => {
         dispatch(logout());
-        router.replace('/login');
+        router.replace(ROUTES.AUTH.LOGIN);
     };
 
     const handleProfile = () => {
-        router.push('/profile');
+        router.push(ROUTES.PROFILE(''));
     };
 
     return !isAccountOptionVisible ? (

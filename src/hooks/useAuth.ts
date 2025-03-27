@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
+ROUTES.AUTH.LOGIN;
 import { useAppSelector, useAppDispatch } from '@/src/store/hooks';
 import { useRouter } from 'next/navigation';
 import { fetchUserInfo } from '@/src/store/auth/userThunks';
+import { ROUTES } from '@/src/types/routes';
 
 export function useAuth() {
     const router = useRouter();
@@ -14,7 +16,7 @@ export function useAuth() {
         const checkAuth = async () => {
             try {
                 const currentPath = window.location.pathname;
-                if (!isAuthenticated && !currentPath.includes('/login')) {
+                if (!isAuthenticated && !currentPath.includes(ROUTES.AUTH.LOGIN)) {
                     await dispatch(fetchUserInfo());
                 }
             } catch (error) {
@@ -37,12 +39,12 @@ export function useAuth() {
             // Redirect based on role
             if (user?.role === 'lessor') {
                 // Redirect to property if on login page or in lessee area
-                if (currentPath === '/login' || currentPath.includes('/lessee_center')) {
+                if (currentPath === ROUTES.AUTH.LOGIN || currentPath.includes('/lessee_center')) {
                     router.replace('/property');
                 }
             } else if (user?.role === 'lessee') {
                 // Redirect to lessee center if on login page or in property area
-                if (currentPath === '/login' || currentPath.includes('/property')) {
+                if (currentPath === ROUTES.AUTH.LOGIN || currentPath.includes('/property')) {
                     router.replace('/lessee_center');
                 }
             }
@@ -52,7 +54,7 @@ export function useAuth() {
     // Handle redirection after authentication check completes
     useEffect(() => {
         if (authCheckComplete && !loading && !isAuthenticated) {
-            router.replace('/login');
+            router.replace(ROUTES.AUTH.LOGIN);
         }
     }, [authCheckComplete, isAuthenticated, loading, router]);
 

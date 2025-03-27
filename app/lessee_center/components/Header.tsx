@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import AccountOption from '@/app/property/components/AccountOption';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/src/hooks/useAuth';
+import { ROUTES } from '@/src/types/routes';
 export default function PropertyHeader() {
     const [isAccountOptionVisible, setIsAccountOptionVisible] = useState<boolean>(false);
     const accountOptionRef = useRef<HTMLDivElement>(null);
@@ -47,7 +48,7 @@ export default function PropertyHeader() {
                 <div
                     className="font-medium cursor-pointer "
                     onClick={() => {
-                        Router.push('/history');
+                        Router.push(ROUTES.TRANSACTIONS);
                     }}
                 >
                     History

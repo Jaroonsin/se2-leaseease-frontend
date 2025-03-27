@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppDispatch } from '@/src/store/hooks';
 import { register, requestOTP } from '@/src/store/auth/authThunks';
+import { ROUTES } from '@/src/types/routes';
 
 const SignUp = () => {
     const router = useRouter();
@@ -50,10 +51,10 @@ const SignUp = () => {
                         image_url: 'https://www.gravatar.com/avatar/',
                     },
                     password,
-                }),
+                })
             );
             await dispatch(requestOTP());
-            router.push('/otp');
+            router.push(ROUTES.AUTH.VERIFY_OTP);
         } catch (error) {
             console.error('Registration failed:', error);
             setError('Registration failed');
@@ -257,7 +258,7 @@ const SignUp = () => {
                             Already have an account?{' '}
                             <span
                                 className="text-slate-700 font-bold cursor-pointer"
-                                onClick={() => router.push('/login')}
+                                onClick={() => router.push(ROUTES.AUTH.LOGIN)}
                             >
                                 Sign In
                             </span>

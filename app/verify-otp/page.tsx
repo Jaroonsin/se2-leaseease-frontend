@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { requestOTP, verifyOTP } from '@/src/store/auth/authThunks';
 import LoadPage from '@/src/components/ui/loadpage';
+import { ROUTES } from '@/src/types/routes';
 
 export default function Page() {
     const dispatch = useAppDispatch();
@@ -16,7 +17,7 @@ export default function Page() {
     const handleVerifyOTP = async () => {
         try {
             const response = await dispatch(verifyOTP(inputRefs.current.map((input) => input.value).join(''))).unwrap();
-            router.push('/login');
+            router.push(ROUTES.AUTH.LOGIN);
         } catch (error) {
             console.error('Verification failed:', error);
             setInputError(true);
@@ -125,7 +126,7 @@ export default function Page() {
                                 strokeLinejoin="round"
                             />
                         </svg>
-                        <button onClick={() => router.push('/login')}>
+                        <button onClick={() => router.push(ROUTES.AUTH.LOGIN)}>
                             <p className="text-slate-700 text-base font-normal leading-6">Back to Login</p>
                         </button>
                     </div>

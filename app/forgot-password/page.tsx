@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useAppDispatch } from '@/src/store/hooks';
 import { forgotPassword } from '@/src/store/auth/authThunks';
 import { useState } from 'react';
+import { ROUTES } from '@/src/types/routes';
 
 export default function Page() {
     const router = useRouter();
@@ -68,7 +69,7 @@ export default function Page() {
                         </svg>
                         <p
                             className="text-base font-normal leading-6 text-[#334155]"
-                            onClick={() => router.push('/login')}
+                            onClick={() => router.push(ROUTES.AUTH.LOGIN)}
                         >
                             Back to Login
                         </p>
@@ -96,7 +97,7 @@ export default function Page() {
                             <div className="flex flex-col items-start gap-[0.625rem] pl-2 ml-2">
                                 <button
                                     className="flex h-10 min-h-10 max-h-10 px-4 py-2 flex-col justify-center items-center gap-[0.625rem] rounded-md bg-blue-900 text-white hover:bg-blue-700"
-                                    onClick={() => router.push('/login')}
+                                    onClick={() => router.push(ROUTES.AUTH.LOGIN)}
                                 >
                                     Back to Login
                                 </button>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { ROUTES } from '@/src/types/routes';
 
 export default function NotFound() {
     const router = useRouter();
@@ -17,7 +18,7 @@ export default function NotFound() {
 
     useEffect(() => {
         if (timeLeft === 0) {
-            router.replace('/login'); // Redirect to login page
+            router.replace(ROUTES.AUTH.LOGIN); // Redirect to login page
         }
     }, [timeLeft, router]);
 
@@ -32,7 +33,7 @@ export default function NotFound() {
             </p>
             <div className="mt-6">
                 <button
-                    onClick={() => router.replace('/login')}
+                    onClick={() => router.replace(ROUTES.AUTH.LOGIN)}
                     className="px-6 py-3 text-white bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 transition-all"
                 >
                     Go to Login

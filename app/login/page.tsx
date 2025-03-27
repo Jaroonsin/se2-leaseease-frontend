@@ -6,6 +6,7 @@ import { login } from '@/src/store/auth/authThunks';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/src/hooks/useAuth';
 import { fetchUserInfo } from '@/src/store/auth/userThunks';
+import { ROUTES } from '@/src/types/routes';
 
 const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault(); // Prevent default form submission
@@ -46,7 +47,7 @@ export default function SignIn() {
                 <div
                     className="flex flex-col w-1/2 bg-cover bg-center rounded-tr-[24px] mt-14"
                     style={{
-                        backgroundImage: "url('bg-condo.jpg')",
+                        backgroundImage: "url('/bg-condo.jpg')",
                     }}
                 />
                 <div className="flex flex-col w-1/2 p-[48px_80px] items-center justify-center gap-10">
@@ -94,7 +95,7 @@ export default function SignIn() {
                                 </div>
                                 <div
                                     className="text-right text-sm text-gray-500 cursor-pointer"
-                                    onClick={() => router.push('/forgot_password')}
+                                    onClick={() => router.push(ROUTES.AUTH.FORGOT_PASSWORD)}
                                 >
                                     Forgot password?
                                 </div>
@@ -124,7 +125,7 @@ export default function SignIn() {
                                     Don’t have an account?{' '}
                                     <span
                                         className="text-slate-700 font-bold cursor-pointer"
-                                        onClick={() => router.push('/signup')}
+                                        onClick={() => router.push(ROUTES.AUTH.SIGNUP)}
                                     >
                                         Sign Up
                                     </span>
