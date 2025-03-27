@@ -4,7 +4,7 @@ import { config } from '../config/config';
 axios.defaults.withCredentials = true;
 
 export const apiClient = axios.create({
-    baseURL: config.apiBaseURL + '/api/v2/',
+    baseURL: config.apiBaseURL + '/',
     timeout: 10000,
     headers: {
         'Content-Type': 'application/json',
