@@ -22,7 +22,7 @@ export const convertToReviewData = (response: any): reviewData[] => {
     }));
 };
 export const getReviewData = async (propID: number) => {
-    let data: reviewData[] = [];
+    const data: reviewData[] = [];
 
     if (propID === -1) return data;
 

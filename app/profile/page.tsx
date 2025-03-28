@@ -1,10 +1,10 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { useAppDispatch } from '@/store/hooks';
-import { updateUserImage, updateUserInfo, uploadImage } from '@/store/auth/userThunks'; // Assuming these actions exist
+import { useAppDispatch } from '@/src/store/hooks';
+import { updateUserImage, updateUserInfo, uploadImage } from '@/src/store/slice/auth/userThunks'; // Assuming these actions exist
 import { useRouter } from 'next/navigation';
-import LoadPage from '@/components/ui/loadpage';
-import { useAuth } from '@/hooks/useAuth';
+import LoadPage from '@/src/components/ui/loadpage';
+import { useAuth } from '@/src/hooks/useAuth';
 
 export default function UserProfile() {
     const [userDetails, setUserDetails] = useState({
@@ -19,7 +19,7 @@ export default function UserProfile() {
     const dispatch = useAppDispatch();
     const router = useRouter();
     const [errors, setErrors] = useState('');
-    const [successMessage, setSuccessMessage] = useState('');
+    const [successMessage] = useState('');
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [uploadButton, setUploadButton] = useState<boolean>(false);
 
