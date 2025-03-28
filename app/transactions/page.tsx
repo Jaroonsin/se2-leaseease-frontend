@@ -306,7 +306,7 @@ export default function Page() {
                             <p>No properties found for the selected status.</p>
                         </div>
                     ) : (
-                        <div className="w-full h-full">
+                        <div className="w-full h-full bg-gray-50">
                             {sortedReservations.map((reservation) => (
                                 <SingleHistory
                                     key={reservation.id}

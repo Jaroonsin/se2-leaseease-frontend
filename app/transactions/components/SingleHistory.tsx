@@ -74,9 +74,9 @@ export default function SingleHistory({ reservation, onShowSlider }: Reservation
     };
 
     return (
-        <div className="flex w-full flex-col items-start bg-white ">
+        <div className="flex w-full px-2 flex-col items-start ">
             <div
-                className="flex w-full flex-col items-start bg-white cursor-pointer"
+                className="flex w-full my-1 flex-col items-start bg-white cursor-pointer rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 ease-in-out"
                 onClick={() => {
                     onShowSlider(true);
                 }}
@@ -140,9 +140,9 @@ export default function SingleHistory({ reservation, onShowSlider }: Reservation
                         </div>
                     </div>
                 </div>
-                <div className="flex flex-col items-start gap-[0.625rem] self-stretch">
+                {/* <div className="flex flex-col items-start gap-[0.625rem] self-stretch">
                     <div className="w-full h-[0.0625rem] bg-slate-200"></div>
-                </div>
+                </div> */}
                 {showModal && (
                     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                         <div className="flex w-[40rem] p-6 flex-col items-center justify-center gap-4 rounded-lg bg-white">
