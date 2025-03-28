@@ -21,11 +21,12 @@ export default [
         files: ['**/*.ts', '**/*.tsx'], // Apply this config to TypeScript files
         rules: {
             // Disable all ESLint rules as needed
-            'no-unused-vars': 'off',
-            'react/display-name': 'off',
-            'react-hooks/exhaustive-deps': 'off',
+            // 'no-unused-vars': 'off',
+            // 'react/display-name': 'off',
+            // 'react-hooks/exhaustive-deps': 'off',
             '@next/next/no-img-element': 'off',
             '@typescript-eslint/no-unused-vars': 'off',
+            '@typescript-eslint/no-explicit-any': 'off',
         },
     },
 ];

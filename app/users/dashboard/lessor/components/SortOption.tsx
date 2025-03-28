@@ -80,4 +80,6 @@ const SortOption = forwardRef<HTMLDivElement, SortOptionProps>(
     }
 );
 
+SortOption.displayName = 'SortOption';
+
 export default SortOption;

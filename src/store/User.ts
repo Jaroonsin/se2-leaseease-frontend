@@ -14,5 +14,5 @@ export interface User {
 }
 
 export type errorType = {
-	message: string;
-}
+    message: string;
+};

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/src/store/store';
 import { createPayment } from '@/src/store/slice/historySlice';
@@ -37,7 +37,7 @@ export default function PaymentModal({ showModal, onClose, reservationId }: Paym
         }
     }, []);
 
-    const isValidCard = (): boolean => {
+    const isValidCard = useCallback((): boolean => {
         const newErrors: Record<string, boolean> = {};
 
         if (!cardName) newErrors.cardName = true;
@@ -54,11 +54,11 @@ export default function PaymentModal({ showModal, onClose, reservationId }: Paym
         }
 
         return true;
-    };
+    }, [cardName, cardNumber, expiryMonth, expiryYear, securityCode]);
 
     useEffect(() => {
         isValidCard();
-    }, [cardName, cardNumber, expiryMonth, expiryYear, securityCode]);
+    }, [isValidCard]);
 
     const handleSubmit = async () => {
         if (!isValidCard()) return;

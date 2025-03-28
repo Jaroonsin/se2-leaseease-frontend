@@ -7,6 +7,7 @@ import Header from '@/app/users/dashboard/components/Header';
 import { fetchUserInfo } from '@/src/store/slice/auth/userThunks';
 import { useParams } from 'next/navigation';
 import { fetchUserById } from '@/src/store/slice/userSlice';
+import { User } from '@/src/store/User';
 
 interface Message {
     sender_id: number;

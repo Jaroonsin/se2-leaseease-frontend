@@ -68,4 +68,6 @@ const AccountDetail = forwardRef<HTMLDivElement, DrowdownProps>(({ isAccountOpti
     );
 });
 
+AccountDetail.displayName = 'AccountDetail';
+
 export default AccountDetail;

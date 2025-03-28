@@ -31,7 +31,7 @@ export default function NotFound() {
         if (timeLeft === 0) {
             router.replace(path); // Redirect to login page
         }
-    }, [timeLeft, router]);
+    }, [timeLeft, router, path]);
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 text-center p-6">

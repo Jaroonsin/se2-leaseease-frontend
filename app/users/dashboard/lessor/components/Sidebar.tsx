@@ -7,6 +7,7 @@ import PropertySingle from './PropertySingle';
 import CreateNewProperty from './CreateNewProperty';
 import { useAppDispatch, useAppSelector } from '@/src/store/hooks';
 import { fetchProperties, Property, setSelectedProperty } from '@/src/store/slice/propertySlice';
+import LoadPage from '@/src/components/ui/loadpage';
 
 export default function PropertySidebar() {
     const [isSortOptionVisible, setIsSortOptionVisible] = useState<boolean>(false);
@@ -41,7 +42,7 @@ export default function PropertySidebar() {
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, []);
+    }, [dispatch, isAuthenticated]);
 
     const sortedProperties = [...properties].sort((a, b) => {
         switch (selectedSort) {
@@ -64,7 +65,9 @@ export default function PropertySidebar() {
 
     const [activeProperty, setActiveProperty] = useState<number | null>(null);
 
-    return (
+    return loading ? (
+        <LoadPage />
+    ) : (
         <div className="flex w-[25rem] h-[calc(100vh-4rem)] p-[1rem] 1rem flex-col items-center gap-[0.5rem] self-stretch border-slate-300 bg-slate-50">
             <div className="flex justify-center items-center gap-[0.5rem] self-stretch">
                 <input
