@@ -7,6 +7,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '@/src/store/store';
 import { fetchReservations } from '@/src/store/slice/historySlice';
 import ReservationSlider from './components/Slider';
+import { useAuth } from '@/src/hooks/useAuth';
+import LoadPage from '@/src/components/ui/loadpage';
 
 type Reservation = {
     id: number;
@@ -27,6 +29,7 @@ export default function Page() {
     const [status, setStatus] = useState<string>('all');
     const [sortBy, setSortBy] = useState<'propertyName' | 'lastModified'>('propertyName');
     const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null);
+    const { loading } = useAuth();
 
     useEffect(() => {
         // const fetchData = async () => {
@@ -48,7 +51,7 @@ export default function Page() {
         fetchHistory();
     }, [dispatch]);
 
-    // if (loading) return <div>Loading...</div>
+    if (loading) return <LoadPage></LoadPage>;
     // if (error) return <div>Error: {error}</div>
 
     const updatedReservations = reservations.map((reservation) => {

@@ -6,6 +6,7 @@ import EditProperty from './EditProperty';
 import DeleteProperty from './DeleteProperty';
 import { useAppSelector } from '@/src/store/hooks';
 import Rating from '@mui/material/Rating';
+import LoadPage from '@/src/components/ui/loadpage';
 
 export default function PropertyDescription() {
     const { selectedProperty } = useAppSelector((state) => state.property);
@@ -13,7 +14,7 @@ export default function PropertyDescription() {
     const [isEditPropertyVisible, setIsEditPropertyVisible] = useState<boolean>(false);
     const [isDeletePropertyVisible, setIsDeletePropertyVisible] = useState<boolean>(false);
     if (!selectedProperty) {
-        return <div>Loading...</div>;
+        return <LoadPage></LoadPage>;
     }
 
     return (

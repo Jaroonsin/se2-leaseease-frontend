@@ -5,6 +5,7 @@ import LesseeDashboard from './lessee/index';
 import LessorDashboard from './lessor/index';
 import AdminDashboard from './admin/index';
 import { useAuth } from '@/src/hooks/useAuth';
+import LoadPage from '@/src/components/ui/loadpage';
 
 export default function DashboardPage() {
     const { user } = useAuth();
@@ -16,7 +17,7 @@ export default function DashboardPage() {
         }
     }, [user]);
 
-    if (!role) return <p>Loading...</p>;
+    if (!role) return <LoadPage></LoadPage>;
 
     switch (role) {
         case 'lessee':

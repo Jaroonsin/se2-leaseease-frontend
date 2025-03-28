@@ -1,7 +1,7 @@
 import React from 'react';
 
 const LoadPage: React.FC = () => (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100">
+    <div className="flex min-h-screen w-full items-center justify-center">
         <div className="flex flex-col items-center">
             <svg
                 className="animate-spin h-8 w-8 text-blue-600"
