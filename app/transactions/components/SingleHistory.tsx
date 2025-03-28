@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { deleteReservation } from '@/src/store/historySlice';
+import { deleteReservation } from '@/src/store/slice/historySlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/src/store/store';
 import PaymentModal from './PaymentModal';

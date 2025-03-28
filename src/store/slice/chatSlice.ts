@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { config } from '../config/config';
+import { config } from '../../config/config';
 
 interface Message {
     sender_id: number;
@@ -42,7 +42,7 @@ const connectWebSocket = (dispatch: any, senderId: number, receiverId: number, g
             (msg: Message) =>
                 msg.content === message.content &&
                 msg.sender_id === message.sender_id &&
-                msg.receiver_id === message.receiver_id,
+                msg.receiver_id === message.receiver_id
         );
 
         if (!messageExists) {

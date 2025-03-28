@@ -1,10 +1,8 @@
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
-import NearMeOutlinedIcon from '@mui/icons-material/NearMeOutlined';
-import { AppDispatch, RootState } from '@/src/store/store';
+import { AppDispatch } from '@/src/store/store';
 import { useRouter } from 'next/navigation';
-import { createReview, deleteReservation } from '@/src/store/historySlice';
+import { createReview, deleteReservation } from '@/src/store/slice/historySlice';
 import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import PaymentModal from './PaymentModal';
 import Rating from '@mui/material/Rating';
 import Stack from '@mui/material/Stack';
@@ -79,7 +77,7 @@ export default function ReservationSlider({ reservation, onClose }: SliderProps)
                     property_id: reservation.interestedProperty,
                     rating,
                     review_message: review,
-                }),
+                })
             );
 
             if (createReview.fulfilled.match(resultAction)) {
@@ -219,7 +217,7 @@ export default function ReservationSlider({ reservation, onClose }: SliderProps)
                 <div className="flex flex-col justify-end gap-2 mt-4 absolute top-10 right-4">
                     <div
                         className={`flex py-[0.375rem] px-[0.5rem] flex-col justify-center items-center gap-[0.625rem] flex-[1_0_0] rounded-full cursor-default ${getStatusClasses(
-                            reservation.status,
+                            reservation.status
                         )}`}
                     >
                         <div className="flex justify-center items-center gap-[0.625rem]">

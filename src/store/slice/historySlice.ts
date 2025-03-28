@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { AxiosResponse } from 'axios';
 import { apiClient } from '@/src/api/axios'; // Import your Axios client
-import { AsyncThunkConfig, RootState } from './store';
+import { AsyncThunkConfig, RootState } from '../store';
 
 // Define the type for the reservation data
 interface Reservation {

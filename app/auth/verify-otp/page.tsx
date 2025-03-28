@@ -3,20 +3,20 @@
 import { useAppDispatch, useAppSelector } from '@/src/store/hooks';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
-import { requestOTP, verifyOTP } from '@/src/store/auth/authThunks';
+import { requestOTP, verifyOTP } from '@/src/store/slice/auth/authThunks';
 import LoadPage from '@/src/components/ui/loadpage';
 import { ROUTES } from '@/src/types/routes';
 
 export default function Page() {
     const dispatch = useAppDispatch();
-    const { loading, error } = useAppSelector((state) => state.auth);
+    const { loading } = useAppSelector((state) => state.auth);
     const router = useRouter();
     const inputRefs = useRef<HTMLInputElement[]>([]);
     const [inputError, setInputError] = useState<boolean>(false);
 
     const handleVerifyOTP = async () => {
         try {
-            const response = await dispatch(verifyOTP(inputRefs.current.map((input) => input.value).join(''))).unwrap();
+            await dispatch(verifyOTP(inputRefs.current.map((input) => input.value).join(''))).unwrap();
             router.push(ROUTES.AUTH.LOGIN);
         } catch (error) {
             console.error('Verification failed:', error);

@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { apiClient } from '@/src/api/axios';
-import { AsyncThunkConfig } from './store';
+import { AsyncThunkConfig } from '../store';
 import { Property } from './propertySlice';
 
 interface ApiResponse<T> {
@@ -70,7 +70,9 @@ export const fetchSearchProperties = createAsyncThunk<
 >('properties/fetchSearchProperties', async (params, { rejectWithValue }) => {
     try {
         // const response = await apiClient.get<ApiResponse<Property[]>>('properties/search', { params });
-        const response = await apiClient.get<ApiResponse<Property[]>>('properties/search?page=1&pagesize=10', { params });
+        const response = await apiClient.get<ApiResponse<Property[]>>('properties/search?page=1&pagesize=10', {
+            params,
+        });
         // const properties = response.data?.data?.properties || [];
 
         const properties = response.data?.data?.properties || [];

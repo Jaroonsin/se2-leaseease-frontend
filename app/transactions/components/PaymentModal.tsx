@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/src/store/store';
-import { createPayment, updateReservationStatus } from '@/src/store/historySlice';
+import { createPayment } from '@/src/store/slice/historySlice';
 import { OmiseInstance } from '@/src/types/omise';
-import { useRouter } from 'next/navigation';
 
 type PaymentModalProps = {
     showModal: boolean;
@@ -20,7 +19,6 @@ export default function PaymentModal({ showModal, onClose, reservationId }: Paym
     const [securityCode, setSecurityCode] = useState<string>('');
     const [omise, setOmise] = useState<OmiseInstance | null>(null);
     const [errors, setErrors] = useState<Record<string, boolean>>({});
-    const router = useRouter();
 
     useEffect(() => {
         if (typeof window !== 'undefined' && !window.Omise) {
@@ -84,7 +82,7 @@ export default function PaymentModal({ showModal, onClose, reservationId }: Paym
                                 amount: 20,
                                 reservationId: reservationId,
                                 tokenData: response.id,
-                            }),
+                            })
                         );
 
                         if (createPayment.fulfilled.match(paymentResult)) {

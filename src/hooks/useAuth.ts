@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
-ROUTES.AUTH.LOGIN;
 import { useAppSelector, useAppDispatch } from '@/src/store/hooks';
 import { useRouter } from 'next/navigation';
-import { fetchUserInfo } from '@/src/store/auth/userThunks';
+import { fetchUserInfo } from '@/src/store/slice/auth/userThunks';
 import { ROUTES } from '@/src/types/routes';
 
 export function useAuth() {

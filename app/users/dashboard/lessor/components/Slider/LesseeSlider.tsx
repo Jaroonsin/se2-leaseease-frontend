@@ -22,7 +22,6 @@ export default function LesseeSlider({
     setCurrentRequest,
     tableData,
 }: LesseeSliderProps) {
-    const [status, setStatus] = useState<'Accept' | 'Reject' | 'None'>('None'); //example
     const data = tableData[currentRequest];
     const propertyInfo = data.propertyName;
     const userName = data.name;
@@ -36,7 +35,7 @@ export default function LesseeSlider({
     });
     const purposeInfo = data.purpose;
     const imgPath = data.imageURL != '' ? data.imageURL : null;
-    const [lesseeStatus, setLesseeStatus] = useState('Active');
+    const [lesseeStatus] = useState('Active');
 
     const router = useRouter();
     return (

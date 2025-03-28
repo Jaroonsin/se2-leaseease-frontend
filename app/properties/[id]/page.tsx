@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useState, useEffect, use } from 'react';
-import Header from '@/src/components/ui/Header';
+import Header from '@/app/users/dashboard/components/Header';
 import { useAuth } from '@/src/hooks/useAuth';
 import LoadPage from '@/src/components/ui/loadpage';
 import { useAppDispatch, useAppSelector } from '@/src/store/hooks';
-import { fetchPropertyById, createLeaseReservation, fetchUserById } from '@/src/store/eachpropertySlice';
+import { fetchPropertyById, createLeaseReservation, fetchUserById } from '@/src/store/slice/eachpropertySlice';
 import { useRouter } from 'next/navigation';
 import { ROUTES } from '@/src/types/routes';
 
@@ -66,7 +66,7 @@ function EachPropertyPage({ params }: { params: Promise<{ id: string }> }) {
             setError('');
             // Optionally, show a success message or redirect the user
         } catch (error) {
-            setError('Failed to create reservation. Please try again.');
+            setError('Failed to create reservation. Please try again.' + error);
         }
     };
 
@@ -81,6 +81,7 @@ function EachPropertyPage({ params }: { params: Promise<{ id: string }> }) {
                 <div className="flex flex-col items-center self-stretch w-3/5">
                     <div className="flex p-5 items-start w-[580px] h-[370px] bg-cover">
                         <img
+                            alt="property"
                             className="w-full h-full rounded-md object-cover"
                             src={
                                 selectedProperty?.image_url && selectedProperty.image_url.trim() !== ''
@@ -137,14 +138,14 @@ function EachPropertyPage({ params }: { params: Promise<{ id: string }> }) {
                                 <div className="flex flex-col justify-center gap-2 w-full">
                                     <button
                                         className=" border-blue-900 rounded-md border p-2 gap-2 flex justify-center items-center self-stretch w-full"
-                                        onClick={() => router.push(ROUTES.PROFILE(user?.id!))}
+                                        onClick={() => router.push(ROUTES.PROFILE(user?.id))}
                                     >
                                         <img src="/eye.svg" alt="eye icon" />
                                         <p className="text-blue-900 text-xs">View Profile</p>
                                     </button>
                                     <button
                                         className="border-blue-900 rounded-md border p-2 gap-2 flex justify-center items-center self-stretch w-full"
-                                        onClick={() => router.push(ROUTES.MESSAGES(user?.id!))}
+                                        onClick={() => router.push(ROUTES.MESSAGES(user?.id))}
                                     >
                                         <img src="/send.svg" alt="send icon" />
                                         <p className="text-blue-900 text-xs">Send message</p>

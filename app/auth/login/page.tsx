@@ -2,10 +2,10 @@
 import { useState } from 'react';
 
 import { useAppDispatch } from '@/src/store/hooks';
-import { login } from '@/src/store/auth/authThunks';
+import { login } from '@/src/store/slice/auth/authThunks';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/src/hooks/useAuth';
-import { fetchUserInfo } from '@/src/store/auth/userThunks';
+import { fetchUserInfo } from '@/src/store/slice/auth/userThunks';
 import { ROUTES } from '@/src/types/routes';
 
 const handleSubmit = (e: React.FormEvent) => {
@@ -17,7 +17,7 @@ export default function SignIn() {
     const [password, setPassword] = useState<string>('');
 
     const dispatch = useAppDispatch();
-    const { user, loading, isAuthenticated } = useAuth();
+    const { loading } = useAuth();
     const [errors, setErrors] = useState('');
     const router = useRouter();
 

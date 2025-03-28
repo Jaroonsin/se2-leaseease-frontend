@@ -24,7 +24,7 @@ export const convertToLesseeData = (response: any): lesseeData[] => {
         }));
 };
 export const getLesseeData = async (propID: number) => {
-    let data: lesseeData[] = [];
+    const data: lesseeData[] = [];
 
     if (propID === -1) return data;
 

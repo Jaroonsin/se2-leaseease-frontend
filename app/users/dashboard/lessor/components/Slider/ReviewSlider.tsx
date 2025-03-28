@@ -1,7 +1,7 @@
 'use client';
 
 import Rating from '@mui/material/Rating';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction} from 'react';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import NearMeOutlinedIcon from '@mui/icons-material/NearMeOutlined';
 import { reviewData } from '@/src/api/data/review';

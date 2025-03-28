@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux'; // Assuming Redux for auth state
 import LesseeDashboard from './lessee/index';
 import LessorDashboard from './lessor/index';
 import AdminDashboard from './admin/index';

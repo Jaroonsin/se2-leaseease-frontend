@@ -1,10 +1,10 @@
 // api for create new property
 
 'use client';
-import { Dispatch, SetStateAction, use, useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 // import { Property } from '../../../type/Property'
 import { useAppDispatch, useAppSelector } from '@/src/store/hooks';
-import { updateProperty, Property } from '@/src/store/propertySlice';
+import { updateProperty, Property } from '@/src/store/slice/propertySlice';
 type EditPropertyProps = {
     setIsEditPropertyVisible: Dispatch<SetStateAction<boolean>>;
 };

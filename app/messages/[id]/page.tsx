@@ -1,12 +1,12 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { initializeWebSocket, sendMessage, setSenderId } from '@/src/store/chatSlice';
+import { initializeWebSocket, sendMessage, setSenderId } from '@/src/store/slice/chatSlice';
 import { RootState, AppDispatch } from '@/src/store/store';
 import Header from '@/app/users/dashboard/components/Header';
-import { fetchUserInfo } from '@/src/store/auth/userThunks';
+import { fetchUserInfo } from '@/src/store/slice/auth/userThunks';
 import { useParams } from 'next/navigation';
-import { fetchUserById } from '@/src/store/userSlice';
+import { fetchUserById } from '@/src/store/slice/userSlice';
 
 interface Message {
     sender_id: number;
@@ -21,8 +21,8 @@ interface ApiResponse<T> {
 export default function Chat() {
     const dispatch = useDispatch<AppDispatch>();
     const [messageContent, setMessageContent] = useState<string>('');
-    const { user, loading, error } = useSelector((state: RootState) => state.user);
-    const { messages, connected, senderId } = useSelector((state: RootState) => state.chat);
+    const { user } = useSelector((state: RootState) => state.user);
+    const { messages, senderId } = useSelector((state: RootState) => state.chat);
     const { id } = useParams();
 
     useEffect(() => {

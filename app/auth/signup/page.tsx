@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppDispatch } from '@/src/store/hooks';
-import { register, requestOTP } from '@/src/store/auth/authThunks';
+import { register, requestOTP } from '@/src/store/slice/auth/authThunks';
 import { ROUTES } from '@/src/types/routes';
 
 const SignUp = () => {

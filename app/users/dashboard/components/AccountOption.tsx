@@ -3,7 +3,7 @@
 
 import { forwardRef } from 'react';
 import { useAppDispatch } from '@/src/store/hooks';
-import { logout } from '@/src/store/auth/authThunks';
+import { logout } from '@/src/store/slice/auth/authThunks';
 import { useRouter } from 'next/navigation';
 import { ROUTES } from '@/src/types/routes';
 import '@/app/globals.css';

@@ -1,7 +1,7 @@
 'use client';
 import { Dispatch, SetStateAction } from 'react';
 import { useAppDispatch } from '@/src/store/hooks';
-import { deleteProperty, setSelectedProperty } from '@/src/store/propertySlice';
+import { deleteProperty, setSelectedProperty } from '@/src/store/slice/propertySlice';
 
 type DeletePropertyProps = {
     setIsDeletePropertyVisible: Dispatch<SetStateAction<boolean>>;

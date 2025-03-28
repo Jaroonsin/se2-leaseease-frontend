@@ -1,9 +1,9 @@
 'use client';
 
 import { useAppDispatch } from '@/src/store/hooks';
-import { resetPassword } from '@/src/store/auth/authThunks';
+import { resetPassword } from '@/src/store/slice/auth/authThunks';
 import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { ROUTES } from '@/src/types/routes';
 
 export default function Page() {

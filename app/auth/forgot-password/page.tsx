@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useAppDispatch } from '@/src/store/hooks';
-import { forgotPassword } from '@/src/store/auth/authThunks';
+import { forgotPassword } from '@/src/store/slice/auth/authThunks';
 import { useState } from 'react';
 import { ROUTES } from '@/src/types/routes';
 

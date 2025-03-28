@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { apiClient } from '@/src/api/axios';
-import { AsyncThunkConfig } from '../store';
+import { AsyncThunkConfig } from '../../store';
 import { getSupabaseClient } from '@/src/utils/supabase';
 
 export const fetchUserInfo = createAsyncThunk<ApiResponse<User>, void, AsyncThunkConfig>(
@@ -12,7 +12,7 @@ export const fetchUserInfo = createAsyncThunk<ApiResponse<User>, void, AsyncThun
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || 'Error connecting to API');
         }
-    },
+    }
 );
 export const updateUserInfo = createAsyncThunk<null, { name: string; address: string }, AsyncThunkConfig>(
     'auth/updateUserInfo',
@@ -26,7 +26,7 @@ export const updateUserInfo = createAsyncThunk<null, { name: string; address: st
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || 'Error connecting to API');
         }
-    },
+    }
 );
 
 export const updateUserImage = createAsyncThunk<null, void, AsyncThunkConfig>(
@@ -41,7 +41,7 @@ export const updateUserImage = createAsyncThunk<null, void, AsyncThunkConfig>(
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || 'Error connecting to API');
         }
-    },
+    }
 );
 export const updateUserPassword = () => {};
 
@@ -69,5 +69,5 @@ export const uploadImage = createAsyncThunk<string, FormData, AsyncThunkConfig>(
         } catch (error: any) {
             return rejectWithValue(error.message);
         }
-    },
+    }
 );

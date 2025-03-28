@@ -1,12 +1,12 @@
 // finished
 
 'use client';
-import { useState, useRef, useEffect, Dispatch, SetStateAction, use } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import SortOption from './SortOption';
 import PropertySingle from './PropertySingle';
 import CreateNewProperty from './CreateNewProperty';
 import { useAppDispatch, useAppSelector } from '@/src/store/hooks';
-import { fetchProperties, Property, setSelectedProperty } from '@/src/store/propertySlice';
+import { fetchProperties, Property, setSelectedProperty } from '@/src/store/slice/propertySlice';
 
 export default function PropertySidebar() {
     const [isSortOptionVisible, setIsSortOptionVisible] = useState<boolean>(false);

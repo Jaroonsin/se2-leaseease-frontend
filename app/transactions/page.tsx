@@ -5,7 +5,7 @@ import SingleHistory from './components/SingleHistory';
 // import { fetchUserInfo } from '@/store/authSlice'
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '@/src/store/store';
-import { fetchReservations } from '@/src/store/historySlice';
+import { fetchReservations } from '@/src/store/slice/historySlice';
 import ReservationSlider from './components/Slider';
 
 type Reservation = {
@@ -22,7 +22,7 @@ type Reservation = {
 
 export default function Page() {
     const dispatch = useDispatch<AppDispatch>();
-    const { reservations, loading, error } = useSelector((state: RootState) => state.reservations);
+    const { reservations } = useSelector((state: RootState) => state.reservations);
     // const [reservations, setReservations] = useState(mockReservations);
     const [status, setStatus] = useState<string>('all');
     const [sortBy, setSortBy] = useState<'propertyName' | 'lastModified'>('propertyName');

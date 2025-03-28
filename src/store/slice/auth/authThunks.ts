@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { apiClient } from '@/src/api/axios';
-import { AsyncThunkConfig } from '../store';
+import { AsyncThunkConfig } from '../../store';
 
 type token = {
     token: string;

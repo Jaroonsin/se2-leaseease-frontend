@@ -24,7 +24,7 @@ export const convertToRequestData = (response: any): requestData[] => {
         }));
 };
 export const getRequestData = async (propID: number) => {
-    let data: requestData[] = [];
+    const data: requestData[] = [];
 
     if (propID === -1) return data;
 

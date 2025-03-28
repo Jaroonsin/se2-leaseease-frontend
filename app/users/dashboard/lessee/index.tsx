@@ -7,7 +7,7 @@ import { useAuth } from '@/src/hooks/useAuth';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import { useAppDispatch, useAppSelector } from '@/src/store/hooks';
-import { fetchAutocomplete, fetchSearchProperties } from '@/src/store/autocompleteSlice';
+import { fetchAutocomplete, fetchSearchProperties } from '@/src/store/slice/autocompleteSlice';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 

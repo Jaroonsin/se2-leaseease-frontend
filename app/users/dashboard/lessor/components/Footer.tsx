@@ -1,4 +1,4 @@
-import React, { useState, useEffect, SetStateAction, Dispatch } from 'react';
+import React, { SetStateAction, Dispatch } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 interface footerProps {
     rowsPerPage: number;

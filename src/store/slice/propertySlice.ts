@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { AxiosResponse } from 'axios';
 import { apiClient } from '@/src/api/axios';
-import { AsyncThunkConfig, RootState } from './store';
+import { AsyncThunkConfig, RootState } from '../store';
 import { getSupabaseClient } from '@/src/utils/supabase';
 
 interface Data {
@@ -82,7 +82,7 @@ export const fetchProperties = createAsyncThunk<Data, void, AsyncThunkConfig>(
         } catch (error: any) {
             return rejectWithValue(error.message);
         }
-    },
+    }
 );
 
 // ** Create Property **
@@ -96,7 +96,7 @@ export const createProperty = createAsyncThunk<Property, Property, AsyncThunkCon
         } catch (error: any) {
             return rejectWithValue(error.message);
         }
-    },
+    }
 );
 
 // ** Update Property **
@@ -109,7 +109,7 @@ export const updateProperty = createAsyncThunk<Property, Property, AsyncThunkCon
         } catch (error: any) {
             return rejectWithValue(error.message);
         }
-    },
+    }
 );
 
 // ** Delete Property **
@@ -124,7 +124,7 @@ export const deleteProperty = createAsyncThunk<number, void, AsyncThunkConfig>(
         } catch (error: any) {
             return rejectWithValue(error.message);
         }
-    },
+    }
 );
 
 // export const uploadPropertyImage = createAsyncThunk<string, FormData, AsyncThunkConfig>(
