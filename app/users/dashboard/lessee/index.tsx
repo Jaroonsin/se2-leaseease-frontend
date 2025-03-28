@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import Header from './components/Header';
+import Header from '@/app/users/dashboard/components/Header';
 import { useAuth } from '@/src/hooks/useAuth';
 // import { CRangeSlider } from '@coreui/react-pro';
 import Slider from 'rc-slider';
@@ -12,6 +12,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 import LoadPage from '@/src/components/ui/loadpage';
+import { ROUTES } from '@/src/types/routes';
 
 export default function LesseeDashboard() {
     const { loading } = useAuth();
@@ -261,7 +262,7 @@ export default function LesseeDashboard() {
                         <div
                             key={property.id}
                             className="flex p-5 items-center gap-2 rounded-xl border-2 border-slate-100 w-full cursor-pointer"
-                            onClick={() => handleClick(`/lessee_center/${property.id}`)}
+                            onClick={() => handleClick(ROUTES.PROPERTIES(property.id))}
                         >
                             <div className="w-[382px] h-[160px] rounded-md">
                                 <img

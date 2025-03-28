@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/src/store/store';
 import PaymentModal from './PaymentModal';
 import { useRouter } from 'next/navigation';
+import { ROUTES } from '@/src/types/routes';
 
 type ReservationProps = {
     reservation: {
@@ -111,7 +112,7 @@ export default function SingleHistory({ reservation, onShowSlider }: Reservation
                         <div className="flex justify-between items-center self-stretch">
                             <div
                                 className={`flex py-[0.375rem] px-[0.5rem] flex-col justify-center items-center gap-[0.625rem] flex-[1_0_0] rounded-full cursor-default ${getStatusClasses(
-                                    reservation.status,
+                                    reservation.status
                                 )}`}
                             >
                                 <div className="flex justify-center items-center gap-[0.625rem]">
@@ -129,7 +130,7 @@ export default function SingleHistory({ reservation, onShowSlider }: Reservation
                                 className="flex py-[0.375rem] px-[0.5rem] flex-col justify-center items-center gap-[0.625rem] rounded-md border border-[#1E3A8A] hover:border-blue-900 hover:bg-blue-50"
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    router.push(`/lessee_center/${reservation.interestedProperty}`);
+                                    router.push(ROUTES.PROPERTIES(reservation.interestedProperty));
                                 }}
                             >
                                 <div className="flex justify-center items-center gap-[0.625rem]">

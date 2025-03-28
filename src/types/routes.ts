@@ -11,8 +11,8 @@ export type RouteDefinition = {
     };
     DASHBOARD: string;
     PROFILE: (userId: string | number) => string;
-    MESSAGES: (userId: string | number) => string;
-    PROPERTIES: string;
+    MESSAGES: (chatId: string | number) => string;
+    PROPERTIES: (proertyId: string | number) => string;
     TRANSACTIONS: string;
     ADMIN: {
         DASHBOARD: string;
@@ -33,7 +33,7 @@ export const ROUTES: RouteDefinition = {
     DASHBOARD: '/users/dashboard',
     PROFILE: (userId) => `/profile/${userId}`,
     MESSAGES: (chatId) => `/messages/${chatId}`,
-    PROPERTIES: '/properties',
+    PROPERTIES: (proertyId) => `/properties/${proertyId}`,
     TRANSACTIONS: '/transactions',
     ADMIN: {
         DASHBOARD: '/admin/dashboard',

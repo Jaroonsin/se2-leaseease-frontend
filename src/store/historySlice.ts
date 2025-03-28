@@ -59,7 +59,7 @@ export const createPayment = createAsyncThunk<
 >('reservations/createPayment', async ({ amount, reservationId, tokenData }, { rejectWithValue }) => {
     try {
         // Step 2: Send token and payment data to backend
-        const paymentResponse = await apiClient.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}api/v2/payments/process`, {
+        const paymentResponse = await apiClient.post(`payments/process`, {
             amount: Math.round(amount * 100), // Convert THB to satang
             currency: 'THB',
             token: tokenData,
@@ -85,10 +85,7 @@ export const updateReservationStatus = createAsyncThunk<
     AsyncThunkConfig // Config type
 >('reservations/updateStatus', async ({ reservationId, status }, { rejectWithValue }) => {
     try {
-        const response = await apiClient.patch(
-            `${process.env.NEXT_PUBLIC_API_BASE_URL}api/v2/reservations/${reservationId}`,
-            { status }
-        );
+        const response = await apiClient.patch(`reservations/${reservationId}`, { status });
 
         if (response.data.status_code === 200) {
             console.log('Status updated:', response.data.message);
@@ -108,7 +105,7 @@ export const createReview = createAsyncThunk<
     AsyncThunkConfig // Config type
 >('propertyReview/create/', async ({ property_id, rating, review_message }, { rejectWithValue }) => {
     try {
-        const response = await apiClient.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}api/v2/propertyReview/create/`, {
+        const response = await apiClient.post(`propertyReview/create/`, {
             property_id,
             rating,
             review_message,
@@ -133,9 +130,7 @@ export const fetchReservations = createAsyncThunk<
     AsyncThunkConfig // Custom configuration
 >('reservations/fetch', async (_, { rejectWithValue }) => {
     try {
-        const response: AxiosResponse<ApiResponse<Reservation[]>> = await apiClient.get(
-            `${process.env.NEXT_PUBLIC_API_BASE_URL}api/v2/lessee/reservations`
-        );
+        const response: AxiosResponse<ApiResponse<Reservation[]>> = await apiClient.get(`lessee/reservations`);
         return response.data; // Return the data if successful
     } catch (error: any) {
         return rejectWithValue(error.message); // Return error message if failed
@@ -148,7 +143,7 @@ export const deleteReservation = createAsyncThunk<
     AsyncThunkConfig // Custom configuration
 >('reservations/delete', async (id, { rejectWithValue }) => {
     try {
-        const response = await apiClient.delete(`${process.env.NEXT_PUBLIC_API_BASE_URL}api/v2/lessee/delete/${id}`);
+        const response = await apiClient.delete(`lessee/delete/${id}`);
         if (response.data.status_code === 200) {
             return id; // Return the id directly
         }

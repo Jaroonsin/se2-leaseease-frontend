@@ -6,6 +6,7 @@ import { useAppDispatch } from '@/src/store/hooks';
 import { logout } from '@/src/store/auth/authThunks';
 import { useRouter } from 'next/navigation';
 import { ROUTES } from '@/src/types/routes';
+import '@/app/globals.css';
 
 type DrowdownProps = {
     isAccountOptionVisible: boolean;

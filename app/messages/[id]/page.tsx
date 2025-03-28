@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { initializeWebSocket, sendMessage, setSenderId } from '@/src/store/chatSlice';
 import { RootState, AppDispatch } from '@/src/store/store';
-import Header from '../../lessee_center/components/Header';
+import Header from '@/app/users/dashboard/components/Header';
 import { fetchUserInfo } from '@/src/store/auth/userThunks';
 import { useParams } from 'next/navigation';
 import { fetchUserById } from '@/src/store/userSlice';

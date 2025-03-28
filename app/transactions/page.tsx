@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import Header from '../lessee_center/components/Header';
+import Header from '@/app/users/dashboard/components/Header';
 import SingleHistory from './components/SingleHistory';
 // import { fetchUserInfo } from '@/store/authSlice'
 import { useDispatch, useSelector } from 'react-redux';
@@ -79,7 +79,7 @@ export default function Page() {
 
     // Then, filter the reservations based on the selected status (or 'all').
     const filteredReservations = updatedReservations.filter(
-        (reservation) => status === 'all' || reservation.status === status,
+        (reservation) => status === 'all' || reservation.status === status
     );
 
     // And sort the reservations as needed.

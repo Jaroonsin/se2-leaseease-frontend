@@ -3,10 +3,21 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ROUTES } from '@/src/types/routes';
+import { useAuth } from '@/src/hooks/useAuth';
 
 export default function NotFound() {
     const router = useRouter();
     const [timeLeft, setTimeLeft] = useState(2000);
+    const { user } = useAuth();
+    const [path, setPath] = useState(ROUTES.AUTH.LOGIN);
+
+    useEffect(() => {
+        if (user) {
+            setPath(ROUTES.DASHBOARD);
+        } else {
+            setPath(ROUTES.AUTH.LOGIN);
+        }
+    }, [user]);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -18,7 +29,7 @@ export default function NotFound() {
 
     useEffect(() => {
         if (timeLeft === 0) {
-            router.replace(ROUTES.AUTH.LOGIN); // Redirect to login page
+            router.replace(path); // Redirect to login page
         }
     }, [timeLeft, router]);
 
@@ -33,7 +44,7 @@ export default function NotFound() {
             </p>
             <div className="mt-6">
                 <button
-                    onClick={() => router.replace(ROUTES.AUTH.LOGIN)}
+                    onClick={() => router.replace(path)}
                     className="px-6 py-3 text-white bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 transition-all"
                 >
                     Go to Login

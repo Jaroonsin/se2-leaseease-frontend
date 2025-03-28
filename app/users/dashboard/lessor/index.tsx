@@ -1,7 +1,7 @@
 'use client';
 
 import Sidebar from './components/Sidebar';
-import Header from './components/Header';
+import Header from '@/app/users/dashboard/components/Header';
 import MiddlePage from './components/MiddlePage';
 import { useAuth } from '@/src/hooks/useAuth';
 

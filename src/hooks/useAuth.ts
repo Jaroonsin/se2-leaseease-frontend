@@ -30,14 +30,14 @@ export function useAuth() {
     }, [dispatch, isAuthenticated]);
 
     // Role-based access control and redirect when authenticated
-    useEffect(() => {
-        // Only proceed if authenticated and auth check is complete
-        if (isAuthenticated && authCheckComplete && !loading) {
-            // Current path
-            const currentPath = window.location.pathname;
-            router.replace(ROUTES.DASHBOARD);
-        }
-    }, [isAuthenticated, authCheckComplete, loading, router, user?.role]);
+    // useEffect(() => {
+    //     // Only proceed if authenticated and auth check is complete
+    //     if (isAuthenticated && authCheckComplete && !loading) {
+    //         // Current path
+    //         const currentPath = window.location.pathname;
+    //         router.replace(ROUTES.DASHBOARD);
+    //     }
+    // }, [isAuthenticated, authCheckComplete, loading, router, user?.role]);
 
     // Handle redirection after authentication check completes
     useEffect(() => {
