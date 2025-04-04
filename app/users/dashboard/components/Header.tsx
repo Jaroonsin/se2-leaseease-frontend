@@ -62,12 +62,12 @@ export default function PropertyHeader() {
                         </button>
                         <button
                             className={`flex items-center gap-2 px-4 py-2 rounded-md transition ${
-                                isActive(ROUTES.DASHBOARD)
+                                isActive(ROUTES.USER.DASHBOARD)
                                     ? 'bg-blue-500 text-white'
                                     : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
                             }`}
-                            disabled={isActive(ROUTES.DASHBOARD)}
-                            onClick={() => Router.push(ROUTES.DASHBOARD)}
+                            disabled={isActive(ROUTES.USER.DASHBOARD)}
+                            onClick={() => Router.push(ROUTES.USER.DASHBOARD)}
                         >
                             <FaSearch /> Search Property
                         </button>
@@ -76,12 +76,12 @@ export default function PropertyHeader() {
                 {user?.role === 'lessor' && (
                     <button
                         className={`flex items-center gap-2 px-4 py-2 rounded-md transition ${
-                            isActive(ROUTES.DASHBOARD)
+                            isActive(ROUTES.USER.DASHBOARD)
                                 ? 'bg-blue-500 text-white'
                                 : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
                         }`}
-                        disabled={isActive(ROUTES.DASHBOARD)}
-                        onClick={() => Router.push(ROUTES.DASHBOARD)}
+                        disabled={isActive(ROUTES.USER.DASHBOARD)}
+                        onClick={() => Router.push(ROUTES.USER.DASHBOARD)}
                     >
                         <FaBuilding /> Manage Property
                     </button>

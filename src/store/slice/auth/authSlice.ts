@@ -1,6 +1,7 @@
 import { createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { fetchUserInfo, updateUserInfo, updateUserImage, uploadImage } from './userThunks';
 import { login, logout, register, verifyOTP } from './authThunks';
+import { User } from '@/src/types/type';
 
 interface AuthState {
     user: User | null;

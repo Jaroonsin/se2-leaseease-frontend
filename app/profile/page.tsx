@@ -5,6 +5,7 @@ import { updateUserImage, updateUserInfo, uploadImage } from '@/src/store/slice/
 import { useRouter } from 'next/navigation';
 import LoadPage from '@/src/components/ui/loadpage';
 import { useAuth } from '@/src/hooks/useAuth';
+import { ROUTES } from '@/src/types/routes';
 
 export default function UserProfile() {
     const [userDetails, setUserDetails] = useState({
@@ -56,7 +57,7 @@ export default function UserProfile() {
             if (uploadImage.fulfilled.match(resultAction)) {
                 await dispatch(updateUserImage());
             }
-            router.push('/property');
+            router.push(ROUTES.USER.DASHBOARD);
         } catch (error) {
             console.error('Upload error:', error);
             alert('Upload failed!');
@@ -67,7 +68,7 @@ export default function UserProfile() {
         e.preventDefault();
         const resultAction = await dispatch(updateUserInfo(userDetails));
         if (updateUserInfo.fulfilled.match(resultAction)) {
-            router.push('/property');
+            router.push(ROUTES.USER.DASHBOARD);
         } else {
             setErrors('Failed to update profile');
         }
@@ -101,7 +102,7 @@ export default function UserProfile() {
                 {/* Back Button */}
                 <div className="mb-6">
                     <button
-                        onClick={() => router.push('/property')}
+                        onClick={() => router.push(ROUTES.USER.DASHBOARD)}
                         className="text-blue-600 hover:text-blue-700 flex items-center"
                     >
                         <svg

@@ -17,7 +17,7 @@ const AccountDetail = forwardRef<HTMLDivElement, DrowdownProps>(({ isAccountOpti
     const router = useRouter();
     const handleLogout = () => {
         dispatch(logout());
-        router.replace(ROUTES.AUTH.LOGIN);
+        router.push(ROUTES.AUTH.LOGIN);
     };
 
     const handleProfile = () => {

@@ -9,13 +9,14 @@ export type RouteDefinition = {
         RESET_PASSWORD: string;
         VERIFY_OTP: string;
     };
-    DASHBOARD: string;
+    USER: {
+        DASHBOARD: string;
+    };
     PROFILE: (userId: string | number) => string;
     MESSAGES: (chatId: string | number) => string;
     PROPERTIES: (proertyId: string | number) => string;
     TRANSACTIONS: string;
     ADMIN: {
-        DASHBOARD: string;
         USERS: string;
         SETTINGS: string;
     };
@@ -30,13 +31,14 @@ export const ROUTES: RouteDefinition = {
         RESET_PASSWORD: '/auth/reset-password',
         VERIFY_OTP: '/auth/verify-otp',
     },
-    DASHBOARD: '/users/dashboard',
+    USER: {
+        DASHBOARD: '/users/dashboard',
+    },
     PROFILE: (userId) => `/profile/${userId}`,
     MESSAGES: (chatId) => `/messages/${chatId}`,
     PROPERTIES: (proertyId) => `/properties/${proertyId}`,
     TRANSACTIONS: '/transactions',
     ADMIN: {
-        DASHBOARD: '/admin/dashboard',
         USERS: '/admin/users',
         SETTINGS: '/admin/settings',
     },

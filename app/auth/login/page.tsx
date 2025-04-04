@@ -27,7 +27,7 @@ export default function SignIn() {
             dispatch(fetchUserInfo());
             if (login.fulfilled.match(resultAction)) {
                 // Handle successful login
-                router.push(ROUTES.DASHBOARD);
+                router.push(ROUTES.USER.DASHBOARD);
             } else if (login.rejected.match(resultAction)) {
                 // Handle errors and validate the error message
                 console.error('Login failed:', resultAction.payload || resultAction.error);

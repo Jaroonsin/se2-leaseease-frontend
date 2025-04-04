@@ -1,6 +1,8 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { apiClient } from '@/src/api/axios';
 import { AsyncThunkConfig } from '../../store';
+import { ApiResponse } from '@/src/types/type';
+import { User } from '@/src/types/type';
 
 type token = {
     token: string;

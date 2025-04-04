@@ -2,6 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { apiClient } from '@/src/api/axios';
 import { AsyncThunkConfig } from '../../store';
 import { getSupabaseClient } from '@/src/utils/supabase';
+import { ApiResponse, User } from '@/src/types/type';
 
 export const fetchUserInfo = createAsyncThunk<ApiResponse<User>, void, AsyncThunkConfig>(
     'auth/fetchUserInfo',

@@ -13,7 +13,7 @@ export default function NotFound() {
 
     useEffect(() => {
         if (user) {
-            setPath(ROUTES.DASHBOARD);
+            setPath(ROUTES.USER.DASHBOARD);
         } else {
             setPath(ROUTES.AUTH.LOGIN);
         }
