@@ -34,9 +34,9 @@ export const ROUTES: RouteDefinition = {
     USER: {
         DASHBOARD: '/users/dashboard',
     },
-    PROFILE: (userId) => `/profile/${userId}`,
-    MESSAGES: (chatId) => `/messages/${chatId}`,
-    PROPERTIES: (proertyId) => `/properties/${proertyId}`,
+    PROFILE: (userId) => (userId ? `/profile/${userId}` : '/profile'),
+    MESSAGES: (chatId) => (chatId ? `/messages/${chatId}` : '/messages'),
+    PROPERTIES: (proertyId) => (proertyId ? `/properties/${proertyId}` : '/properties'),
     TRANSACTIONS: '/transactions',
     ADMIN: {
         USERS: '/admin/users',

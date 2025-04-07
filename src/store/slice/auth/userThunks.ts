@@ -44,7 +44,6 @@ export const updateUserImage = createAsyncThunk<null, void, AsyncThunkConfig>(
         }
     }
 );
-export const updateUserPassword = () => {};
 
 export const uploadImage = createAsyncThunk<string, FormData, AsyncThunkConfig>(
     'auth/uploadImage',
@@ -72,3 +71,19 @@ export const uploadImage = createAsyncThunk<string, FormData, AsyncThunkConfig>(
         }
     }
 );
+
+export const updateUserPassword = createAsyncThunk<
+    null,
+    { currentPassword: string; newPassword: string },
+    AsyncThunkConfig
+>('auth/updateUserPassword', async (data, { rejectWithValue }) => {
+    try {
+        await apiClient.post<ApiResponse<User>>('user/change-password', {
+            old_password: data.currentPassword,
+            new_password: data.newPassword,
+        });
+        return null;
+    } catch (error: any) {
+        return rejectWithValue(error.response?.data?.message || 'Error changing password');
+    }
+});
