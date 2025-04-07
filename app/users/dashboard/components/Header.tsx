@@ -31,7 +31,7 @@ export default function PropertyHeader() {
         };
     }, []);
 
-    const isActive = (route: string) => pathname === route;
+    const isActive = (route: string) => pathname.includes(route);
 
     return (
         <div className="flex w-full h-16 px-6 justify-between items-center border-b border-gray-300 bg-white shadow-md">
