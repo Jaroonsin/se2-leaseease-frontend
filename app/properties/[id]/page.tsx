@@ -137,14 +137,14 @@ function EachPropertyPage({ params }: { params: Promise<{ id: string }> }) {
                                 </div>
                                 <div className="flex flex-col justify-center gap-2 w-full">
                                     <button
-                                        className=" border-blue-900 rounded-md border p-2 gap-2 flex justify-center items-center self-stretch w-full"
+                                        className=" border-blue-900 rounded-md border p-2 gap-2 flex justify-center items-center self-stretch w-full hover:bg-gray-200"
                                         onClick={() => router.push(ROUTES.PROFILE(user?.id))}
                                     >
                                         <img src="/eye.svg" alt="eye icon" />
                                         <p className="text-blue-900 text-xs">View Profile</p>
                                     </button>
                                     <button
-                                        className="border-blue-900 rounded-md border p-2 gap-2 flex justify-center items-center self-stretch w-full"
+                                        className="border-blue-900 rounded-md border p-2 gap-2 flex justify-center items-center self-stretch w-full hover:bg-gray-200"
                                         onClick={() => router.push(ROUTES.MESSAGES(user?.id))}
                                     >
                                         <img src="/send.svg" alt="send icon" />
@@ -154,7 +154,7 @@ function EachPropertyPage({ params }: { params: Promise<{ id: string }> }) {
                             </div>
                             <div>
                                 <button
-                                    className="bg-blue-900 rounded-md border p-2 gap-2 flex justify-center items-center self-stretch w-full"
+                                    className="bg-blue-500 hover:bg-blue-900 rounded-md border p-2 gap-2 flex justify-center items-center self-stretch w-full"
                                     onClick={() => setShowModal(true)}
                                 >
                                     <img src="/calendar-check.svg" alt="send icon" />

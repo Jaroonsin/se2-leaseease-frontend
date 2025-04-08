@@ -52,7 +52,7 @@ export default function PropertyHeader() {
                         <button
                             className={`flex items-center gap-2 px-4 py-2 rounded-md transition ${
                                 isActive(ROUTES.TRANSACTIONS)
-                                    ? 'bg-blue-500 text-white'
+                                    ? 'bg-blue-500 hover:bg-blue-900 text-white'
                                     : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
                             }`}
                             disabled={isActive(ROUTES.TRANSACTIONS)}
@@ -63,7 +63,7 @@ export default function PropertyHeader() {
                         <button
                             className={`flex items-center gap-2 px-4 py-2 rounded-md transition ${
                                 isActive(ROUTES.USER.DASHBOARD)
-                                    ? 'bg-blue-500 text-white'
+                                    ? 'bg-blue-500 hover:bg-blue-900 text-white'
                                     : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
                             }`}
                             disabled={isActive(ROUTES.USER.DASHBOARD)}
@@ -77,7 +77,7 @@ export default function PropertyHeader() {
                     <button
                         className={`flex items-center gap-2 px-4 py-2 rounded-md transition ${
                             isActive(ROUTES.USER.DASHBOARD)
-                                ? 'bg-blue-500 text-white'
+                                ? 'bg-blue-500 hover:bg-blue-900 text-white'
                                 : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
                         }`}
                         disabled={isActive(ROUTES.USER.DASHBOARD)}
@@ -89,7 +89,7 @@ export default function PropertyHeader() {
                 <button
                     className={`flex items-center gap-2 px-4 py-2 rounded-md transition ${
                         isActive(ROUTES.MESSAGES(''))
-                            ? 'bg-blue-500 text-white'
+                            ? 'bg-blue-500 hover:bg-blue-900 text-white'
                             : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
                     }`}
                     disabled={isActive(ROUTES.MESSAGES(''))}
