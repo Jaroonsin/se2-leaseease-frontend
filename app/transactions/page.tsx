@@ -101,7 +101,7 @@ export default function Page() {
                 <div className="flex h-[2.25rem] p-[0.25rem] justify-center items-center flex-shrink-0 rounded-lg bg-zinc-100">
                     <div
                         className={`flex w-[5rem] h-[1.75rem] py-[0.25rem] px-[0.75rem] flex-col justify-center items-center gap-[0.625rem] rounded-md ${
-                            status === 'all' ? 'bg-white shadow-md' : ''
+                            status === 'all' ? 'bg-white shadow-md' : 'hover:bg-slate-200 hover:shadow-md'
                         }`}
                     >
                         <button
@@ -120,7 +120,7 @@ export default function Page() {
 
                     <div
                         className={`flex w-[5rem] h-[1.75rem] py-[0.25rem] px-[0.75rem] flex-col justify-center items-center gap-[0.625rem] rounded-md ${
-                            status === 'active' ? 'bg-white shadow-md' : ''
+                            status === 'active' ? 'bg-white shadow-md' : 'hover:bg-slate-200 hover:shadow-md'
                         }`}
                     >
                         <button
@@ -139,7 +139,7 @@ export default function Page() {
 
                     <div
                         className={`flex w-[5rem] h-[1.75rem] py-[0.25rem] px-[0.75rem] flex-col justify-center items-center gap-[0.625rem] rounded-md ${
-                            status === 'pending' ? 'bg-white shadow-md' : ''
+                            status === 'pending' ? 'bg-white shadow-md' : 'hover:bg-slate-200 hover:shadow-md'
                         }`}
                     >
                         <button
@@ -158,7 +158,7 @@ export default function Page() {
 
                     <div
                         className={`flex w-[5rem] h-[1.75rem] py-[0.25rem] px-[0.75rem] flex-col justify-center items-center gap-[0.625rem] rounded-md ${
-                            status === 'payment' ? 'bg-white shadow-md' : ''
+                            status === 'payment' ? 'bg-white shadow-md' : 'hover:bg-slate-200 hover:shadow-md'
                         }`}
                     >
                         <button
@@ -177,7 +177,7 @@ export default function Page() {
 
                     <div
                         className={`flex w-[5rem] h-[1.75rem] py-[0.25rem] px-[0.75rem] flex-col justify-center items-center gap-[0.625rem] rounded-md ${
-                            status === 'expired' ? 'bg-white shadow-md' : ''
+                            status === 'expired' ? 'bg-white shadow-md' : 'hover:bg-slate-200 hover:shadow-md'
                         }`}
                     >
                         <button
@@ -196,7 +196,7 @@ export default function Page() {
 
                     <div
                         className={`flex w-[5rem] h-[1.75rem] py-[0.25rem] px-[0.75rem] flex-col justify-center items-center gap-[0.625rem] rounded-md ${
-                            status === 'cancel' ? 'bg-white shadow-md' : ''
+                            status === 'cancel' ? 'bg-white shadow-md' : 'hover:bg-slate-200 hover:shadow-md'
                         }`}
                     >
                         <button

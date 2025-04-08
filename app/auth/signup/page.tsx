@@ -203,7 +203,7 @@ const SignUp = () => {
                                         className={`border rounded-lg  p-3 w-1/2 cursor-pointer flex flex-col justify-center items-start${
                                             accountType === 'lessee'
                                                 ? ' border-blue-900 bg-indigo-100'
-                                                : 'border-slate-200'
+                                                : 'border-slate-200 hover:bg-slate-300 hover:border-slate-500'
                                         }`}
                                         onClick={() => setAccountType('lessee')}
                                     >
@@ -222,7 +222,7 @@ const SignUp = () => {
                                         className={`border rounded-lg p-3 w-1/2 cursor-pointer flex flex-col justify-center items-start${
                                             accountType === 'lessor'
                                                 ? ' border-blue-900 bg-indigo-100'
-                                                : 'border-slate-200'
+                                                : 'border-slate-200 hover:bg-slate-300 hover:border-slate-500'
                                         }`}
                                         onClick={() => setAccountType('lessor')}
                                     >
@@ -248,7 +248,7 @@ const SignUp = () => {
                     <div className="w-full flex flex-col gap-2">
                         <button
                             type="submit"
-                            className="w-full bg-blue-900 text-white p-3.5 rounded-lg"
+                            className="w-full bg-blue-900 hover:bg-blue-700 text-white p-3.5 rounded-lg"
                             onClick={() => handleRegister()}
                         >
                             Sign up
