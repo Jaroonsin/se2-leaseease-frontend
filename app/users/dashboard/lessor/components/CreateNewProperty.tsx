@@ -168,11 +168,7 @@ export default function CreateNewProperty({ setIsCreateNewPropertyVisible }: Cre
                             <div className="text-slate-700 text-xs font-medium leading-[16px]">Name*</div>
                         </div>
 
-                        <div
-                            className={`flex p-[8px] w-full rounded-[6px] border ${
-                                errors.name ? 'border-red-500' : 'border-slate-200'
-                            }`}
-                        >
+                        <div className={`flex p-[8px] w-full rounded-[6px] border $`}>
                             <input
                                 className="text-base font-normal leading-[24px] w-full outline-none"
                                 placeholder="Property Name"
@@ -180,6 +176,11 @@ export default function CreateNewProperty({ setIsCreateNewPropertyVisible }: Cre
                                 onChange={(e) => setName(e.target.value)}
                             />
                         </div>
+                        {errors.name && (
+                            <div className=" text-red-500 text-xs">
+                                <p>*Name is required</p>
+                            </div>
+                        )}
                     </div>
 
                     <div className="flex flex-col items-start gap-[4px] self-stretch">
@@ -187,9 +188,7 @@ export default function CreateNewProperty({ setIsCreateNewPropertyVisible }: Cre
                             <div className="text-slate-700 text-xs font-medium leading-[16px]">Location*</div>
                         </div>
                         <div
-                            className={`flex p-[8px] items-start gap-[10px] flex-1 self-stretch rounded-[6px] border ${
-                                errors.location ? 'border-red-500' : 'border-slate-200'
-                            }`}
+                            className={`flex p-[8px] items-start gap-[10px] flex-1 self-stretch rounded-[6px] border `}
                         >
                             <input
                                 className="text-base font-normal leading-[24px] w-full outline-none"
@@ -198,6 +197,11 @@ export default function CreateNewProperty({ setIsCreateNewPropertyVisible }: Cre
                                 onChange={(e) => setLocation(e.target.value)}
                             />
                         </div>
+                        {errors.location && (
+                            <div className=" text-red-500 text-xs">
+                                <p>*Location is required</p>
+                            </div>
+                        )}
                     </div>
 
                     <div className="flex h-[144px] flex-col items-start gap-[4px] self-stretch">
@@ -223,11 +227,7 @@ export default function CreateNewProperty({ setIsCreateNewPropertyVisible }: Cre
                             </div>
                         </div>
                         <div className="flex items-center gap-[4px] self-stretch">
-                            <div
-                                className={`flex p-[8px] items-center gap-[10px] flex-1 rounded-[6px] border ${
-                                    errors.size ? 'border-red-500' : 'border-slate-200'
-                                }`}
-                            >
+                            <div className={`flex p-[8px] items-center gap-[10px] flex-1 rounded-[6px] border `}>
                                 <input
                                     type="number"
                                     className="text-base font-normal leading-[24px] w-full outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
@@ -237,6 +237,11 @@ export default function CreateNewProperty({ setIsCreateNewPropertyVisible }: Cre
                                 />
                             </div>
                         </div>
+                        {errors.size && (
+                            <div className=" text-red-500 text-xs">
+                                <p>*Size is required</p>
+                            </div>
+                        )}
                     </div>
 
                     <div className="flex flex-col items-start gap-[4px] self-stretch">
@@ -245,11 +250,7 @@ export default function CreateNewProperty({ setIsCreateNewPropertyVisible }: Cre
                                 Price* (Baht per month)
                             </div>
                         </div>
-                        <div
-                            className={`flex p-[8px] items-center gap-[10px] self-stretch rounded-[6px] border ${
-                                errors.price ? 'border-red-500' : 'border-slate-200'
-                            }`}
-                        >
+                        <div className={`flex p-[8px] items-center gap-[10px] self-stretch rounded-[6px] border `}>
                             <input
                                 type="number"
                                 className="w-full text-base font-normal leading-[24px] outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
@@ -258,6 +259,11 @@ export default function CreateNewProperty({ setIsCreateNewPropertyVisible }: Cre
                                 onChange={(e) => setPrice(Number(e.target.value) || null)}
                             />
                         </div>
+                        {errors.price && (
+                            <div className=" text-red-500 text-xs">
+                                <p>*Price is required</p>
+                            </div>
+                        )}
                         <div className="w-full h-[100px] empty"></div>
                     </div>
                 </div>
