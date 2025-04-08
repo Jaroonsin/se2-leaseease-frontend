@@ -59,8 +59,8 @@ export default function CreateNewProperty({ setIsCreateNewPropertyVisible }: Cre
         const newErrors: typeof errors = {};
         if (!name) newErrors.name = true;
         if (!location) newErrors.location = true;
-        if (!size) newErrors.size = true;
-        if (!price) newErrors.price = true;
+        if (!size || size <= 0) newErrors.size = true;
+        if (!price || price < 20) newErrors.price = true;
 
         setErrors(newErrors);
         if (Object.keys(newErrors).length > 0) return;
@@ -230,7 +230,7 @@ export default function CreateNewProperty({ setIsCreateNewPropertyVisible }: Cre
                         </div>
                         {errors.size && (
                             <div className=" text-red-500 text-xs">
-                                <p>*Size is required</p>
+                                <p>*Size required more than zero</p>
                             </div>
                         )}
                     </div>
@@ -252,7 +252,7 @@ export default function CreateNewProperty({ setIsCreateNewPropertyVisible }: Cre
                         </div>
                         {errors.price && (
                             <div className=" text-red-500 text-xs">
-                                <p>*Price is required</p>
+                                <p>*Price required more than 20 Baht</p>
                             </div>
                         )}
                         <div className="w-full h-[100px] empty"></div>
