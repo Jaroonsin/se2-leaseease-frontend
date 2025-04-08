@@ -101,7 +101,7 @@ export default function SignIn() {
                             <div className="flex flex-col gap-2">
                                 <button
                                     type="submit"
-                                    className={`w-full bg-blue-900 text-white p-3.5 rounded-lg ${
+                                    className={`w-full bg-blue-900 hover:bg-blue-700 text-white p-3.5 rounded-lg ${
                                         loading ? 'opacity-70 pointer-events-none relative' : ''
                                     }`}
                                     onClick={() => handleLogin()}
