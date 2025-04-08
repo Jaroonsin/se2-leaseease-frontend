@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { AxiosResponse } from 'axios';
 import { apiClient } from '@/src/api/axios';
 import { AsyncThunkConfig, RootState } from '../store';
-import { getSupabaseClient } from '@/src/utils/supabase';
+import uploadImage from '@/src/api/image';
 
 interface Data {
     properties: Property[];
@@ -127,31 +127,24 @@ export const deleteProperty = createAsyncThunk<number, void, AsyncThunkConfig>(
     }
 );
 
-// export const uploadPropertyImage = createAsyncThunk<string, FormData, AsyncThunkConfig>(
-//     'auth/uploadImage',
-//     async (formData, { getState, rejectWithValue }) => {
-//         try {
-//             const file = formData.get('file') as File;
-//             const userId = getState().auth.user?.id;
-//             if (!file) throw new Error('No file provided');
-//             const filePath = `${userId}/${Date.now().toString()}/image.jpg`;
-//             const { data, error } = await supabase.storage.from('property').update(filePath, file, {
-//                 cacheControl: 'no-cache',
-//                 upsert: true,
-//             });
+export const uploadPropertyImage = createAsyncThunk<string, { id: string; formData: FormData }, AsyncThunkConfig>(
+    'properties/uploadImage',
+    async (payload, { rejectWithValue }) => {
+        try {
+            if (!payload.formData) {
+                throw new Error('No file provided');
+            }
+            const response = await uploadImage(payload.id, 'properties', payload.formData);
+            if (!response) {
+                throw new Error('Error uploading image');
+            }
 
-//             console.log('data', data?.fullPath);
-//             if (error) {
-//                 console.error('Upload failed:', error.message);
-//                 throw error;
-//             }
-
-//             return supabase.storage.from('user').getPublicUrl(filePath).data.publicUrl + '?version=1';
-//         } catch (error: any) {
-//             return rejectWithValue(error.message);
-//         }
-//     }
-// );
+            return response;
+        } catch (error: any) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
 
 const propertiesSlice = createSlice({
     name: 'properties',

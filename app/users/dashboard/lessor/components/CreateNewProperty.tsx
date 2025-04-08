@@ -1,7 +1,7 @@
 'use client';
 import { Dispatch, SetStateAction, useState } from 'react';
 import { useAppDispatch } from '@/src/store/hooks';
-import { createProperty, Property } from '@/src/store/slice/propertySlice';
+import { createProperty, Property, updateProperty, uploadPropertyImage } from '@/src/store/slice/propertySlice';
 
 type CreateNewPropertyProps = {
     setIsCreateNewPropertyVisible: Dispatch<SetStateAction<boolean>>;
@@ -23,6 +23,7 @@ export default function CreateNewProperty({ setIsCreateNewPropertyVisible }: Cre
         location?: boolean;
         size?: boolean;
         price?: boolean;
+        image?: boolean;
     }>({});
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,22 +38,21 @@ export default function CreateNewProperty({ setIsCreateNewPropertyVisible }: Cre
             setFile(file);
         }
     };
-    const handleUpload = async () => {
+
+    const handleUpload = async (id: string) => {
         const formData = new FormData();
         if (File) {
-            formData.append('file', File);
+            formData.append('image', File);
         }
-
-        // try {
-        //     const resultAction = await dispatch(uploadImage(formData));
-        //     if (uploadImage.fulfilled.match(resultAction)) {
-        //         await dispatch(updateUserImage());
-        //     }
-        //     router.push('/property');
-        // } catch (error) {
-        //     console.error('Upload error:', error);
-        //     alert('Upload failed!');
-        // }
+        try {
+            const resultAction = await dispatch(uploadPropertyImage({ id, formData }));
+            const response = resultAction.payload;
+            return response || '';
+        } catch (error) {
+            console.error('Upload error:', error);
+            alert('Upload failed!');
+            return '';
+        }
     };
 
     const handleSubmit = async () => {
@@ -61,6 +61,7 @@ export default function CreateNewProperty({ setIsCreateNewPropertyVisible }: Cre
         if (!location) newErrors.location = true;
         if (!size) newErrors.size = true;
         if (!price) newErrors.price = true;
+        if (!File) newErrors.image = true;
 
         setErrors(newErrors);
         if (Object.keys(newErrors).length > 0) return;
@@ -74,13 +75,21 @@ export default function CreateNewProperty({ setIsCreateNewPropertyVisible }: Cre
                 location: location ?? '',
                 detail: detail ?? '',
                 rating: 0,
-                image_url: `https://loremflickr.com/2048/1280?random=${Math.floor(Math.random() * 1000) + 1}`,
+                image_url: '',
                 date: new Date().toISOString(),
                 status: 'available',
                 review_count: 0,
             };
+            const response = await dispatch(createProperty(propertyData));
+            const payload = response.payload as Property;
+            const property : Property = {
+                ...propertyData,
+                id: payload?.id,
+                image_url : await handleUpload(payload?.id.toString())
+            };
+			
+            await dispatch(updateProperty(property));
 
-            await dispatch(createProperty(propertyData));
             setIsCreateNewPropertyVisible(false);
         } catch (error) {
             console.error('Error creating property:', error);
@@ -121,17 +130,17 @@ export default function CreateNewProperty({ setIsCreateNewPropertyVisible }: Cre
             <div className="flex h-[52.5rem] p-[1.25rem] [1.5rem] flex-col items-start gap-[0.625rem] self-stretch">
                 <div className="flex flex-col items-start gap-[16px] self-stretch">
                     <div className="flex h-[280px] p-[28px] flex-col items-center justify-center gap-[10px] self-stretch rounded-[6px] bg-slate-200 relative overflow-hidden">
-                        <img
-                            src={imagePreview || 'https://loremflickr.com/500/300?random=1'}
-                            alt="Property preview"
-                            className="object-cover w-full h-full absolute inset-0"
-                        />
+                        <img src={imagePreview || ''} alt="" className="object-cover w-full h-full absolute inset-0" />
                     </div>
                     <div className="flex flex-col items-start gap-[4px] self-stretch">
                         <div className="flex items-start gap-[10px] self-stretch">
                             <div className="text-slate-700 text-xs font-medium leading-[16px]">Image*</div>
                         </div>
-                        <div className="flex h-[40px] min-h-[40px] max-h-[40px] py-[8px] px-[12px] items-center self-stretch rounded-[6px] border border-slate-200 bg-white">
+                        <div
+                            className={`flex h-[40px] min-h-[40px] max-h-[40px] py-[8px] px-[12px] items-center self-stretch rounded-[6px] border ${
+                                errors.image ? 'border-red-500' : 'border-slate-200'
+                            } bg-white`}
+                        >
                             <div className="flex pr-[4px] flex-col items-center gap-[10px]">
                                 <div className="flex py-[1px] px-[6px] items-center gap-[10px]">
                                     <label htmlFor="file-input" className="cursor-pointer">

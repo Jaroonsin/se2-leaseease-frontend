@@ -138,14 +138,14 @@ function EachPropertyPage({ params }: { params: Promise<{ id: string }> }) {
                                 <div className="flex flex-col justify-center gap-2 w-full">
                                     <button
                                         className=" border-blue-900 rounded-md border p-2 gap-2 flex justify-center items-center self-stretch w-full"
-                                        onClick={() => router.push(ROUTES.PROFILE(user?.id))}
+                                        onClick={() => router.push(ROUTES.PROFILE(user?.id || ''))}
                                     >
                                         <img src="/eye.svg" alt="eye icon" />
                                         <p className="text-blue-900 text-xs">View Profile</p>
                                     </button>
                                     <button
                                         className="border-blue-900 rounded-md border p-2 gap-2 flex justify-center items-center self-stretch w-full"
-                                        onClick={() => router.push(ROUTES.MESSAGES(user?.id))}
+                                        onClick={() => router.push(ROUTES.MESSAGES(user?.id || ''))}
                                     >
                                         <img src="/send.svg" alt="send icon" />
                                         <p className="text-blue-900 text-xs">Send message</p>

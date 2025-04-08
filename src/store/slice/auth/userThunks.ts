@@ -1,8 +1,8 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { apiClient } from '@/src/api/axios';
 import { AsyncThunkConfig } from '../../store';
-import { getSupabaseClient } from '@/src/utils/supabase';
 import { ApiResponse, User } from '@/src/types/type';
+import uploadImage from '@/src/api/image';
 
 export const fetchUserInfo = createAsyncThunk<ApiResponse<User>, void, AsyncThunkConfig>(
     'auth/fetchUserInfo',
@@ -35,8 +35,8 @@ export const updateUserImage = createAsyncThunk<null, void, AsyncThunkConfig>(
     async (_, { getState, rejectWithValue }) => {
         const image_url = getState().auth.user?.image_url;
         try {
-            const response = await apiClient.put<ApiResponse<User>>('user/image', {
-                image_url,
+            await apiClient.put<ApiResponse<User>>('user/image', {
+                image_url: image_url,
             });
             return null;
         } catch (error: any) {
@@ -45,27 +45,21 @@ export const updateUserImage = createAsyncThunk<null, void, AsyncThunkConfig>(
     }
 );
 
-export const uploadImage = createAsyncThunk<string, FormData, AsyncThunkConfig>(
+export const uploadUserImage = createAsyncThunk<string, FormData, AsyncThunkConfig>(
     'auth/uploadImage',
     async (formData, { getState, rejectWithValue }) => {
         try {
-            const file = formData.get('file') as File;
-            const userId = getState().auth.user?.id;
-            if (!file) throw new Error('No file provided');
-            const filePath = `${userId}/profile.jpg`;
-            const supabase = getSupabaseClient();
-            const { data, error } = await supabase.storage.from('user').update(filePath, file, {
-                cacheControl: 'no-cache',
-                upsert: true,
-            });
+            const id = getState().auth.user?.id || '';
 
-            console.log('data', data?.fullPath);
-            if (error) {
-                console.error('Upload failed:', error.message);
-                throw error;
+            if (!formData) {
+                throw new Error('No file provided');
+            }
+            const response = await uploadImage(id, 'profiles', formData);
+            if (!response) {
+                throw new Error('Error uploading image');
             }
 
-            return supabase.storage.from('user').getPublicUrl(filePath).data.publicUrl + '?version=1';
+            return response;
         } catch (error: any) {
             return rejectWithValue(error.message);
         }

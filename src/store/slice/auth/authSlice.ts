@@ -1,5 +1,5 @@
 import { createSlice, isAnyOf } from '@reduxjs/toolkit';
-import { fetchUserInfo, updateUserInfo, updateUserImage, uploadImage } from './userThunks';
+import { fetchUserInfo, updateUserInfo, updateUserImage, uploadUserImage } from './userThunks';
 import { login, logout, register, verifyOTP } from './authThunks';
 import { User } from '@/src/types/type';
 
@@ -40,6 +40,7 @@ const authSlice = createSlice({
             .addCase(logout.fulfilled, (state) => {
                 state.user = null;
                 state.isAuthenticated = false;
+                state.token = '';
                 state.loading = false;
                 state.error = null;
             })
@@ -50,7 +51,7 @@ const authSlice = createSlice({
             .addCase(verifyOTP.fulfilled, (state) => {
                 state.loading = false;
             })
-            .addCase(uploadImage.fulfilled, (state, action) => {
+            .addCase(uploadUserImage.fulfilled, (state, action) => {
                 state.loading = false;
                 state.user!.image_url = action.payload;
             })
@@ -67,7 +68,7 @@ const authSlice = createSlice({
                     logout.pending,
                     register.pending,
                     verifyOTP.pending,
-                    uploadImage.pending,
+                    uploadUserImage.pending,
                     updateUserInfo.pending,
                     updateUserImage.pending
                 ),
@@ -83,7 +84,7 @@ const authSlice = createSlice({
                     logout.rejected,
                     register.rejected,
                     verifyOTP.rejected,
-                    uploadImage.rejected,
+                    uploadUserImage.rejected,
                     updateUserInfo.rejected,
                     updateUserImage.rejected
                 ),
