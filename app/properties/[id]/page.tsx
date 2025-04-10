@@ -8,6 +8,8 @@ import { useAppDispatch, useAppSelector } from '@/src/store/hooks';
 import { fetchPropertyById, createLeaseReservation, fetchUserById } from '@/src/store/slice/eachpropertySlice';
 import { useRouter } from 'next/navigation';
 import { ROUTES } from '@/src/types/routes';
+import { createChatroom } from '@/src/store/slice/chatSlice';
+import { initializeWebSocket } from '@/src/store/slice/chatSlice';
 
 function EachPropertyPage({ params }: { params: Promise<{ id: string }> }) {
     const [showModal, setShowModal] = useState(false);
@@ -29,6 +31,10 @@ function EachPropertyPage({ params }: { params: Promise<{ id: string }> }) {
 
         fetchParams();
     }, [params]);
+
+    useEffect(() => {
+        dispatch(initializeWebSocket());
+    }, [dispatch]);
 
     useEffect(() => {
         if (!propertyId) return;
@@ -144,8 +150,11 @@ function EachPropertyPage({ params }: { params: Promise<{ id: string }> }) {
                                         <p className="text-blue-900 text-xs">View Profile</p>
                                     </button>
                                     <button
-                                        className="border-blue-900 rounded-md border p-2 gap-2 flex justify-center items-center self-stretch w-full hover:bg-gray-200"
-                                        onClick={() => router.push(ROUTES.MESSAGES(user?.id || ''))}
+                                        className="border-blue-900 rounded-md border p-2 gap-2 flex justify-center items-center self-stretch w-full"
+                                        onClick={async () => {
+                                            await dispatch(createChatroom(user?.id || '', user?.name || ''));
+                                            router.push(ROUTES.MESSAGES(''));
+                                        }}
                                     >
                                         <img src="/send.svg" alt="send icon" />
                                         <p className="text-blue-900 text-xs">Send message</p>
