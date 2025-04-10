@@ -21,6 +21,7 @@ function EachPropertyPage({ params }: { params: Promise<{ id: string }> }) {
     const [propertyId, setPropertyId] = useState<number | null>(null);
     const { id } = use(params);
     const router = useRouter();
+    const unreadCount = useAppSelector((state) => state.chat.totalUnreadCount);
 
     useEffect(() => {
         const fetchParams = async () => {
@@ -156,6 +157,12 @@ function EachPropertyPage({ params }: { params: Promise<{ id: string }> }) {
                                             router.push(ROUTES.MESSAGES(''));
                                         }}
                                     >
+                                        {/* Red badge at top-right */}
+                                        {unreadCount > 0 && (
+                                            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-600 rounded-full">
+                                                {unreadCount}
+                                            </div>
+                                        )}
                                         <img src="/send.svg" alt="send icon" />
                                         <p className="text-blue-900 text-xs">Send message</p>
                                     </button>

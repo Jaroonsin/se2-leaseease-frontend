@@ -258,16 +258,13 @@ export const createChatroom = (user_id: string, user_name: string) =>
 		}
 	
 		if (!ws || ws.readyState !== WebSocket.OPEN) {
-			// initializeWebSocket should return the new WebSocket instance
-			ws = initializeWebSocket();
+			// ✅ await the Promise to get the actual WebSocket
+			ws = await dispatch(initializeWebSocket()) as WebSocket;
 	
-			// Wait until WebSocket is open
+			// Wait for it to open before sending
 			await new Promise<void>((resolve) => {
-				ws.onopen = () => resolve();
+				ws!.onopen = () => resolve();
 			});
-	
-			// Optional: dispatch update to ws in Redux
-			// dispatch(setWebSocket(ws)); // if you have such an action
 		}
 	
 		const params = {
@@ -283,9 +280,8 @@ export const createChatroom = (user_id: string, user_name: string) =>
 	
 		console.log('this is params from sendStart:', params);
 		ws.send(JSON.stringify(params));
-	};
+	};	
 	
-
 // Send message through WebSocket (no need to addMessage in this action)
 export const sendMessage = (chatroom_id: string, content: string) => (dispatch: any, getState: any) => {
 	const state = getState();

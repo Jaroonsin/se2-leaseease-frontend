@@ -15,9 +15,12 @@ export default function Chat() {
     const [currentChatroomId, setCurrentChatroomId] = useState<string>('');
 
     useEffect(() => {
-        dispatch(initializeWebSocket());
-        dispatch(sendStart());
-        console.log('this is sendStart');
+        const setup = async () => {
+            await dispatch(initializeWebSocket());
+            await dispatch(sendStart());
+        };
+
+        setup();
     }, [dispatch]);
 
     const handleChatroomClick = (chatroomId: string) => {
