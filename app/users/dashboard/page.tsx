@@ -7,7 +7,7 @@ import AdminDashboard from './admin/index';
 import { useAuth } from '@/src/hooks/useAuth';
 import LoadPage from '@/src/components/ui/loadpage';
 import { useAppDispatch } from '@/src/store/hooks';
-import { initializeWebSocket } from '@/src/store/slice/chatSlice';
+import { initializeWebSocket, sendStart } from '@/src/store/slice/chatSlice';
 
 export default function DashboardPage() {
     const { user } = useAuth();
@@ -16,7 +16,11 @@ export default function DashboardPage() {
 
     // Initialize WebSocket connection when the component mounts
     useEffect(() => {
-        dispatch(initializeWebSocket());
+        const setup = async () => {
+            await dispatch(initializeWebSocket());
+            await dispatch(sendStart());
+        };
+        setup();
     }, [dispatch]);
 
     useEffect(() => {

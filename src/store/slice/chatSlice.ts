@@ -131,6 +131,8 @@ const chatSlice = createSlice({
 			if (message.sender_id != state.senderId && message.type != 'history') {
 				state.unreadCounts[chatroomId] = (state.unreadCounts[chatroomId] || 0) + 1;
 				state.totalUnreadCount += 1;
+				console.log('this is unreadCounts from addMessage:', state.unreadCounts[chatroomId]);
+				console.log('this is totalUnreadCount from addMessage:', state.totalUnreadCount);
 			}
 		},
 		addProfile(state, action: PayloadAction<{ chatroomId: string; profile: Profiles }>) {

@@ -105,7 +105,7 @@ export default function Chat() {
                                 </div>
 
                                 {/* Scrollable chat messages */}
-                                <div className="flex-1 overflow-y-auto px-[1rem] py-[1rem] gap-[0.625rem] flex flex-col scrollbar-hide">
+                                <div className="flex-1 overflow-y-auto px-[1rem] py-[1rem] gap-[0.625rem] flex flex-col">
                                     {(messages[currentChatroomId] || []).map((message) => {
                                         const isSender = message.sender_id == senderId;
                                         return (
