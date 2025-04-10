@@ -1,5 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { config } from '../../config/config';
+import { apiClient } from '@/src/api/axios';
+import { fetchUserInfo } from '@/src/store/slice/auth/userThunks';
+import { User } from '@/src/store/User';
+
+interface ApiResponse<T> {
+    data: T;
+}
 
 interface Message {
     type: string;
@@ -53,18 +60,6 @@ const connectWebSocket = (dispatch: any, getState: any): WebSocket => {
     ws.onopen = () => {
         console.log('WebSocket connected');
         dispatch(setConnected(true));
-
-		const params = {
-            type: "start",
-            chatroom_id: "0",  
-            sender_id: sender_id.toString(),
-            content: "",  
-            message_id: "",  
-            timestamp: new Date().toISOString(),
-            limit: 20,
-            offset: 0
-        };
-		ws.send(JSON.stringify(params));
     };
 
     ws.onmessage = (event: MessageEvent) => {
@@ -157,16 +152,30 @@ const chatSlice = createSlice({
     },
 });
 
-// Async action to initialize WebSocket connection with getState properly used
-export const initializeWebSocket = () => (dispatch: any, getState: any) => {
-    const { sender_id } = getState().chat;
-    if (sender_id === null) {
-        console.error('senderId is null, from chatSlice');
-        return;
+// Async action to initialize WebSocket connection
+export const initializeWebSocket = () => async (dispatch: any, getState: any) => {
+    try {
+		if(getState().chat.connected) {
+			console.log('WebSocket already connected, skipping initialization.');
+			return;
+		}
+        // Fetch user info and get user data
+        const action = await dispatch(fetchUserInfo());
+        const userInfo = action.payload as ApiResponse<User>;
+
+        // Set sender ID in the state
+        dispatch(setSenderId(userInfo.data.id));
+
+        // Initialize WebSocket connection after setting the sender ID
+        connectWebSocket(dispatch, getState);
+        
+        // Dispatch any other necessary actions here, if needed
+        dispatch(initializeWebSocket());
+
+    } catch (error) {
+        console.error('Error initializing WebSocket:', error);
+        // Optionally dispatch error handling action if necessary
     }
-	// const ws = connectWebSocket(dispatch, 1, receiverId, getState); 
-    const ws = connectWebSocket(dispatch, getState); 
-    dispatch(setWebSocket(ws));
 };
 
 // Open Chatroom
@@ -213,6 +222,59 @@ export const openChatroom = (chatroomId: string) => (dispatch: any, getState: an
     } else {
         console.log('WebSocket is not connected');
     }
+}
+
+export const createChatroom = (user_id: string, user_name: string) =>
+    async (dispatch: any, getState: any) => {
+        const state = getState();
+        const sender_id = state.chat.senderId;
+
+        try {
+            const payload = {
+                name: user_name,
+                members: [sender_id.toString(), user_id.toString()],
+                is_private: false,
+            };
+
+            const response = await apiClient.post('chat/create', payload);
+
+            console.log('Chatroom created:', response.data);
+            return response.data;
+
+        } catch (error: any) {
+            console.error('Error creating chatroom:', error.message);
+            throw error;
+        }
+    };
+
+// sent start of the chatSlice
+export const sendStart = () => async (dispatch: any, getState: any) => {
+	const state = getState();
+	const sender_id = state.chat.senderId;
+	const { ws } = state.chat;
+
+	if (!ws || ws.readyState !== WebSocket.OPEN) {
+		initializeWebSocket();
+	}
+
+	if (!sender_id) {
+		// Fetch user info and get user data
+        const action = await dispatch(fetchUserInfo());
+        const userInfo = action.payload as ApiResponse<User>;
+        dispatch(setSenderId(userInfo.data.id));
+	}
+
+	const params = {
+		type: "start",
+		chatroom_id: "0",
+		sender_id: sender_id.toString(),
+		content: "",
+		message_id: "",
+		timestamp: new Date().toISOString(),
+		limit: 20,
+		offset: 0
+	};
+	ws.send(JSON.stringify(params));
 }
 
 // Send message through WebSocket (no need to addMessage in this action)
