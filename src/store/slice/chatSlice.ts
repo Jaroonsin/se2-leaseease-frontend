@@ -154,28 +154,28 @@ const chatSlice = createSlice({
 
 // Async action to initialize WebSocket connection
 export const initializeWebSocket = () => async (dispatch: any, getState: any) => {
-    try {
-		if(getState().chat.connected) {
-			console.log('WebSocket already connected, skipping initialization.');
-			return;
+	try {
+		if (getState().chat.connected) {
+			console.log('WebSocket already connected.');
+			return getState().chat.ws;
 		}
-        // Fetch user info and get user data
-        const action = await dispatch(fetchUserInfo());
-        const userInfo = action.payload as ApiResponse<User>;
 
-        // Set sender ID in the state
-        dispatch(setSenderId(userInfo.data.id));
+		let sender_id = getState().chat.senderId;
+		if (!sender_id) {
+			const action = await dispatch(fetchUserInfo());
+			const userInfo = action.payload as ApiResponse<User>;
+			sender_id = userInfo.data.id;
+			dispatch(setSenderId(sender_id));
+		}
 
-        // Initialize WebSocket connection after setting the sender ID
-        connectWebSocket(dispatch, getState);
-        
-        // Dispatch any other necessary actions here, if needed
-        dispatch(initializeWebSocket());
+		const ws = connectWebSocket(dispatch, getState); // returns WebSocket instance
+		dispatch(setWebSocket(ws)); // store it in Redux
+		return ws;
 
-    } catch (error) {
-        console.error('Error initializing WebSocket:', error);
-        // Optionally dispatch error handling action if necessary
-    }
+	} catch (err) {
+		console.error("WebSocket init failed:", err);
+		throw err;
+	}
 };
 
 // Open Chatroom
@@ -247,35 +247,44 @@ export const createChatroom = (user_id: string, user_name: string) =>
         }
     };
 
-// sent start of the chatSlice
-export const sendStart = () => async (dispatch: any, getState: any) => {
-	const state = getState();
-	const sender_id = state.chat.senderId;
-	const { ws } = state.chat;
-
-	if (!ws || ws.readyState !== WebSocket.OPEN) {
-		initializeWebSocket();
-	}
-
-	if (!sender_id) {
-		// Fetch user info and get user data
-        const action = await dispatch(fetchUserInfo());
-        const userInfo = action.payload as ApiResponse<User>;
-        dispatch(setSenderId(userInfo.data.id));
-	}
-
-	const params = {
-		type: "start",
-		chatroom_id: "0",
-		sender_id: sender_id.toString(),
-		content: "",
-		message_id: "",
-		timestamp: new Date().toISOString(),
-		limit: 20,
-		offset: 0
+	export const sendStart = () => async (dispatch: any, getState: any) => {
+		let state = getState();
+		let { ws } = state.chat;
+		const sender_id = state.chat.senderId;
+	
+		if (!sender_id) {
+			console.error("senderId is null in connectWebSocket");
+			throw new Error("senderId is required");
+		}
+	
+		if (!ws || ws.readyState !== WebSocket.OPEN) {
+			// initializeWebSocket should return the new WebSocket instance
+			ws = initializeWebSocket();
+	
+			// Wait until WebSocket is open
+			await new Promise<void>((resolve) => {
+				ws.onopen = () => resolve();
+			});
+	
+			// Optional: dispatch update to ws in Redux
+			// dispatch(setWebSocket(ws)); // if you have such an action
+		}
+	
+		const params = {
+			type: "start",
+			chatroom_id: "0",
+			sender_id: sender_id.toString(),
+			content: "",
+			message_id: "",
+			timestamp: new Date().toISOString(),
+			limit: 20,
+			offset: 0
+		};
+	
+		console.log('this is params from sendStart:', params);
+		ws.send(JSON.stringify(params));
 	};
-	ws.send(JSON.stringify(params));
-}
+	
 
 // Send message through WebSocket (no need to addMessage in this action)
 export const sendMessage = (chatroom_id: string, content: string) => (dispatch: any, getState: any) => {

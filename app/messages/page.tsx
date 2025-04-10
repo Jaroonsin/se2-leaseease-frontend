@@ -17,6 +17,7 @@ export default function Chat() {
     useEffect(() => {
         dispatch(initializeWebSocket());
         dispatch(sendStart());
+        console.log('this is sendStart');
     }, [dispatch]);
 
     const handleChatroomClick = (chatroomId: string) => {
