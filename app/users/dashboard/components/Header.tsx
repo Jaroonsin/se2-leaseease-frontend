@@ -6,7 +6,7 @@ import AccountOption from './AccountOption';
 import { ROUTES } from '@/src/types/routes';
 import { FaSearch, FaExchangeAlt, FaBuilding, FaEnvelope } from 'react-icons/fa';
 import '@/app/globals.css';
-import { useAppDispatch, useAppSelector } from '@/src/store/hooks';
+import { useAppSelector } from '@/src/store/hooks';
 
 export default function PropertyHeader() {
     const [isAccountOptionVisible, setIsAccountOptionVisible] = useState(false);
@@ -14,7 +14,6 @@ export default function PropertyHeader() {
     const Router = useRouter();
     const pathname = usePathname();
     const { user } = useAuth();
-    const dispatch = useAppDispatch();
     const totalUnreadCount = useAppSelector((state) => state.chat.totalUnreadCount);
 
     const toggleAccountOption = () => {
