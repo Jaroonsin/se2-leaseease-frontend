@@ -36,7 +36,7 @@ interface ChatState {
     unreadCounts: Record<string, number>;
     totalUnreadCount: number;
     last_read_message_ids: Record<string, string>; 
-	activeChatroomId: string | null;
+	activeChatroomId: string;
 }
 
 const initialState: ChatState = {
@@ -48,7 +48,7 @@ const initialState: ChatState = {
     unreadCounts: {},
     totalUnreadCount: 0,
     last_read_message_ids: {}, 
-	activeChatroomId: null,
+	activeChatroomId: '',
 };
 
 // WebSocket connection helper
@@ -79,7 +79,7 @@ const connectWebSocket = (dispatch: any, getState: any): WebSocket => {
 					if (!getState().chat.profiles[room.chatroom_id]) {
 						// If not, add it to the state
                     	dispatch(addProfile({ chatroomId: room.chatroom_id, profile }));
-						dispatch(setlast_messageId({ chatroomId: room.chatroom_id, messageId: room.last_read_message_id }));
+						dispatch(setlastMessageId({ chatroomId: room.chatroom_id, messageId: room.last_read_message_id }));
 						dispatch(sendHistory(room.chatroom_id));
 					}
                 });
@@ -144,9 +144,13 @@ const chatSlice = createSlice({
             const { chatroomId, profile } = action.payload;
             state.profiles[chatroomId] = profile;
         },
-		setlast_messageId(state, action: PayloadAction<{ chatroomId: string; messageId: string }>) {
+		setlastMessageId(state, action: PayloadAction<{ chatroomId: string; messageId: string }>) {
 			const { chatroomId, messageId } = action.payload;
 			state.last_read_message_ids[chatroomId] = messageId;
+		},
+		setActiveChatroomId(state, action: PayloadAction<string>) {
+			console.log('setActiveChatroomId:', action.payload);
+			state.activeChatroomId = action.payload;
 		},
         setWebSocket(state, action: PayloadAction<WebSocket | null>) {
             state.ws = action.payload;
@@ -305,5 +309,5 @@ export const sendRead = (chatroomId: string) => (dispatch: any, getState: any) =
 };
 
 // Export actions and reducer
-export const { setConnected, addMessage, addProfile, setlast_messageId, setWebSocket, setSenderId, clearUnreadCount } = chatSlice.actions;
+export const { setConnected, addMessage, addProfile, setlastMessageId, setWebSocket, setSenderId, clearUnreadCount, setActiveChatroomId  } = chatSlice.actions;
 export default chatSlice.reducer;

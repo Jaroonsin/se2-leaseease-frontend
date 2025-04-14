@@ -1,7 +1,14 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { sendMessage, sendHistory, initializeWebSocket, sendStart, sendRead } from '@/src/store/slice/chatSlice';
+import {
+    sendMessage,
+    sendHistory,
+    initializeWebSocket,
+    sendStart,
+    sendRead,
+    setActiveChatroomId,
+} from '@/src/store/slice/chatSlice';
 import { RootState, AppDispatch } from '@/src/store/store';
 import Header from '@/app/users/dashboard/components/Header';
 import React from 'react';
@@ -12,7 +19,7 @@ export default function Chat() {
     const { messages, senderId } = useSelector((state: RootState) => state.chat);
     const profiles = useSelector((state: any) => state.chat.profiles);
     const unreadCounts = useSelector((state: any) => state.chat.unreadCounts);
-    const [currentChatroomId, setCurrentChatroomId] = useState<string>('');
+    const currentChatroomId = useSelector((state: any) => state.chat.activeChatroomId);
     const last_read_message_ids = useSelector((state: any) => state.chat.last_read_message_ids);
 
     useEffect(() => {
@@ -25,10 +32,14 @@ export default function Chat() {
     }, [dispatch]);
 
     const handleChatroomClick = (chatroomId: string) => {
-        setCurrentChatroomId(chatroomId);
+        dispatch(setActiveChatroomId(chatroomId));
         dispatch(sendHistory(chatroomId));
         dispatch(sendRead(chatroomId));
     };
+
+    useEffect(() => {
+        console.log('Current Chatroom ID from Redux: ', currentChatroomId);
+    }, [currentChatroomId]);
 
     const handleSendMessage = () => {
         if (messageContent.trim() === '') return; // Don't send empty messages
