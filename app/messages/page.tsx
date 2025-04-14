@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { sendMessage, openChatroom, initializeWebSocket, sendStart } from '@/src/store/slice/chatSlice';
+import { sendMessage, sendHistory, initializeWebSocket, sendStart } from '@/src/store/slice/chatSlice';
 import { RootState, AppDispatch } from '@/src/store/store';
 import Header from '@/app/users/dashboard/components/Header';
 
@@ -25,7 +25,7 @@ export default function Chat() {
 
     const handleChatroomClick = (chatroomId: string) => {
         setCurrentChatroomId(chatroomId);
-        dispatch(openChatroom(chatroomId));
+        dispatch(sendHistory(chatroomId));
     };
 
     const handleSendMessage = () => {
@@ -33,8 +33,8 @@ export default function Chat() {
         if (senderId == null) return;
         console.log('sender Id', senderId);
 
-        setMessageContent('');
         dispatch(sendMessage(currentChatroomId, messageContent));
+        setMessageContent('');
     };
 
     return (

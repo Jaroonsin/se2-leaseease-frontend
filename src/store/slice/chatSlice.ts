@@ -4,6 +4,7 @@ import { apiClient } from '@/src/api/axios';
 import { fetchUserInfo } from '@/src/store/slice/auth/userThunks';
 import { User } from '@/src/store/User';
 
+// Interfaces
 interface ApiResponse<T> {
     data: T;
 }
@@ -14,97 +15,92 @@ interface Message {
     sender_id: string;
     content: string;
     message_id: string;
-    timestamp: string; 
-    limit: null | number;
-    offset: null | number;
+    timestamp: string;
+    limit: number | null;
+    offset: number | null;
 }
 
-interface Profiles {
-	id: number;
-	name: string;
-	avatar: string;
+interface Profile {
+    id: number;
+    name: string;
+    avatar: string;
 }
 
 interface ChatState {
-	messages: { [chatroomId: string]: Message[] }; // updated here
-	connected: boolean;
-	ws: WebSocket | null;
-	senderId: string | null;
-	profiles: { [chatroomId: string]: Profiles };
-	unreadCounts: { [chatroomId: string]: number };
-	totalUnreadCount: number;
+    messages: Record<string, Message[]>;
+    connected: boolean;
+    ws: WebSocket | null;
+    senderId: string | null;
+    profiles: Record<string, Profile>;
+    unreadCounts: Record<string, number>;
+    totalUnreadCount: number;
+    last_messages: Record<string, string>; 
 }
 
 const initialState: ChatState = {
-	messages: {}, // changed from [] to {}
-	connected: false,
-	ws: null,
-	senderId: null,
-	profiles: {},
-	unreadCounts: {},
-	totalUnreadCount: 0,
+    messages: {},
+    connected: false,
+    ws: null,
+    senderId: null,
+    profiles: {},
+    unreadCounts: {},
+    totalUnreadCount: 0,
+    last_messages: {}, 
 };
 
-// Modify WebSocket connection logic to use `getState` from thunk
+// WebSocket connection helper
 const connectWebSocket = (dispatch: any, getState: any): WebSocket => {
-	const state = getState();
-	const sender_id = state.chat.senderId;
+    const senderId = getState().chat.senderId;
 
-	if (!sender_id) {
-		console.error("senderId is null in connectWebSocket");
-		throw new Error("senderId is required");
-	}
+    if (!senderId) {
+        throw new Error("Sender ID is required before establishing WebSocket connection.");
+    }
 
     const ws = new WebSocket(`${config.wsBaseURL}/chat/ws`);
 
-    ws.onopen = () => {
-        console.log('WebSocket connected');
-        dispatch(setConnected(true));
-    };
+    ws.onopen = () => dispatch(setConnected(true));
 
     ws.onmessage = (event: MessageEvent) => {
         const message: Message = JSON.parse(event.data);
-        console.log('this is message from socket:', message);
+        // const { messages } = getState().chat;
 
-        // Access Redux state here (within the correct context of the thunk)
-        const { messages } = getState().chat;
-
-        // Handle case where type is null or undefined
-		if (!message.type) {
-			try {
-				// If the message is a single object, wrap it in an array
-				const raw = Array.isArray(message) ? message : [message];
-
-				raw.forEach((chatroom: any) => {
-					const profile = {
-						id: parseInt(chatroom.chatroom_id),
-						name: chatroom.name,
-						avatar: 'default_avatar_url' // You can update this
-					};
-					dispatch(addProfile({ chatroomId: chatroom.chatroom_id, profile }));
-				});
-			} catch (err) {
-				console.error("Error processing user list message:", err);
-			}
-			return; // Skip normal message handling
-		} else  {
+        if (!message.type) {
+            try {
+                const chatrooms = Array.isArray(message) ? message : [message];
+                chatrooms.forEach((room: any) => {
+                    const profile: Profile = {
+                        id: parseInt(room.chatroom_id),
+                        name: room.name,
+                        avatar: 'default_avatar_url'
+                    };
+					// Check if the profile already exists
+					if (!getState().chat.profiles[room.chatroom_id]) {
+						// If not, add it to the state
+                    	dispatch(addProfile({ chatroomId: room.chatroom_id, profile }));
+						dispatch(setlast_messages({ chatroomId: room.chatroom_id, messageId: room.last_message_id }));
+					}
+                });
+            } catch (err) {
+                console.error("Error parsing chatroom data:", err);
+            }
+            return;
+        }
+		else if (message.type === 'history') {
+			console.log('History message:', message);
+        	dispatch(addMessage(message));
+		}
+		else if (message.type === 'message') {
 			dispatch(addMessage(message));
 		}
     };
 
-    ws.onerror = (error) => {
-        console.error('WebSocket error:', error);
-    };
-
-    ws.onclose = () => {
-        console.log('WebSocket closed');
-        dispatch(setConnected(false));
-    };
+    ws.onerror = (error) => console.error('WebSocket error:', error);
+    ws.onclose = () => dispatch(setConnected(false));
 
     return ws;
 };
 
-// Create the slice
+// Redux slice
 const chatSlice = createSlice({
     name: 'chat',
     initialState,
@@ -113,213 +109,159 @@ const chatSlice = createSlice({
             state.connected = action.payload;
         },
         addMessage(state, action: PayloadAction<Message>) {
-			console.log('this is addMessage from chatSlice:', action.payload);
 			const message = action.payload;
-			const chatroomId = message.chatroom_id;
+			const { chatroom_id, message_id, sender_id, type } = message;
 		
-			if (!state.messages[chatroomId]) {
-				state.messages[chatroomId] = [];
+			if (!state.messages[chatroom_id]) {
+				state.messages[chatroom_id] = [];
 			}
-		
-			// Prevent duplicates by message_id
-			const exists = state.messages[chatroomId].some(m => m.message_id === message.message_id);
+
+			// ✅ Skip messages that are empty from history
+			if (message.type === 'history' && message.content === '') {
+				return;
+			}
+			
+			const exists = state.messages[chatroom_id].some(m => m.message_id == message_id);
+
 			if (!exists) {
-				state.messages[chatroomId].push(message);
-			}
-		
-			// Only increment unread count if the message is from another user
-			if (message.sender_id != state.senderId && message.type != 'history') {
-				state.unreadCounts[chatroomId] = (state.unreadCounts[chatroomId] || 0) + 1;
-				state.totalUnreadCount += 1;
-				console.log('this is unreadCounts from addMessage:', state.unreadCounts[chatroomId]);
-				console.log('this is totalUnreadCount from addMessage:', state.totalUnreadCount);
+				state.messages[chatroom_id].push(message);
+				state.last_messages[chatroom_id] = message_id;
+	
+				if (sender_id !== state.senderId && type !== 'history') {
+					state.unreadCounts[chatroom_id] = (state.unreadCounts[chatroom_id] || 0) + 1;
+					state.totalUnreadCount += 1;
+				}
 			}
 		},
-		addProfile(state, action: PayloadAction<{ chatroomId: string; profile: Profiles }>) {
-			const { chatroomId, profile } = action.payload;
-			state.profiles[chatroomId] = profile;
+        addProfile(state, action: PayloadAction<{ chatroomId: string; profile: Profile }>) {
+            const { chatroomId, profile } = action.payload;
+            state.profiles[chatroomId] = profile;
+        },
+		setlast_messages(state, action: PayloadAction<{ chatroomId: string; messageId: string }>) {
+			const { chatroomId, messageId } = action.payload;
+			state.last_messages[chatroomId] = messageId;
 		},
-		// Add other reducers as needed		
         setWebSocket(state, action: PayloadAction<WebSocket | null>) {
             state.ws = action.payload;
         },
         setSenderId(state, action: PayloadAction<string>) {
             state.senderId = action.payload;
         },
-		clearUnreadCount(state, action: PayloadAction<string>) {
-			const chatroomId = action.payload;
-			state.totalUnreadCount -= state.unreadCounts[chatroomId] || 0; 
-			state.unreadCounts[chatroomId] = 0;
-		},
-    },
+        clearUnreadCount(state, action: PayloadAction<string>) {
+            const chatroomId = action.payload;
+            state.totalUnreadCount -= state.unreadCounts[chatroomId] || 0;
+            state.unreadCounts[chatroomId] = 0;
+        },
+    }
 });
 
-// Async action to initialize WebSocket connection
+// Async thunks
 export const initializeWebSocket = () => async (dispatch: any, getState: any) => {
-	try {
-		if (getState().chat.connected) {
-			console.log('WebSocket already connected.');
-			return getState().chat.ws;
-		}
+    if (getState().chat.connected) return getState().chat.ws;
 
-		let sender_id = getState().chat.senderId;
-		if (!sender_id) {
-			const action = await dispatch(fetchUserInfo());
-			const userInfo = action.payload as ApiResponse<User>;
-			sender_id = userInfo.data.id;
-			dispatch(setSenderId(sender_id));
-		}
+    let senderId = getState().chat.senderId;
 
-		const ws = connectWebSocket(dispatch, getState); // returns WebSocket instance
-		dispatch(setWebSocket(ws)); // store it in Redux
-		return ws;
+    if (!senderId) {
+        const action = await dispatch(fetchUserInfo());
+        const userInfo = action.payload as ApiResponse<User>;
+        senderId = userInfo.data.id;
+        dispatch(setSenderId(senderId));
+    }
 
-	} catch (err) {
-		console.error("WebSocket init failed:", err);
-		throw err;
-	}
+    const ws = connectWebSocket(dispatch, getState);
+    dispatch(setWebSocket(ws));
+    return ws;
 };
 
-// Open Chatroom
-export const openChatroom = (chatroomId: string) => (dispatch: any, getState: any) => {
-	const state = getState();
-	const sender_id = state.chat.senderId;
+export const createChatroom = (userId: string, userName: string) => async (dispatch: any, getState: any) => {
+    const { senderId } = getState().chat;
 
-	if (!sender_id) {
-		console.error("senderId is null in connectWebSocket");
-		throw new Error("senderId is required");
-	}
-
-    const { ws, connected } = getState().chat;
-
-
-	const params1 = {
-		type: "history",
-		chatroom_id: chatroomId,
-		sender_id: getState().chat.senderId.toString(),
-		content: "",
-		message_id: "",
-		timestamp: new Date().toISOString(),
-		limit: 20,
-		offset: 0
-	};
-	const params2 = {
-		type: "read",
-		chatroom_id: chatroomId,
-		sender_id: getState().chat.senderId.toString(),
-		content: "",
-		message_id: "",
-		timestamp: new Date().toISOString(),
-		limit: 20,
-		offset: 0
-	};
-	// console.log('this is params from sendMessage:', params2);
-	// console.log('this is ws from sendMessage:', ws);
-	// console.log('this is connected from sendMessage:', connected);
-	if (ws && connected) {
-        // Send the message over the WebSocket
-		ws.send(JSON.stringify(params1));
-		ws.send(JSON.stringify(params2)); 
-		dispatch(clearUnreadCount(chatroomId));
-    } else {
-        console.log('WebSocket is not connected');
-    }
-}
-
-export const createChatroom = (user_id: string, user_name: string) =>
-    async (dispatch: any, getState: any) => {
-        const state = getState();
-        const sender_id = state.chat.senderId;
-
-        try {
-            const payload = {
-                name: user_name,
-                members: [sender_id.toString(), user_id.toString()],
-                is_private: false,
-            };
-
-            const response = await apiClient.post('chat/create', payload);
-
-            console.log('Chatroom created:', response.data);
-            return response.data;
-
-        } catch (error: any) {
-            console.error('Error creating chatroom:', error.message);
-            throw error;
-        }
+    const payload = {
+        name: userName,
+        members: [senderId?.toString(), userId.toString()],
+        is_private: false,
     };
 
-	export const sendStart = () => async (dispatch: any, getState: any) => {
-		let state = getState();
-		let { ws } = state.chat;
-		const sender_id = state.chat.senderId;
-	
-		if (!sender_id) {
-			console.error("senderId is null in connectWebSocket");
-			throw new Error("senderId is required");
-		}
-	
-		if (!ws || ws.readyState !== WebSocket.OPEN) {
-			// ✅ await the Promise to get the actual WebSocket
-			ws = await dispatch(initializeWebSocket()) as WebSocket;
-	
-			// Wait for it to open before sending
-			await new Promise<void>((resolve) => {
-				ws!.onopen = () => resolve();
-			});
-		}
-	
-		const params = {
-			type: "start",
-			chatroom_id: "0",
-			sender_id: sender_id.toString(),
-			content: "",
-			message_id: "",
-			timestamp: new Date().toISOString(),
-			limit: 20,
-			offset: 0
-		};
-	
-		console.log('this is params from sendStart:', params);
-		ws.send(JSON.stringify(params));
-	};	
-	
-// Send message through WebSocket (no need to addMessage in this action)
-export const sendMessage = (chatroom_id: string, content: string) => (dispatch: any, getState: any) => {
-	const state = getState();
-	const sender_id = state.chat.senderId;
-
-	if (!sender_id) {
-		console.error("senderId is null in connectWebSocket");
-		throw new Error("senderId is required");
-	}
-
-    const { ws, connected } = getState().chat;
-
-	const params = {
-		type: "message",
-		chatroom_id: chatroom_id,  
-		sender_id: sender_id.toString(),
-		content: content,  
-		message_id: chatroom_id + new Date().toISOString(),  
-		timestamp: new Date().toISOString(),
-		limit: 20,
-		offset: 1
-	};
-	// console.log('this is params from sendMessage:', params);
-	// console.log('this is ws from sendMessage:', ws);
-	// console.log('this is connected from sendMessage:', connected);
-    if (ws && connected) {
-        // Send the message over the WebSocket
-        ws.send(JSON.stringify(params));
-		dispatch(addMessage(params)); 
-    } else {
-        console.log('WebSocket is not connected');
+    try {
+        const response = await apiClient.post('chat/create', payload);
+        return response.data;
+    } catch (error: any) {
+        console.error('Error creating chatroom:', error.message);
+        throw error;
     }
 };
 
-// Export actions
-export const { setConnected, addMessage, addProfile, setWebSocket, setSenderId, clearUnreadCount} = chatSlice.actions;
+export const sendStart = () => async (dispatch: any, getState: any) => {
+    let { ws, senderId } = getState().chat;
 
-// Export the reducer
+    if (!senderId) throw new Error("Sender ID is required.");
+
+    if (!ws || ws.readyState !== WebSocket.OPEN) {
+        ws = await dispatch(initializeWebSocket()) as WebSocket;
+        await new Promise<void>((resolve) => { ws!.onopen = () => resolve(); });
+    }
+
+    const message = {
+        type: "start",
+        chatroom_id: "0",
+        sender_id: senderId.toString(),
+        content: "",
+        message_id: "",
+        timestamp: new Date().toISOString(),
+        limit: 20,
+        offset: 0
+    };
+
+    ws.send(JSON.stringify(message));
+};
+
+export const sendMessage = (chatroomId: string, content: string) => (dispatch: any, getState: any) => {
+    const { ws, connected, senderId } = getState().chat;
+
+    if (!senderId) throw new Error("Sender ID is required.");
+
+    const message: Message = {
+        type: "message",
+        chatroom_id: chatroomId,
+        sender_id: senderId.toString(),
+        content,
+        message_id: chatroomId + new Date().toISOString(),
+        timestamp: new Date().toISOString(),
+        limit: 20,
+        offset: 1
+    };
+
+    if (ws && connected) {
+        ws.send(JSON.stringify(message));
+        dispatch(addMessage(message));
+    } else {
+        console.log('WebSocket not connected');
+    }
+};
+
+export const sendHistory = (chatroomId: string) => (dispatch: any, getState: any) => {
+    const { ws, connected, senderId } = getState().chat;
+
+    if (!senderId) throw new Error("Sender ID is required.");
+
+    const message: Message = {
+        type: "history",
+        chatroom_id: chatroomId,
+        sender_id: senderId.toString(),
+        content: "",
+        message_id: chatroomId + new Date().toISOString(),
+        timestamp: new Date().toISOString(),
+        limit: 20,
+        offset: 1
+    };
+
+    if (ws && connected) {
+        ws.send(JSON.stringify(message));
+    } else {
+        console.log('WebSocket not connected');
+    }
+};
+
+// Export actions and reducer
+export const { setConnected, addMessage, addProfile, setlast_messages, setWebSocket, setSenderId, clearUnreadCount } = chatSlice.actions;
 export default chatSlice.reducer;
