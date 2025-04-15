@@ -8,10 +8,12 @@ import {
     sendStart,
     sendRead,
     setActiveChatroomId,
+    getPagination,
 } from '@/src/store/slice/chatSlice';
 import { RootState, AppDispatch } from '@/src/store/store';
 import Header from '@/app/users/dashboard/components/Header';
 import React from 'react';
+import { useRef } from 'react';
 
 export default function Chat() {
     const dispatch = useDispatch<AppDispatch>();
@@ -20,7 +22,8 @@ export default function Chat() {
     const profiles = useSelector((state: any) => state.chat.profiles);
     const unreadCounts = useSelector((state: any) => state.chat.unreadCounts);
     const currentChatroomId = useSelector((state: any) => state.chat.activeChatroomId);
-    const last_read_message_ids = useSelector((state: any) => state.chat.last_read_message_ids);
+    const prevUnreadCountRef = useRef<number>(0);
+    const [loadingMore, setLoadingMore] = useState(false);
 
     useEffect(() => {
         const setup = async () => {
@@ -32,14 +35,13 @@ export default function Chat() {
     }, [dispatch]);
 
     const handleChatroomClick = (chatroomId: string) => {
+        prevUnreadCountRef.current = unreadCounts[chatroomId] || 0;
+
         dispatch(setActiveChatroomId(chatroomId));
         dispatch(sendHistory(chatroomId));
         dispatch(sendRead(chatroomId));
+        dispatch(sendStart());
     };
-
-    useEffect(() => {
-        console.log('Current Chatroom ID from Redux: ', currentChatroomId);
-    }, [currentChatroomId]);
 
     const handleSendMessage = () => {
         if (messageContent.trim() === '') return; // Don't send empty messages
@@ -49,6 +51,67 @@ export default function Chat() {
         dispatch(sendMessage(currentChatroomId, messageContent));
         setMessageContent('');
     };
+
+    const boxRef = useRef<HTMLDivElement>(null); // Explicitly type the ref
+    const scrollInfoRef = useRef<{ prevScrollHeight: number; prevScrollTop: number } | null>(null);
+
+    const loadMoreMessages = () => {
+        if (!boxRef.current) return;
+        const container = boxRef.current;
+        const prevScrollHeight = container.scrollHeight;
+        const prevScrollTop = container.scrollTop;
+
+        // Save scroll values to ref so we can use them after state update
+        scrollInfoRef.current = { prevScrollHeight, prevScrollTop };
+
+        setLoadingMore(true); // Set flag
+        dispatch(getPagination()); // Load new messages
+    };
+
+    useEffect(() => {
+        if (!loadingMore || !boxRef.current || !scrollInfoRef.current) return;
+
+        const container = boxRef.current;
+        const { prevScrollHeight, prevScrollTop } = scrollInfoRef.current;
+
+        requestAnimationFrame(() => {
+            const newScrollHeight = container.scrollHeight;
+            const scrollDiff = newScrollHeight - prevScrollHeight;
+            container.scrollTop = prevScrollTop + scrollDiff;
+
+            scrollInfoRef.current = null;
+            setLoadingMore(false); // Reset flag
+        });
+    }, [messages]);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (boxRef.current) {
+                if (boxRef.current.scrollTop === 0) {
+                    // console.log('top of the box reached');
+                    loadMoreMessages(); // Load more messages when scrolled to the top
+                }
+            }
+        };
+
+        const boxElement = boxRef.current;
+        if (boxElement) {
+            boxElement.addEventListener('scroll', handleScroll);
+        }
+
+        return () => {
+            if (boxElement) {
+                boxElement.removeEventListener('scroll', handleScroll);
+            }
+        };
+    }, [boxRef, currentChatroomId]); // Add boxRef as a dependency
+
+    useEffect(() => {
+        const container = boxRef.current;
+        if (container) {
+            container.scrollTop = container.scrollHeight;
+        }
+    }, [currentChatroomId]);
 
     return (
         <div className="flex w-full h-full flex-col items-center rounded-md bg-white">
@@ -118,14 +181,35 @@ export default function Chat() {
                                 </div>
 
                                 {/* Scrollable chat messages */}
-                                <div className="flex-1 overflow-y-auto px-[1rem] py-[1rem] gap-[0.625rem] flex flex-col">
+                                <div
+                                    className="flex-1 overflow-y-auto max-h-[500px] px-[1rem] py-[1rem] gap-[0.625rem] flex flex-col"
+                                    ref={boxRef}
+                                >
                                     {(() => {
-                                        // --- Flag to track if the unread divider has been shown ---
-                                        let unreadDividerShown = false;
+                                        const chatMessages = messages[currentChatroomId] || [];
+                                        const prevUnreadCount = prevUnreadCountRef.current;
 
-                                        return (messages[currentChatroomId] || []).map((message) => {
+                                        // --- Find all received (not sent by you) messages ---
+                                        const receivedMessages = chatMessages.filter(
+                                            (msg) => msg.sender_id !== senderId
+                                        );
+
+                                        // --- Identify the target unread message based on unread count ---
+                                        const targetUnreadMessage =
+                                            prevUnreadCount > 0
+                                                ? receivedMessages[receivedMessages.length - prevUnreadCount]
+                                                : null;
+
+                                        // --- Find its index in the full list ---
+                                        const dividerIndex = targetUnreadMessage
+                                            ? chatMessages.findIndex(
+                                                  (msg) => msg.message_id === targetUnreadMessage.message_id
+                                              )
+                                            : -1;
+
+                                        return chatMessages.map((message, index) => {
                                             const isSender = message.sender_id == senderId;
-                                            const profile = profiles[message.chatroom_id]; // get profile
+                                            const profile = profiles[message.chatroom_id];
 
                                             const msgDate = new Date(message.timestamp);
                                             const now = new Date();
@@ -143,27 +227,10 @@ export default function Chat() {
                                                       minute: '2-digit',
                                                   });
 
-                                            const last_read_message_id = last_read_message_ids[currentChatroomId];
-
-                                            // --- Check if the current message is unread ---
-                                            const isUnread =
-                                                last_read_message_id && // Ensure last_read_message_id exists
-                                                parseInt(message.message_id) > parseInt(last_read_message_id);
-
-                                            // --- Determine if THIS is the exact spot to show the divider ---
-                                            let showDividerBeforeThisMessage = false;
-                                            if (
-                                                isUnread && // Message must be unread
-                                                !isSender && // Message must be received (not sent by current user)
-                                                !unreadDividerShown // Divider must not have been shown already
-                                            ) {
-                                                showDividerBeforeThisMessage = true;
-                                                unreadDividerShown = true; // Set the flag: Don't show it again
-                                            }
+                                            const showDividerBeforeThisMessage = index === dividerIndex;
 
                                             return (
                                                 <React.Fragment key={message.message_id}>
-                                                    {/* --- Conditionally render the divider --- */}
                                                     {showDividerBeforeThisMessage && (
                                                         <div className="flex items-center gap-2 my-4">
                                                             <div className="flex-grow h-px bg-gray-300" />
@@ -174,7 +241,6 @@ export default function Chat() {
                                                         </div>
                                                     )}
 
-                                                    {/* --- Message rendering (remains the same) --- */}
                                                     <div
                                                         className={`flex flex-col ${
                                                             isSender
@@ -182,7 +248,6 @@ export default function Chat() {
                                                                 : 'items-start pl-[0.5rem]'
                                                         } gap-[0.25rem]`}
                                                     >
-                                                        {/* Header: profile and time */}
                                                         {!isSender && profile && (
                                                             <div className="flex items-center gap-2 text-xs text-gray-600 font-medium">
                                                                 <img
@@ -202,12 +267,11 @@ export default function Chat() {
                                                             </div>
                                                         )}
 
-                                                        {/* Message bubble */}
                                                         <div
                                                             className={`rounded-xl px-[1rem] py-[0.5rem] max-w-[70%] break-words ${
                                                                 isSender
-                                                                    ? 'bg-blue-300 text-black' // Your sent message style
-                                                                    : 'bg-slate-300 text-black' // Received message style
+                                                                    ? 'bg-blue-300 text-black'
+                                                                    : 'bg-slate-300 text-black'
                                                             }`}
                                                         >
                                                             {message.content}
@@ -216,8 +280,7 @@ export default function Chat() {
                                                 </React.Fragment>
                                             );
                                         });
-                                    })()}{' '}
-                                    {/* Immediately invoke the function wrapper */}
+                                    })()}
                                 </div>
 
                                 {/* Message Input */}
