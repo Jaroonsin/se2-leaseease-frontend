@@ -8,6 +8,7 @@ import {
     sendStart,
     sendRead,
     setActiveChatroomId,
+    getPagination,
 } from '@/src/store/slice/chatSlice';
 import { RootState, AppDispatch } from '@/src/store/store';
 import Header from '@/app/users/dashboard/components/Header';
@@ -22,6 +23,7 @@ export default function Chat() {
     const unreadCounts = useSelector((state: any) => state.chat.unreadCounts);
     const currentChatroomId = useSelector((state: any) => state.chat.activeChatroomId);
     const prevUnreadCountRef = useRef<number>(0);
+    const [loadingMore, setLoadingMore] = useState(false);
 
     useEffect(() => {
         const setup = async () => {
@@ -51,12 +53,43 @@ export default function Chat() {
     };
 
     const boxRef = useRef<HTMLDivElement>(null); // Explicitly type the ref
+    const scrollInfoRef = useRef<{ prevScrollHeight: number; prevScrollTop: number } | null>(null);
+
+    const loadMoreMessages = () => {
+        if (!boxRef.current) return;
+        const container = boxRef.current;
+        const prevScrollHeight = container.scrollHeight;
+        const prevScrollTop = container.scrollTop;
+
+        // Save scroll values to ref so we can use them after state update
+        scrollInfoRef.current = { prevScrollHeight, prevScrollTop };
+
+        setLoadingMore(true); // Set flag
+        dispatch(getPagination()); // Load new messages
+    };
+
+    useEffect(() => {
+        if (!loadingMore || !boxRef.current || !scrollInfoRef.current) return;
+
+        const container = boxRef.current;
+        const { prevScrollHeight, prevScrollTop } = scrollInfoRef.current;
+
+        requestAnimationFrame(() => {
+            const newScrollHeight = container.scrollHeight;
+            const scrollDiff = newScrollHeight - prevScrollHeight;
+            container.scrollTop = prevScrollTop + scrollDiff;
+
+            scrollInfoRef.current = null;
+            setLoadingMore(false); // Reset flag
+        });
+    }, [messages]);
 
     useEffect(() => {
         const handleScroll = () => {
             if (boxRef.current) {
                 if (boxRef.current.scrollTop === 0) {
-                    console.log('test');
+                    // console.log('top of the box reached');
+                    loadMoreMessages(); // Load more messages when scrolled to the top
                 }
             }
         };
@@ -71,14 +104,14 @@ export default function Chat() {
                 boxElement.removeEventListener('scroll', handleScroll);
             }
         };
-    }, [boxRef]); // Add boxRef as a dependency
+    }, [boxRef, currentChatroomId]); // Add boxRef as a dependency
 
     useEffect(() => {
         const container = boxRef.current;
         if (container) {
             container.scrollTop = container.scrollHeight;
         }
-    }, [messages[currentChatroomId]]);
+    }, [currentChatroomId]);
 
     return (
         <div className="flex w-full h-full flex-col items-center rounded-md bg-white">
