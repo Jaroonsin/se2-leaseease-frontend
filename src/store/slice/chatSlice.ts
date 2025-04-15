@@ -88,17 +88,17 @@ const connectWebSocket = (dispatch: any, getState: any): WebSocket => {
             }
             return;
         }
-		else if (message.type === 'history') {
-        	dispatch(addMessage(message));
-		}
-		else if (message.type === 'message') {
+		else{
 			const { chatroom_id, message_id } = message;
 			const state = getState().chat;
 
-			if (state.chat.activeChatroomId === chatroom_id) {
-                dispatch(sendRead(chatroom_id));
-            } 
 			dispatch(addMessage(message));
+
+			if (state.chat.activeChatroomId && state.chat.activeChatroomId == chatroom_id) {
+				dispatch(sendRead(chatroom_id));
+				dispatch(setlastMessageId({ chatroomId: chatroom_id, messageId: message_id }));
+				dispatch(clearUnreadCount(chatroom_id)); 
+			}
 		}
     };
 
@@ -125,7 +125,7 @@ const chatSlice = createSlice({
 			}
 
 			// ✅ Skip messages that are empty from history
-			if (type === 'history' && message.content === '') {
+			if (message.content === '') {
 				return;
 			}
 			
@@ -133,11 +133,17 @@ const chatSlice = createSlice({
 
 			if (!exists) {
 				state.messages[chatroom_id].push(message);
-				if(parseInt(message_id) > parseInt(state.last_read_message_ids[chatroom_id]) &&
-				sender_id != state.senderId) {
-					state.unreadCounts[chatroom_id] = (state.unreadCounts[chatroom_id] || 0) + 1;
-					state.totalUnreadCount += 1;
+				// ✅ Sort messages after inserting by message_id (you can change this to timestamp if needed)
+				state.messages[chatroom_id].sort((a, b) => parseInt(a.message_id) - parseInt(b.message_id));
+				const lastReadStr = state.last_read_message_ids[chatroom_id] || "0";
+				const lastRead = parseInt(lastReadStr);
+				const currentMsgId = parseInt(message_id);
+
+				if ((Number.isNaN(currentMsgId) || currentMsgId > lastRead) && sender_id !== state.senderId) {
+				state.unreadCounts[chatroom_id] = (state.unreadCounts[chatroom_id] || 0) + 1;
+				state.totalUnreadCount += 1;
 				}
+
 			}
 		},
         addProfile(state, action: PayloadAction<{ chatroomId: string; profile: Profile }>) {
@@ -243,9 +249,22 @@ export const sendMessage = (chatroomId: string, content: string) => (dispatch: a
 		last_read_message_id: ""
     };
 
+	const history: Message = {
+		type: "history",
+		chatroom_id: chatroomId,
+		sender_id: senderId.toString(),
+		content: "",
+		message_id: "",
+		timestamp: new Date().toISOString(),
+		limit: 1,
+		offset: 0,
+		last_read_message_id: ""
+	};
+
     if (ws && connected) {
         ws.send(JSON.stringify(message));
-        dispatch(addMessage(message));
+		ws.send(JSON.stringify(history));
+        // dispatch(addMessage(message));
     } else {
         console.log('WebSocket not connected');
     }
@@ -303,6 +322,8 @@ export const sendRead = (chatroomId: string) => (dispatch: any, getState: any) =
     console.log('sendRead:', message);
     if (ws && connected) {
         ws.send(JSON.stringify(message));
+		dispatch(setlastMessageId({ chatroomId, messageId: lastMessage.message_id }));
+		dispatch(clearUnreadCount(chatroomId));
     } else {
         console.log('WebSocket not connected');
     }

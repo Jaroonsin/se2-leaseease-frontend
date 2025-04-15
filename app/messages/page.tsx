@@ -35,6 +35,7 @@ export default function Chat() {
         dispatch(setActiveChatroomId(chatroomId));
         dispatch(sendHistory(chatroomId));
         dispatch(sendRead(chatroomId));
+        dispatch(sendStart());
     };
 
     useEffect(() => {
