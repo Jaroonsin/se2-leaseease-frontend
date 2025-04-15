@@ -91,10 +91,11 @@ const connectWebSocket = (dispatch: any, getState: any): WebSocket => {
 		else{
 			const { chatroom_id, message_id } = message;
 			const state = getState().chat;
+			const activeChatroomId = state.activeChatroomId;
 
 			dispatch(addMessage(message));
 
-			if (state.chat.activeChatroomId && state.chat.activeChatroomId == chatroom_id) {
+			if (activeChatroomId == chatroom_id) {
 				dispatch(sendRead(chatroom_id));
 				dispatch(setlastMessageId({ chatroomId: chatroom_id, messageId: message_id }));
 				dispatch(clearUnreadCount(chatroom_id)); 
@@ -324,6 +325,33 @@ export const sendRead = (chatroomId: string) => (dispatch: any, getState: any) =
         ws.send(JSON.stringify(message));
 		dispatch(setlastMessageId({ chatroomId, messageId: lastMessage.message_id }));
 		dispatch(clearUnreadCount(chatroomId));
+    } else {
+        console.log('WebSocket not connected');
+    }
+};
+
+export const getPagination = () => (dispatch: any, getState: any) => {
+    const { ws, connected, senderId, activeChatroomId, messages } = getState().chat;
+
+    if (!senderId) throw new Error("Sender ID is required.");
+    if (!activeChatroomId) throw new Error("Active Chatroom ID is required.");
+
+    const chatroomMessages = messages[activeChatroomId] || [];
+    const offset = chatroomMessages.length;
+
+    const message = {
+        type: "history",
+        chatroom_id: activeChatroomId,
+        sender_id: senderId.toString(),
+        content: "",
+        message_id: "",
+        timestamp: new Date().toISOString(),
+        limit: 20,
+        offset: offset,
+    };
+	console.log('getPagination:', message);
+    if (ws && connected) {
+        ws.send(JSON.stringify(message));
     } else {
         console.log('WebSocket not connected');
     }
