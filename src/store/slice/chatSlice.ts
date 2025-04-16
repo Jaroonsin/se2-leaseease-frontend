@@ -153,7 +153,11 @@ const chatSlice = createSlice({
         },
 		setlastMessageId(state, action: PayloadAction<{ chatroomId: string; messageId: string }>) {
 			const { chatroomId, messageId } = action.payload;
-			state.last_read_message_ids[chatroomId] = messageId;
+			const { last_read_message_ids } = state;
+	
+			if(!last_read_message_ids[chatroomId] || messageId > last_read_message_ids[chatroomId]){
+				state.last_read_message_ids[chatroomId] = messageId;
+			}
 		},
 		setActiveChatroomId(state, action: PayloadAction<string>) {
 			console.log('setActiveChatroomId:', action.payload);
@@ -308,6 +312,12 @@ export const sendRead = (chatroomId: string) => (dispatch: any, getState: any) =
     const lastMessage = chatMessages.reduce((latest: Message, current: Message) => {
         return current.message_id > latest.message_id ? current : latest;
     });
+
+	const { last_read_message_ids } = getState().chat;
+	
+	if(lastMessage.message_id <= last_read_message_ids[chatroomId]){
+		return;
+	}
 
     const message = {
         type: "read",
