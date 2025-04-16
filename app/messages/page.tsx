@@ -22,8 +22,12 @@ export default function Chat() {
     const profiles = useSelector((state: any) => state.chat.profiles);
     const unreadCounts = useSelector((state: any) => state.chat.unreadCounts);
     const currentChatroomId = useSelector((state: any) => state.chat.activeChatroomId);
-    const prevUnreadCountRef = useRef<number>(0);
+    const last_read_message_ids = useSelector((state: RootState) => state.chat.last_read_message_ids);
     const [loadingMore, setLoadingMore] = useState(false);
+    const boxRef = useRef<HTMLDivElement>(null); // Explicitly type the ref
+    const scrollInfoRef = useRef<{ prevScrollHeight: number; prevScrollTop: number } | null>(null);
+    const [scrollToBottom, setScrollToBottom] = useState(false);
+    const dividerIndex = useRef<number>(-1);
 
     useEffect(() => {
         const setup = async () => {
@@ -34,26 +38,67 @@ export default function Chat() {
         setup();
     }, [dispatch]);
 
-    const handleChatroomClick = (chatroomId: string) => {
-        prevUnreadCountRef.current = unreadCounts[chatroomId] || 0;
+    useEffect(() => {
+        console.log('last_read_message_ids', last_read_message_ids);
+    }, [last_read_message_ids]);
 
+    const handleChatroomClick = (chatroomId: string) => {
         dispatch(setActiveChatroomId(chatroomId));
         dispatch(sendHistory(chatroomId));
+
+        const chatMessages = messages[chatroomId] || [];
+
+        // --- Find all received (not sent by you) messages ---
+        const receivedMessages = chatMessages.filter((msg) => msg.sender_id !== senderId);
+
+        // --- Last unread message is the one that has id higher than last readid and sender != sender_id ---
+        let targetUnreadMessage = null;
+        for (const msg of receivedMessages) {
+            if (parseInt(msg.message_id) > parseInt(last_read_message_ids[chatroomId])) {
+                if (!targetUnreadMessage) {
+                    targetUnreadMessage = msg;
+                }
+            }
+        }
+
+        // --- Find the index of that unread message in the full chat list ---
+        dividerIndex.current = targetUnreadMessage
+            ? chatMessages.findIndex((msg) => msg.message_id === targetUnreadMessage.message_id)
+            : -1;
+        // console.log(
+        //     'last_read_message_ids[chatroomId]',
+        //     last_read_message_ids[chatroomId],
+        //     'targetUnreadMessage',
+        //     targetUnreadMessage?.message_id,
+        //     'dividerIndex',
+        //     dividerIndex
+        // );
+
         dispatch(sendRead(chatroomId));
         dispatch(sendStart());
     };
 
-    const handleSendMessage = () => {
-        if (messageContent.trim() === '') return; // Don't send empty messages
+    const handleSendMessage = async () => {
+        if (messageContent.trim() === '') return;
         if (senderId == null) return;
         console.log('sender Id', senderId);
 
-        dispatch(sendMessage(currentChatroomId, messageContent));
+        // Wait for the message to be sent
+        await dispatch(sendMessage(currentChatroomId, messageContent));
         setMessageContent('');
+
+        setScrollToBottom(true); // trigger scroll effect
     };
 
-    const boxRef = useRef<HTMLDivElement>(null); // Explicitly type the ref
-    const scrollInfoRef = useRef<{ prevScrollHeight: number; prevScrollTop: number } | null>(null);
+    useEffect(() => {
+        if (scrollToBottom) {
+            const container = boxRef.current;
+            if (container) {
+                container.scrollTop = container.scrollHeight;
+            }
+            setScrollToBottom(false); // reset flag
+        }
+    }, [messages]);
 
     const loadMoreMessages = () => {
         if (!boxRef.current) return;
@@ -187,25 +232,6 @@ export default function Chat() {
                                 >
                                     {(() => {
                                         const chatMessages = messages[currentChatroomId] || [];
-                                        const prevUnreadCount = prevUnreadCountRef.current;
-
-                                        // --- Find all received (not sent by you) messages ---
-                                        const receivedMessages = chatMessages.filter(
-                                            (msg) => msg.sender_id !== senderId
-                                        );
-
-                                        // --- Identify the target unread message based on unread count ---
-                                        const targetUnreadMessage =
-                                            prevUnreadCount > 0
-                                                ? receivedMessages[receivedMessages.length - prevUnreadCount]
-                                                : null;
-
-                                        // --- Find its index in the full list ---
-                                        const dividerIndex = targetUnreadMessage
-                                            ? chatMessages.findIndex(
-                                                  (msg) => msg.message_id === targetUnreadMessage.message_id
-                                              )
-                                            : -1;
 
                                         return chatMessages.map((message, index) => {
                                             const isSender = message.sender_id == senderId;
@@ -227,7 +253,7 @@ export default function Chat() {
                                                       minute: '2-digit',
                                                   });
 
-                                            const showDividerBeforeThisMessage = index === dividerIndex;
+                                            const showDividerBeforeThisMessage = index === dividerIndex.current;
 
                                             return (
                                                 <React.Fragment key={message.message_id}>
