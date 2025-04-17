@@ -1,9 +1,9 @@
 'use client';
 
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import NearMeOutlinedIcon from '@mui/icons-material/NearMeOutlined';
-import { reviewData } from '@/src/api/data/review';
+import { deleteReview, reviewDataForAdmin } from '@/src/api/data/review';
 import { useRouter } from 'next/navigation';
 import { ROUTES } from '@/src/types/routes';
 
@@ -12,10 +12,18 @@ type SliderProps = {
     totalRequests: number;
     currentRequest: number;
     setCurrentRequest: Dispatch<SetStateAction<number | null>>;
-    tableData: reviewData[];
+    setDeleting: Dispatch<SetStateAction<boolean>>;
+    tableData: reviewDataForAdmin[];
 };
 
-export default function Slider({ id, totalRequests, currentRequest, setCurrentRequest, tableData }: SliderProps) {
+export default function Slider({
+    id,
+    totalRequests,
+    currentRequest,
+    setCurrentRequest,
+    setDeleting,
+    tableData,
+}: SliderProps) {
     const data = tableData[currentRequest];
     const userName = data.name;
     const requestTime = new Date(data.reviewedAt).toLocaleString('en-GB', {
@@ -150,6 +158,28 @@ export default function Slider({ id, totalRequests, currentRequest, setCurrentRe
                 <div className="">
                     <h3 className=" text-slate-400 text-sm font-normal mt-3">Detail</h3>
                     <p className=" text-slate-600 text-sm font-normal leading-relaxed">{detail}</p>
+                </div>
+                <div className="flex p-[16px] justify-center items-center gap-3 self-stretch border-t border-slate-300 fixed bottom-0 right-0 w-[32.5rem] bg-white">
+                    <button
+                        className="flex p-[12px] justify-center items-center gap-2 flex-1 rounded-[6px] bg-slate-50 border border-slate-700 text-slate-700 hover:bg-slate-200"
+                        onClick={async () => {
+                            // await acceptRequest(requestID);
+                            setCurrentRequest(null);
+                        }}
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        className="flex p-[12px] justify-center items-center gap-2 flex-1 rounded-[6px] bg-red-50 border border-red-700 text-red-700 hover:bg-red-200"
+                        onClick={async () => {
+                            setDeleting(true);
+                            await deleteReview(data.id);
+                            setDeleting(false);
+                            setCurrentRequest(null);
+                        }}
+                    >
+                        Delete
+                    </button>
                 </div>
             </div>
         </div>

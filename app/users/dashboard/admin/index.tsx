@@ -1,5 +1,5 @@
 'use client';
-import { getReviewData, reviewData } from '@/src/api/data/review';
+import { getReviewDataForAdmin, reviewDataForAdmin } from '@/src/api/data/review';
 import { useEffect, useState } from 'react';
 import Header from '@/app/users/dashboard/components/Header';
 // import { fetchUserInfo } from '@/store/authSlice'
@@ -11,52 +11,53 @@ import { useAuth } from '@/src/hooks/useAuth';
 import LoadPage from '@/src/components/ui/loadpage';
 
 export default function AdminDashboard() {
-    const dispatch = useDispatch<AppDispatch>();
-    const [sortColumn, setSortColumn] = useState<string | null>(null);
+    const [sortColumn, setSortColumn] = useState<string>('property_name');
     const [currentRequest, setCurrentRequest] = useState<number | null>(null);
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
     const { loading } = useAuth();
-    const selectedProperty = 1;
-    const mockData: reviewData[] = Array.from({ length: 30 }, (_, index) => ({
-        name: `Lessee Name ${index + 1}`,
-        reviewedAt: `2025-04-${(index % 30) + 1}T12:00:00Z`, // Example timestamp (modify for real data)
-        message: `This is a review message for lessee ${index + 1}.`,
-        imageURL: `https://example.com/images/image${index + 1}.jpg`,
-        rating: Math.floor(Math.random() * 5) + 1, // Random rating between 1 and 5
-        id: index + 1,
-        lesseeID: index + 1,
-    }));
-    const [tableData, setTableData] = useState<reviewData[]>(mockData);
-    const [filteredData, setFilteredData] = useState<reviewData[]>([]);
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         try {
-    //             const requestDatas = await getReviewData(selectedProperty ? selectedProperty : -1);
-    //             setTableData(requestDatas);
-    //			   setFilteredData(tableData);
-    //         } catch (error) {
-    //             console.error('Error fetching data:', error);
-    //         }
-    //     };
-    //     // fetchData()
-    //     fetchData();
-    // }, [dispatch]);
+    const [deleting, setDeleting] = useState<boolean>(false);
 
-    if (loading) return <LoadPage></LoadPage>;
+    // const mockData: reviewDataForAdmin[] = Array.from({ length: 30 }, (_, index) => ({
+    //     name: `Lessee Name ${index + 1}`,
+    //     reviewedAt: `2025-04-${(index % 30) + 1}T12:00:00Z`, // Example timestamp (modify for real data)
+    //     message: `This is a review message for lessee ${index + 1}.`,
+    //     imageURL: `https://example.com/images/image${index + 1}.jpg`,
+    //     rating: Math.floor(Math.random() * 5) + 1, // Random rating between 1 and 5
+    //     id: index + 1,
+    //     lesseeID: index + 1,
+    //     pname: `random ${30 - index}.`,
+    // }));
+    const [tableData, setTableData] = useState<reviewDataForAdmin[]>([]);
+    const [filteredData, setFilteredData] = useState<reviewDataForAdmin[]>([]);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const requestDatas = await getReviewDataForAdmin('', 'property_name', sortOrder);
+                setTableData(requestDatas);
+                setFilteredData(tableData);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+        // fetchData()
+        fetchData();
+    }, []);
+
+    if (loading || deleting) return <LoadPage></LoadPage>;
     // if (error) return <div>Error: {error}</div>
 
-    const handleSort = (column: 'name' | 'rating' | 'reviewedAt') => {
+    const handleSort = (column: 'property_name' | 'reviewer' | 'time') => {
         const newOrder = sortColumn === column && sortOrder === 'asc' ? 'desc' : 'asc';
         setSortColumn(column);
         setSortOrder(newOrder);
 
         const sortedData = [...filteredData].sort((a, b) => {
-            if (column === 'name') {
+            if (column === 'property_name') {
+                return newOrder === 'asc' ? a.pname.localeCompare(b.pname) : b.pname.localeCompare(a.pname);
+            } else if (column === 'reviewer') {
                 return newOrder === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
-            } else if (column === 'rating') {
-                return newOrder === 'asc' ? a.rating - b.rating : b.rating - a.rating;
-            } else if (column === 'reviewedAt') {
+            } else if (column === 'time') {
                 return newOrder === 'asc'
                     ? new Date(a.reviewedAt).getTime() - new Date(b.reviewedAt).getTime()
                     : new Date(b.reviewedAt).getTime() - new Date(a.reviewedAt).getTime();
@@ -69,12 +70,16 @@ export default function AdminDashboard() {
     const search = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
             const searchValue = (event.target as HTMLInputElement).value;
-
-            // Filter the properties based on the input value
-            const filtered = tableData.filter((property) =>
-                property.name.toLowerCase().includes(searchValue.toLowerCase())
-            );
-            setFilteredData(filtered);
+            const fetchData = async () => {
+                try {
+                    const newData = await getReviewDataForAdmin(searchValue, sortColumn, sortOrder);
+                    setTableData(newData);
+                    setFilteredData(tableData);
+                } catch (error) {
+                    console.error('Error fetching data:', error);
+                }
+            };
+            fetchData();
         }
     };
     return (
@@ -92,7 +97,7 @@ export default function AdminDashboard() {
                         <div className="flex w-full bg-white rounded-t-lg text-slate-400 border-b border-gray-200">
                             <div
                                 className="px-6 py-3 text-left w-[37%] flex items-center"
-                                onClick={() => handleSort('name')}
+                                onClick={() => handleSort('property_name')}
                             >
                                 <div>Property Name</div>
                                 <div className="flex pl-[0.5rem] justify-center items-center gap-[0.625rem]">
@@ -114,7 +119,7 @@ export default function AdminDashboard() {
                             </div>
                             <div
                                 className="px-6 py-3 text-left w-[20%] flex items-center"
-                                onClick={() => handleSort('name')}
+                                onClick={() => handleSort('reviewer')}
                             >
                                 <div>Reviewer</div>
                                 <div className="flex pl-[0.5rem] justify-center items-center gap-[0.625rem]">
@@ -136,7 +141,7 @@ export default function AdminDashboard() {
                             </div>
                             <div
                                 className="px-6 py-3 text-left w-[28%] flex items-center"
-                                onClick={() => handleSort('reviewedAt')}
+                                onClick={() => handleSort('time')}
                             >
                                 <div>Reviewed at</div>
                                 <div className="flex pl-[0.5rem] justify-center items-center gap-[0.625rem]">
@@ -167,7 +172,7 @@ export default function AdminDashboard() {
                                         key={index}
                                         className="flex w-full bg-white h-[56px] items-center border border-gray-200"
                                     >
-                                        <div className="px-6 w-[37%]">{row.name}</div>
+                                        <div className="px-6 w-[37%]">{row.pname}</div>
                                         <div className="px-6 w-[20%]">{row.name}</div>
                                         <div className="px-6 w-[28%]">
                                             {' '}
@@ -204,6 +209,7 @@ export default function AdminDashboard() {
                             currentRequest={currentRequest}
                             setCurrentRequest={setCurrentRequest}
                             tableData={filteredData}
+                            setDeleting={setDeleting}
                         />
                     )}
                 </div>
