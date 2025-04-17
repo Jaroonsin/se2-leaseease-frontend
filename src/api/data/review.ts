@@ -43,17 +43,24 @@ export const getReviewData = async (propID: number) => {
         return data; // Return default data in case of error
     }
 };
-export const getReviewDataForAdmin = async (name: string, sort: string, dir: string) => {
+export const getReviewDataForAdmin = async (
+    page: number,
+    pageSize: number,
+    name: string,
+    sort: string,
+    dir: string
+) => {
     const data: reviewDataForAdmin[] = [];
     try {
         const response = await apiClient.get(
-            `propertyReview/get/admin?page=1&pageSize=20&name=${name}&sort=${sort}&dir=${dir}`
+            `admin/get-reviews/?page=${page}&pageSize=${pageSize}&name=${name}&sort=${sort}&dir=${dir}`
         );
         console.log(response.data);
-        return convertToReviewDataForAdmin(response.data); // Return the fetched data
+        console.log(7);
+        return [convertToReviewDataForAdmin(response.data), response.data.data.total_pages]; // Return the fetched data
     } catch (error) {
         console.error('Error fetching reservations:', error);
-        return data; // Return default data in case of error
+        return [data, 1]; // Return default data in case of error
     }
 };
 export const convertToReviewDataForAdmin = (response: any): reviewDataForAdmin[] => {
