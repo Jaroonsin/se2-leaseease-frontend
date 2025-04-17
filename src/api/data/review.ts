@@ -69,7 +69,7 @@ export const convertToReviewDataForAdmin = (response: any): reviewDataForAdmin[]
 };
 export const deleteReview = async (id: number) => {
     try {
-        const response = await apiClient.get(`propertyReview/delete/${id}`);
+        const response = await apiClient.delete(`propertyReview/delete/${id}`);
     } catch (error) {}
     return;
 };
