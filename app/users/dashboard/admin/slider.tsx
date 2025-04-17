@@ -14,6 +14,7 @@ type SliderProps = {
     setCurrentRequest: Dispatch<SetStateAction<number | null>>;
     setDeleting: Dispatch<SetStateAction<boolean>>;
     tableData: reviewDataForAdmin[];
+    onAfterDelete: () => void;
 };
 
 export default function Slider({
@@ -23,6 +24,7 @@ export default function Slider({
     setCurrentRequest,
     setDeleting,
     tableData,
+    onAfterDelete,
 }: SliderProps) {
     const data = tableData[currentRequest];
     const userName = data.name;
@@ -34,7 +36,6 @@ export default function Slider({
         minute: '2-digit',
         timeZone: 'UTC',
     });
-    const rating = data.rating;
     const detail = data.message;
     const imgPath = data.imageURL != '' ? data.imageURL : null;
 
@@ -176,6 +177,7 @@ export default function Slider({
                             await deleteReview(data.id);
                             setDeleting(false);
                             setCurrentRequest(null);
+                            onAfterDelete();
                         }}
                     >
                         Delete

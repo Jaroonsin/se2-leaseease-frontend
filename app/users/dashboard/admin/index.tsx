@@ -1,6 +1,6 @@
 'use client';
 import { getReviewDataForAdmin, reviewDataForAdmin } from '@/src/api/data/review';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Header from '@/app/users/dashboard/components/Header';
 // import { fetchUserInfo } from '@/store/authSlice'
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,15 +9,18 @@ import Slider from './slider';
 import { fetchReservations } from '@/src/store/slice/historySlice';
 import { useAuth } from '@/src/hooks/useAuth';
 import LoadPage from '@/src/components/ui/loadpage';
+import Footer from '../lessor/components/Footer';
 
 export default function AdminDashboard() {
-    const [sortColumn, setSortColumn] = useState<string>('property_name');
+    const [sortColumn, setSortColumn] = useState<string>('name');
     const [currentRequest, setCurrentRequest] = useState<number | null>(null);
-    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-
+    const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('ASC');
+    const [query, setQuery] = useState<string>('');
     const { loading } = useAuth();
     const [deleting, setDeleting] = useState<boolean>(false);
-
+    const [rowsPerPage, setRowsPerPage] = useState<number>(1);
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const [totalPages, setTotalPage] = useState<number>(1);
     // const mockData: reviewDataForAdmin[] = Array.from({ length: 30 }, (_, index) => ({
     //     name: `Lessee Name ${index + 1}`,
     //     reviewedAt: `2025-04-${(index % 30) + 1}T12:00:00Z`, // Example timestamp (modify for real data)
@@ -29,57 +32,64 @@ export default function AdminDashboard() {
     //     pname: `random ${30 - index}.`,
     // }));
     const [tableData, setTableData] = useState<reviewDataForAdmin[]>([]);
-    const [filteredData, setFilteredData] = useState<reviewDataForAdmin[]>([]);
+    // const [filteredData, setFilteredData] = useState<reviewDataForAdmin[]>([]);
+    const fetchData = async (sortColumn: string, sortOrder: string) => {
+        try {
+            const [requestDatas, totalPages] = await getReviewDataForAdmin(
+                currentPage,
+                rowsPerPage,
+                query,
+                sortColumn,
+                sortOrder
+            );
+            console.log(requestDatas);
+            console.log(143);
+            console.log(totalPages);
+            setTableData(requestDatas);
+            setTotalPage(totalPages);
+            // setFilteredData(tableData);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const requestDatas = await getReviewDataForAdmin('', 'property_name', sortOrder);
-                setTableData(requestDatas);
-                setFilteredData(tableData);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        };
-        // fetchData()
-        fetchData();
-    }, []);
+        fetchData(sortColumn, sortOrder);
+    }, [currentPage]);
 
+    useEffect(() => {
+        setCurrentPage(1);
+        fetchData(sortColumn, sortOrder);
+    }, [rowsPerPage]);
+    const fetchAfterDel = async () => {
+        fetchData(sortColumn, sortOrder);
+    };
     if (loading || deleting) return <LoadPage></LoadPage>;
     // if (error) return <div>Error: {error}</div>
 
-    const handleSort = (column: 'property_name' | 'reviewer' | 'time') => {
-        const newOrder = sortColumn === column && sortOrder === 'asc' ? 'desc' : 'asc';
+    const handleSort = (column: 'name' | 'reviewer' | 'time') => {
+        const newOrder = sortColumn === column && sortOrder === 'ASC' ? 'DESC' : 'ASC';
         setSortColumn(column);
         setSortOrder(newOrder);
-
-        const sortedData = [...filteredData].sort((a, b) => {
-            if (column === 'property_name') {
-                return newOrder === 'asc' ? a.pname.localeCompare(b.pname) : b.pname.localeCompare(a.pname);
-            } else if (column === 'reviewer') {
-                return newOrder === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
-            } else if (column === 'time') {
-                return newOrder === 'asc'
-                    ? new Date(a.reviewedAt).getTime() - new Date(b.reviewedAt).getTime()
-                    : new Date(b.reviewedAt).getTime() - new Date(a.reviewedAt).getTime();
-            }
-            return 0;
-        });
+        // const sortedData = [...filteredData].sort((a, b) => {
+        //     if (column === 'property_name') {
+        //         return newOrder === 'asc' ? a.pname.localeCompare(b.pname) : b.pname.localeCompare(a.pname);
+        //     } else if (column === 'reviewer') {
+        //         return newOrder === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
+        //     } else if (column === 'time') {
+        //         return newOrder === 'asc'
+        //             ? new Date(a.reviewedAt).getTime() - new Date(b.reviewedAt).getTime()
+        //             : new Date(b.reviewedAt).getTime() - new Date(a.reviewedAt).getTime();
+        //     }
+        //     return 0;
+        // });
         setCurrentRequest(null);
-        setFilteredData(sortedData);
+        fetchData(column, newOrder);
     };
     const search = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
             const searchValue = (event.target as HTMLInputElement).value;
-            const fetchData = async () => {
-                try {
-                    const newData = await getReviewDataForAdmin(searchValue, sortColumn, sortOrder);
-                    setTableData(newData);
-                    setFilteredData(tableData);
-                } catch (error) {
-                    console.error('Error fetching data:', error);
-                }
-            };
-            fetchData();
+            setQuery(searchValue);
+            fetchData(sortColumn, sortOrder);
         }
     };
     return (
@@ -97,7 +107,7 @@ export default function AdminDashboard() {
                         <div className="flex w-full bg-white rounded-t-lg text-slate-400 border-b border-gray-200">
                             <div
                                 className="px-6 py-3 text-left w-[37%] flex items-center"
-                                onClick={() => handleSort('property_name')}
+                                onClick={() => handleSort('name')}
                             >
                                 <div>Property Name</div>
                                 <div className="flex pl-[0.5rem] justify-center items-center gap-[0.625rem]">
@@ -167,7 +177,7 @@ export default function AdminDashboard() {
                         {/* Table Body */}
                         <div className="w-full h-[calc(100%-96px)] overflow-y-auto text-slate-600">
                             <div className="w-full">
-                                {filteredData.map((row, index) => (
+                                {tableData.map((row, index) => (
                                     <div
                                         key={index}
                                         className="flex w-full bg-white h-[56px] items-center border border-gray-200"
@@ -200,16 +210,24 @@ export default function AdminDashboard() {
                         {/*Gray Space*/}
                         <div className="h-12 w-full"></div>
                     </div>
-
+                    {/*Footer*/}
+                    <Footer
+                        rowsPerPage={rowsPerPage}
+                        setRowsPerPage={setRowsPerPage}
+                        currentPage={currentPage}
+                        setCurrentPage={setCurrentPage}
+                        totalPages={totalPages}
+                    />
                     {/*Slider*/}
                     {currentRequest != null && (
                         <Slider
                             id={'0'}
-                            totalRequests={filteredData.length}
+                            totalRequests={tableData.length}
                             currentRequest={currentRequest}
                             setCurrentRequest={setCurrentRequest}
-                            tableData={filteredData}
+                            tableData={tableData}
                             setDeleting={setDeleting}
+                            onAfterDelete={fetchAfterDel}
                         />
                     )}
                 </div>
