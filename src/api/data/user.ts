@@ -34,7 +34,7 @@ export const getUserData = async () => {
 };
 export const updateUserStatus = async (id: number, status: string) => {
     try {
-        const response = await apiClient.post(`/admin/manage-user/${id}`, {
+        const response = await apiClient.patch(`/admin/update-users-status/${id}`, {
             status: status,
         });
         console.log(response.data);
