@@ -55,8 +55,6 @@ export const getReviewDataForAdmin = async (
         const response = await apiClient.get(
             `admin/get-reviews/?page=${page}&pageSize=${pageSize}&name=${name}&sort=${sort}&dir=${dir}`
         );
-        console.log(response.data);
-        console.log(7);
         return [convertToReviewDataForAdmin(response.data), response.data.data.total_pages]; // Return the fetched data
     } catch (error) {
         console.error('Error fetching reservations:', error);
