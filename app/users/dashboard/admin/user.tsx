@@ -47,7 +47,7 @@ export default function UserDashboard() {
     if (loading || deleting) return <LoadPage></LoadPage>;
     // if (error) return <div>Error: {error}</div>
 
-    const handleSort = (column: 'name' | 'role' | 'id') => {
+    const handleSort = (column: 'name' | 'role' | 'status') => {
         const newOrder = sortColumn === column && sortOrder === 'ASC' ? 'DESC' : 'ASC';
         setSortColumn(column);
         setSortOrder(newOrder);
@@ -56,10 +56,10 @@ export default function UserDashboard() {
                 return newOrder === 'ASC' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
             } else if (column === 'role') {
                 return newOrder === 'ASC' ? a.name.localeCompare(b.role) : b.role.localeCompare(a.role);
-            } else if (column === 'id') {
+            } else if (column === 'status') {
                 return newOrder === 'ASC'
-                    ? new Date(a.id).getTime() - new Date(b.id).getTime()
-                    : new Date(b.id).getTime() - new Date(a.id).getTime();
+                    ? new Date(a.status).getTime() - new Date(b.status).getTime()
+                    : new Date(b.status).getTime() - new Date(a.status).getTime();
             }
             return 0;
         });
@@ -67,8 +67,9 @@ export default function UserDashboard() {
     };
     const search = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
-            const searchValue = (event.target as HTMLInputElement).value;
-            setQuery(searchValue);
+            const searchValue = event.currentTarget.value.toLowerCase();
+            const results = tableData.filter((item) => item.name.toLowerCase().includes(searchValue));
+            setFilteredData(results);
         }
     };
     return (
@@ -129,9 +130,9 @@ export default function UserDashboard() {
                             </div>
                             <div
                                 className="px-6 py-3 text-left w-[28%] flex items-center cursor-pointer"
-                                onClick={() => handleSort('id')}
+                                onClick={() => handleSort('status')}
                             >
-                                <div>User ID</div>
+                                <div>Status</div>
                                 <div className="flex pl-[0.5rem] justify-center items-center gap-[0.625rem]">
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -149,26 +150,33 @@ export default function UserDashboard() {
                                     </svg>
                                 </div>
                             </div>
-                            <div className="px-6 py-3 text-left w-[15%]">Detail</div>
+                            <div className="flex px-6 py-3 text-left w-[15%] justify-center">Manage</div>
                         </div>
 
                         {/* Table Body */}
                         <div className="w-full h-[calc(100%-96px)] overflow-y-auto text-slate-600">
                             <div className="w-full">
-                                {tableData.map((row, index) => (
+                                {filteredData.map((row, index) => (
                                     <div
                                         key={index}
                                         className="flex w-full bg-white h-[56px] items-center border border-gray-200"
                                     >
                                         <div className="px-6 w-[37%]">{row.name}</div>
                                         <div className="px-6 w-[20%]">{row.role}</div>
-                                        <div className="px-6 w-[28%]">{row.id}</div>
-                                        <div className="px-6 w-[15%]">
+                                        <div className="px-6 w-[28%]">
+                                            {row.status === 'active' ? 'Active' : 'Banned'}
+                                        </div>
+                                        <div className="flex w-[15%] justify-center">
                                             <button
-                                                className="px-4 py-2 text-sm text-blue-900 bg-blue-50 rounded-lg hover:bg-blue-100 border-blue-900 border"
+                                                className={`py-2 text-xs font-medium rounded-lg border w-[30%] 
+													${
+                                                        row.status === 'active'
+                                                            ? 'text-red-700 bg-white hover:bg-red-100 border-red-700'
+                                                            : 'text-green-700 bg-white hover:bg-green-100 border-green-700'
+                                                    }`}
                                                 onClick={() => setCurrentRequest(index)}
                                             >
-                                                View Detail
+                                                {row.status === 'active' ? 'Ban' : 'Activate'}
                                             </button>
                                         </div>
                                     </div>
