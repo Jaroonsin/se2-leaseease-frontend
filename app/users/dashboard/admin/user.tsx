@@ -2,17 +2,15 @@
 import { getReviewDataForAdmin, reviewDataForAdmin } from '@/src/api/data/review';
 import { useEffect, useState } from 'react';
 // import { fetchUserInfo } from '@/store/authSlice'
-import Slider from './slider';
 import { useAuth } from '@/src/hooks/useAuth';
 import LoadPage from '@/src/components/ui/loadpage';
-import Footer from '../lessor/components/Footer';
 import { getUserData, userData } from '@/src/api/data/user';
+import Modal from './modal';
 
 export default function UserDashboard() {
     const [sortColumn, setSortColumn] = useState<string>('name');
-    const [currentRequest, setCurrentRequest] = useState<number | null>(null);
+    const [modal, setModal] = useState<[number, string] | null>(null);
     const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('ASC');
-    const [query, setQuery] = useState<string>('');
     const { loading } = useAuth();
     const [deleting, setDeleting] = useState<boolean>(false);
     const [filteredData, setFilteredData] = useState<userData[]>([]);
@@ -41,9 +39,7 @@ export default function UserDashboard() {
     useEffect(() => {
         fetchData();
     }, []);
-    const fetchAfterDel = async () => {
-        fetchData();
-    };
+
     if (loading || deleting) return <LoadPage></LoadPage>;
     // if (error) return <div>Error: {error}</div>
 
@@ -63,7 +59,7 @@ export default function UserDashboard() {
             }
             return 0;
         });
-        setTableData(sortedData);
+        setFilteredData(sortedData);
     };
     const search = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
@@ -174,7 +170,7 @@ export default function UserDashboard() {
                                                             ? 'text-red-700 bg-white hover:bg-red-100 border-red-700'
                                                             : 'text-green-700 bg-white hover:bg-green-100 border-green-700'
                                                     }`}
-                                                onClick={() => setCurrentRequest(index)}
+                                                onClick={() => setModal([row.id, row.status])}
                                             >
                                                 {row.status === 'active' ? 'Ban' : 'Activate'}
                                             </button>
@@ -187,18 +183,8 @@ export default function UserDashboard() {
                         <div className="h-12 w-full"></div>
                     </div>
 
-                    {/*Slider*/}
-                    {/* {currentRequest != null && (
-                        <Slider
-                            id={'0'}
-                            totalRequests={tableData.length}
-                            currentRequest={currentRequest}
-                            setCurrentRequest={setCurrentRequest}
-                            tableData={tableData}
-                            setDeleting={setDeleting}
-                            onAfterDelete={fetchAfterDel}
-                        />
-                    )} */}
+                    {/*Modal*/}
+                    {modal != null && <Modal fetch={fetchData} modal={modal} setModal={setModal} />}
                 </div>
             </div>
         </div>
