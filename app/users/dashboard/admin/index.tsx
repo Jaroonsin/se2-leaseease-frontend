@@ -18,7 +18,7 @@ export default function AdminDashboard() {
     const [query, setQuery] = useState<string>('');
     const { loading } = useAuth();
     const [deleting, setDeleting] = useState<boolean>(false);
-    const [rowsPerPage, setRowsPerPage] = useState<number>(1);
+    const [rowsPerPage, setRowsPerPage] = useState<number>(10);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [totalPages, setTotalPage] = useState<number>(1);
     // const mockData: reviewDataForAdmin[] = Array.from({ length: 30 }, (_, index) => ({
