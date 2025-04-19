@@ -38,9 +38,6 @@ export default function ReviewDashboard() {
                 sortColumn,
                 sortOrder
             );
-            console.log(requestDatas);
-            console.log(143);
-            console.log(totalPages);
             setTableData(requestDatas);
             setTotalPage(totalPages);
             // setFilteredData(tableData);
