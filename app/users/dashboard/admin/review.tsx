@@ -187,9 +187,9 @@ export default function ReviewDashboard() {
                                                 timeZone: 'UTC',
                                             })}
                                         </div>
-                                        <div className="px-6 w-[15%]">
+                                        <div className="px-6 w-[15%] h-[100%] flex items-center">
                                             <button
-                                                className="px-4 py-2 text-sm text-blue-900 bg-blue-50 rounded-lg hover:bg-blue-100 border-blue-900 border"
+                                                className="px-4 text-sm text-blue-900 bg-blue-50 rounded-lg hover:bg-blue-100 border-blue-900 border h-[70%] min-h-2/3"
                                                 onClick={() => setCurrentRequest(index)}
                                             >
                                                 View Detail
