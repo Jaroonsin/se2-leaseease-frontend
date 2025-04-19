@@ -19,11 +19,8 @@ export const convertToUserData = (response: any): userData[] => {
         imageURL: item.imageURL,
     }));
 };
-export const getRequestData = async (propID: number) => {
+export const getUserData = async () => {
     const data: userData[] = [];
-
-    if (propID === -1) return data;
-
     try {
         const response = await apiClient.get(`/admin/get-users`);
         console.log(response.data);
