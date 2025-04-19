@@ -10,14 +10,16 @@ export type userData = {
 };
 
 export const convertToUserData = (response: any): userData[] => {
-    return response.data.map((item: any) => ({
-        id: item.id,
-        role: item.role,
-        name: item.name,
-        status: item.status,
-        address: item.address,
-        imageURL: item.imageURL,
-    }));
+    return response.data
+        .filter((item: any) => item.status !== 'warned')
+        .map((item: any) => ({
+            id: item.id,
+            role: item.role,
+            name: item.name,
+            status: item.status,
+            address: item.address,
+            imageURL: item.imageURL,
+        }));
 };
 export const getUserData = async () => {
     const data: userData[] = [];
