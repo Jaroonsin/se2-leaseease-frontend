@@ -1,7 +1,6 @@
 'use client';
 import { getReviewDataForAdmin, reviewDataForAdmin } from '@/src/api/data/review';
 import { useEffect, useState } from 'react';
-import Header from '@/app/users/dashboard/components/Header';
 // import { fetchUserInfo } from '@/store/authSlice'
 import Slider from './slider';
 import { useAuth } from '@/src/hooks/useAuth';
@@ -91,7 +90,6 @@ export default function ReviewDashboard() {
     };
     return (
         <div className=" flex w-full flex-col items-center rounded-md">
-            <Header />
             <div className="flex w-[72.72vw] h-[53rem] p-[0.625rem] flex-col items-start gap-[0.625rem] flex-shrink-0">
                 <input
                     className="flex w-[20rem] h-[40px] min-h-[40px] max-h-[40px] py-2 px-3 justify-between items-center flex-1 rounded-md bg-gray-200 outline-none text-black"
