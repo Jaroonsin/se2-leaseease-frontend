@@ -73,7 +73,7 @@ export default function UserDashboard() {
         if (event.key === 'Enter') {
             const value = event.currentTarget.value.toLowerCase();
             const results = tableData.filter((item) => item.name.toLowerCase().includes(value));
-            setSearchValue('value');
+            setSearchValue(value);
             setSearchData(results);
         }
     };
