@@ -18,11 +18,11 @@ export default function DashboardPage() {
     }, [user]);
     if (!role) return <LoadPage></LoadPage>;
 
-    switch (user.role) {
+    switch (role) {
         case 'lessee':
-            return <AdminDashboard />;
+            return <LesseeDashboard />;
         case 'lessor':
-            return <AdminDashboard />;
+            return <LessorDashboard />;
         case 'admin':
             return <AdminDashboard />;
         default:
