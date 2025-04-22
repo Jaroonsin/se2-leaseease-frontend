@@ -78,7 +78,7 @@ export default function UserDashboard() {
                 />
 
                 <div className="w-full h-full flex flex-col">
-                    <div className="w-full h-full rounded-lg bg-slate-50">
+                    <div className="w-full h-full rounded-lg bg-slate-50 border-2 border-gray-200">
                         <div className="flex w-full bg-white rounded-t-lg text-slate-400 border-b border-gray-200">
                             <div
                                 className="px-6 py-3 text-left w-[37%] flex items-center"
