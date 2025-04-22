@@ -301,12 +301,12 @@ export default function LesseeDashboard() {
                                     <p>Location: {property.location}</p>
                                     <div className="flex justify-between items-end self-stretch text-lg font-semibold text-blue-500">
                                         <p>Size: {property.size} m²</p>
-                                        <p>
+                                        <div className="flex flex-col">
                                             <div className="text-2xl">
                                                 {new Intl.NumberFormat('th-TH').format(property.price)}
-                                            </div>{' '}
-                                            <div>Baht/Month</div>{' '}
-                                        </p>
+                                            </div>
+                                            <div>Baht/Month</div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

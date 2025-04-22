@@ -1,7 +1,12 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useAppDispatch } from '@/src/store/hooks';
-import { updateUserImage, updateUserInfo, uploadImage, updateUserPassword } from '@/src/store/slice/auth/userThunks'; // Assuming these actions exist
+import {
+    updateUserImage,
+    updateUserInfo,
+    uploadUserImage,
+    updateUserPassword,
+} from '@/src/store/slice/auth/userThunks'; // Assuming these actions exist
 import { useRouter } from 'next/navigation';
 import LoadPage from '@/src/components/ui/loadpage';
 import { useAuth } from '@/src/hooks/useAuth';
@@ -54,8 +59,8 @@ export default function UserProfile() {
         const formData = new FormData(event.currentTarget);
 
         try {
-            const resultAction = await dispatch(uploadImage(formData));
-            if (uploadImage.fulfilled.match(resultAction)) {
+            const resultAction = await dispatch(uploadUserImage(formData));
+            if (uploadUserImage.fulfilled.match(resultAction)) {
                 await dispatch(updateUserImage());
             }
             router.push(ROUTES.USER.DASHBOARD);
@@ -136,7 +141,7 @@ export default function UserProfile() {
                             Change Picture
                             <input
                                 type="file"
-                                name="file"
+                                name="image"
                                 accept="image/*"
                                 onChange={handleImageChange}
                                 className="hidden"

@@ -8,6 +8,8 @@ import RejectRequest from '../RejectRequest';
 import { acceptRequest, rejectRequest, requestData } from '@/src/api/data/request';
 import { useRouter } from 'next/navigation';
 import { ROUTES } from '@/src/types/routes';
+import { useAppDispatch } from '@/src/store/hooks';
+import { createChatroom } from '@/src/store/slice/chatSlice';
 
 type RequestSliderProps = {
     id: string;
@@ -46,7 +48,7 @@ export default function RequestSlider({
     const imgPath = data.imageURL != '' ? data.imageURL : null;
     const requestID = data.id;
     const router = useRouter();
-    console.log('dog', data);
+    const dispatch = useAppDispatch();
 
     return (
         <div className="flex z-50 w-[32.5rem] h-[calc(100vh-4rem)] p-0 flex-col items-start absolute right-0 bottom-0 border-l border-slate-300 bg-white shadow-[0px_4px_6px_-4px_rgba(0,_0,_0,_0.10),_0px_10px_15px_-3px_rgba(0,_0,_0,_0.10)]  overflow-y-auto">
@@ -155,7 +157,11 @@ export default function RequestSlider({
                     </button>
                     <button
                         className="h-[28px] px-4 py-1 border border-blue-500 rounded-lg text-slate-600 text-sm font-normal bg-blue-100 hover:bg-blue-200 shadow-md flex gap-x-2"
-                        onClick={() => router.push(ROUTES.MESSAGES(data.lesseeID))}
+                        // onClick={() => router.push(ROUTES.MESSAGES(data.lesseeID))}
+                        onClick={async () => {
+                            await dispatch(createChatroom(data.lesseeID.toString() || '', data.name || ''));
+                            router.push(ROUTES.MESSAGES(''));
+                        }}
                     >
                         <NearMeOutlinedIcon fontSize="small" />
                         Send Message

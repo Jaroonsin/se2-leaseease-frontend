@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { AxiosResponse } from 'axios';
 import { apiClient } from '@/src/api/axios';
 import { AsyncThunkConfig, RootState } from '../store';
+import { User } from '@/src/types/type';
 
 interface Data {
     properties: Property[];
