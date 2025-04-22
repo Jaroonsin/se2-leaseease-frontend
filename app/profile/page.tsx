@@ -1,10 +1,16 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { useAppDispatch } from '@/store/hooks';
-import { updateUserImage, updateUserInfo, uploadImage } from '@/store/auth/userThunks'; // Assuming these actions exist
+import { useAppDispatch } from '@/src/store/hooks';
+import {
+    updateUserImage,
+    updateUserInfo,
+    uploadUserImage,
+    updateUserPassword,
+} from '@/src/store/slice/auth/userThunks'; // Assuming these actions exist
 import { useRouter } from 'next/navigation';
-import LoadPage from '@/components/ui/loadpage';
-import { useAuth } from '@/hooks/useAuth';
+import LoadPage from '@/src/components/ui/loadpage';
+import { useAuth } from '@/src/hooks/useAuth';
+import { ROUTES } from '@/src/types/routes';
 
 export default function UserProfile() {
     const [userDetails, setUserDetails] = useState({
@@ -13,6 +19,7 @@ export default function UserProfile() {
         address: '',
         picture: '', // Field for image_url
     });
+    const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const { user, loading } = useAuth();
@@ -52,11 +59,11 @@ export default function UserProfile() {
         const formData = new FormData(event.currentTarget);
 
         try {
-            const resultAction = await dispatch(uploadImage(formData));
-            if (uploadImage.fulfilled.match(resultAction)) {
+            const resultAction = await dispatch(uploadUserImage(formData));
+            if (uploadUserImage.fulfilled.match(resultAction)) {
                 await dispatch(updateUserImage());
             }
-            router.push('/property');
+            router.push(ROUTES.USER.DASHBOARD);
         } catch (error) {
             console.error('Upload error:', error);
             alert('Upload failed!');
@@ -67,30 +74,30 @@ export default function UserProfile() {
         e.preventDefault();
         const resultAction = await dispatch(updateUserInfo(userDetails));
         if (updateUserInfo.fulfilled.match(resultAction)) {
-            router.push('/property');
+            router.push(ROUTES.USER.DASHBOARD);
         } else {
             setErrors('Failed to update profile');
         }
     };
 
     const handlePasswordChange = async (e: React.FormEvent) => {
-        // e.preventDefault();
-        // if (newPassword !== confirmPassword) {
-        //     setErrors('Passwords do not match');
-        //     return;
-        // }
-        // const resultAction = await dispatch(updateUserPassword({ newPassword }));
-        // if (updateUserPassword.fulfilled.match(resultAction)) {
-        //     setSuccessMessage('Password reset successfully!');
-        //     setErrors('');
-        //     setNewPassword('');
-        //     setConfirmPassword('');
-        //     setTimeout(() => {
-        //         setSuccessMessage('');
-        //     }, 3000); // Clear success message after 3 seconds
-        // } else {
-        //     setErrors('Failed to reset password');
-        // }
+        e.preventDefault();
+        if (newPassword !== confirmPassword) {
+            setErrors('Passwords do not match');
+            return;
+        }
+        const resultAction = await dispatch(updateUserPassword({ newPassword, currentPassword }));
+        if (updateUserPassword.fulfilled.match(resultAction)) {
+            setSuccessMessage('Password reset successfully!');
+            setErrors('');
+            setNewPassword('');
+            setConfirmPassword('');
+            setTimeout(() => {
+                setSuccessMessage('');
+            }, 3000); // Clear success message after 3 seconds
+        } else {
+            setErrors('Failed to reset password');
+        }
     };
 
     if (loading) return <LoadPage />;
@@ -101,7 +108,7 @@ export default function UserProfile() {
                 {/* Back Button */}
                 <div className="mb-6">
                     <button
-                        onClick={() => router.push('/property')}
+                        onClick={() => router.push(ROUTES.USER.DASHBOARD)}
                         className="text-blue-600 hover:text-blue-700 flex items-center"
                     >
                         <svg
@@ -134,7 +141,7 @@ export default function UserProfile() {
                             Change Picture
                             <input
                                 type="file"
-                                name="file"
+                                name="image"
                                 accept="image/*"
                                 onChange={handleImageChange}
                                 className="hidden"
@@ -200,9 +207,23 @@ export default function UserProfile() {
                         />
                     </div>
 
-                    {/* Password Reset Section */}
+                    {/* Password Change Section */}
                     <div>
-                        <h3 className="text-xl font-semibold text-gray-700 mt-6">Reset Password</h3>
+                        <h3 className="text-xl font-semibold text-gray-700 mt-6">Change Password</h3>
+                        <div>
+                            <label htmlFor="currentPassword" className="block text-gray-700">
+                                Current Password
+                            </label>
+                            <input
+                                type="password"
+                                id="currentPassword"
+                                autoComplete="current-password"
+                                value={currentPassword}
+                                onChange={(e) => setCurrentPassword(e.target.value)}
+                                className="w-full p-3 border rounded-3xl text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                            />
+                        </div>
+
                         <div>
                             <label htmlFor="newPassword" className="block text-gray-700">
                                 New Password
@@ -243,7 +264,7 @@ export default function UserProfile() {
                         </div>
                     )}
 
-                    {/* Reset Password Button */}
+                    {/* Change Password Button */}
                     {successMessage && (
                         <div className="mb-4 text-green-500 text-center text-xl font-semibold">
                             <p>{successMessage}</p>
@@ -253,14 +274,16 @@ export default function UserProfile() {
                         <button
                             type="button"
                             onClick={handlePasswordChange}
-                            disabled={!newPassword || !confirmPassword || newPassword !== confirmPassword}
+                            disabled={
+                                !currentPassword || !newPassword || !confirmPassword || newPassword !== confirmPassword
+                            }
                             className={`text-sm text-center ${
                                 !newPassword || !confirmPassword || newPassword !== confirmPassword
                                     ? 'bg-blue-300 cursor-not-allowed'
                                     : 'bg-blue-600 hover:bg-blue-700'
                             } text-white p-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-600`}
                         >
-                            Reset Password
+                            Change Password
                         </button>
                     </div>
 
