@@ -6,6 +6,7 @@ import AccountOption from './AccountOption';
 import { ROUTES } from '@/src/types/routes';
 import { FaSearch, FaExchangeAlt, FaBuilding, FaEnvelope } from 'react-icons/fa';
 import '@/app/globals.css';
+import { useAppSelector } from '@/src/store/hooks';
 
 export default function PropertyHeader() {
     const [isAccountOptionVisible, setIsAccountOptionVisible] = useState(false);
@@ -13,6 +14,7 @@ export default function PropertyHeader() {
     const Router = useRouter();
     const pathname = usePathname();
     const { user } = useAuth();
+    const totalUnreadCount = useAppSelector((state) => state.chat.totalUnreadCount);
 
     const toggleAccountOption = () => {
         setIsAccountOptionVisible(!isAccountOptionVisible);
@@ -52,7 +54,7 @@ export default function PropertyHeader() {
                         <button
                             className={`flex items-center gap-2 px-4 py-2 rounded-md transition ${
                                 isActive(ROUTES.TRANSACTIONS)
-                                    ? 'bg-blue-500 text-white'
+                                    ? 'bg-blue-500 hover:bg-blue-900 text-white'
                                     : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
                             }`}
                             disabled={isActive(ROUTES.TRANSACTIONS)}
@@ -63,7 +65,7 @@ export default function PropertyHeader() {
                         <button
                             className={`flex items-center gap-2 px-4 py-2 rounded-md transition ${
                                 isActive(ROUTES.USER.DASHBOARD)
-                                    ? 'bg-blue-500 text-white'
+                                    ? 'bg-blue-500 hover:bg-blue-900 text-white'
                                     : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
                             }`}
                             disabled={isActive(ROUTES.USER.DASHBOARD)}
@@ -77,7 +79,7 @@ export default function PropertyHeader() {
                     <button
                         className={`flex items-center gap-2 px-4 py-2 rounded-md transition ${
                             isActive(ROUTES.USER.DASHBOARD)
-                                ? 'bg-blue-500 text-white'
+                                ? 'bg-blue-500 hover:bg-blue-900 text-white'
                                 : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
                         }`}
                         disabled={isActive(ROUTES.USER.DASHBOARD)}
@@ -86,17 +88,36 @@ export default function PropertyHeader() {
                         <FaBuilding /> Manage Property
                     </button>
                 )}
-                <button
+                {/* <button
                     className={`flex items-center gap-2 px-4 py-2 rounded-md transition ${
                         isActive(ROUTES.MESSAGES(''))
-                            ? 'bg-blue-500 text-white'
+                            ? 'bg-blue-500 hover:bg-blue-900 text-white'
                             : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
                     }`}
                     disabled={isActive(ROUTES.MESSAGES(''))}
                     onClick={() => Router.push(ROUTES.MESSAGES(''))}
                 >
                     <FaEnvelope /> Messages
-                </button>
+                </button> */}
+                <div className="relative inline-block">
+                    <button
+                        className={`flex items-center gap-2 px-4 py-2 rounded-md transition ${
+                            isActive(ROUTES.MESSAGES(''))
+                                ? 'bg-blue-500 text-white'
+                                : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                        }`}
+                        disabled={isActive(ROUTES.MESSAGES(''))}
+                        onClick={() => Router.push(ROUTES.MESSAGES(''))}
+                    >
+                        <FaEnvelope /> Messages
+                    </button>
+
+                    {totalUnreadCount > 0 && (
+                        <div className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-600 rounded-full">
+                            {totalUnreadCount}
+                        </div>
+                    )}
+                </div>
             </div>
 
             {/* User Section */}

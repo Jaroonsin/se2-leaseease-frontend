@@ -1,7 +1,7 @@
 'use client';
 import { Dispatch, SetStateAction, useState } from 'react';
 import { useAppDispatch } from '@/src/store/hooks';
-import { createProperty, Property } from '@/src/store/slice/propertySlice';
+import { createProperty, Property, updateProperty, uploadPropertyImage } from '@/src/store/slice/propertySlice';
 
 type CreateNewPropertyProps = {
     setIsCreateNewPropertyVisible: Dispatch<SetStateAction<boolean>>;
@@ -23,6 +23,7 @@ export default function CreateNewProperty({ setIsCreateNewPropertyVisible }: Cre
         location?: boolean;
         size?: boolean;
         price?: boolean;
+        image?: boolean;
     }>({});
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,30 +38,30 @@ export default function CreateNewProperty({ setIsCreateNewPropertyVisible }: Cre
             setFile(file);
         }
     };
-    const handleUpload = async () => {
+
+    const handleUpload = async (id: string) => {
         const formData = new FormData();
         if (File) {
-            formData.append('file', File);
+            formData.append('image', File);
         }
-
-        // try {
-        //     const resultAction = await dispatch(uploadImage(formData));
-        //     if (uploadImage.fulfilled.match(resultAction)) {
-        //         await dispatch(updateUserImage());
-        //     }
-        //     router.push('/property');
-        // } catch (error) {
-        //     console.error('Upload error:', error);
-        //     alert('Upload failed!');
-        // }
+        try {
+            const resultAction = await dispatch(uploadPropertyImage({ id, formData }));
+            const response = resultAction.payload;
+            return response || '';
+        } catch (error) {
+            console.error('Upload error:', error);
+            alert('Upload failed!');
+            return '';
+        }
     };
 
     const handleSubmit = async () => {
         const newErrors: typeof errors = {};
         if (!name) newErrors.name = true;
         if (!location) newErrors.location = true;
-        if (!size) newErrors.size = true;
-        if (!price) newErrors.price = true;
+        if (!size || size <= 0) newErrors.size = true;
+        if (!price || price < 20) newErrors.price = true;
+		if (!File) newErrors.image = true;
 
         setErrors(newErrors);
         if (Object.keys(newErrors).length > 0) return;
@@ -74,13 +75,21 @@ export default function CreateNewProperty({ setIsCreateNewPropertyVisible }: Cre
                 location: location ?? '',
                 detail: detail ?? '',
                 rating: 0,
-                image_url: `https://loremflickr.com/2048/1280?random=${Math.floor(Math.random() * 1000) + 1}`,
+                image_url: '',
                 date: new Date().toISOString(),
                 status: 'available',
                 review_count: 0,
             };
+            const response = await dispatch(createProperty(propertyData));
+            const payload = response.payload as Property;
+            const property : Property = {
+                ...propertyData,
+                id: payload?.id,
+                image_url : await handleUpload(payload?.id.toString())
+            };
+			
+            await dispatch(updateProperty(property));
 
-            await dispatch(createProperty(propertyData));
             setIsCreateNewPropertyVisible(false);
         } catch (error) {
             console.error('Error creating property:', error);
@@ -121,17 +130,17 @@ export default function CreateNewProperty({ setIsCreateNewPropertyVisible }: Cre
             <div className="flex h-[52.5rem] p-[1.25rem] [1.5rem] flex-col items-start gap-[0.625rem] self-stretch">
                 <div className="flex flex-col items-start gap-[16px] self-stretch">
                     <div className="flex h-[280px] p-[28px] flex-col items-center justify-center gap-[10px] self-stretch rounded-[6px] bg-slate-200 relative overflow-hidden">
-                        <img
-                            src={imagePreview || 'https://loremflickr.com/500/300?random=1'}
-                            alt="Property preview"
-                            className="object-cover w-full h-full absolute inset-0"
-                        />
+                        <img src={imagePreview || ''} alt="" className="object-cover w-full h-full absolute inset-0" />
                     </div>
                     <div className="flex flex-col items-start gap-[4px] self-stretch">
                         <div className="flex items-start gap-[10px] self-stretch">
                             <div className="text-slate-700 text-xs font-medium leading-[16px]">Image*</div>
                         </div>
-                        <div className="flex h-[40px] min-h-[40px] max-h-[40px] py-[8px] px-[12px] items-center self-stretch rounded-[6px] border border-slate-200 bg-white">
+                        <div
+                            className={`flex h-[40px] min-h-[40px] max-h-[40px] py-[8px] px-[12px] items-center self-stretch rounded-[6px] border ${
+                                errors.image ? 'border-red-500' : 'border-slate-200'
+                            } bg-white`}
+                        >
                             <div className="flex pr-[4px] flex-col items-center gap-[10px]">
                                 <div className="flex py-[1px] px-[6px] items-center gap-[10px]">
                                     <label htmlFor="file-input" className="cursor-pointer">
@@ -159,11 +168,7 @@ export default function CreateNewProperty({ setIsCreateNewPropertyVisible }: Cre
                             <div className="text-slate-700 text-xs font-medium leading-[16px]">Name*</div>
                         </div>
 
-                        <div
-                            className={`flex p-[8px] w-full rounded-[6px] border ${
-                                errors.name ? 'border-red-500' : 'border-slate-200'
-                            }`}
-                        >
+                        <div className={`flex p-[8px] w-full rounded-[6px] border $`}>
                             <input
                                 className="text-base font-normal leading-[24px] w-full outline-none"
                                 placeholder="Property Name"
@@ -171,6 +176,11 @@ export default function CreateNewProperty({ setIsCreateNewPropertyVisible }: Cre
                                 onChange={(e) => setName(e.target.value)}
                             />
                         </div>
+                        {errors.name && (
+                            <div className=" text-red-500 text-xs">
+                                <p>*Name is required</p>
+                            </div>
+                        )}
                     </div>
 
                     <div className="flex flex-col items-start gap-[4px] self-stretch">
@@ -178,9 +188,7 @@ export default function CreateNewProperty({ setIsCreateNewPropertyVisible }: Cre
                             <div className="text-slate-700 text-xs font-medium leading-[16px]">Location*</div>
                         </div>
                         <div
-                            className={`flex p-[8px] items-start gap-[10px] flex-1 self-stretch rounded-[6px] border ${
-                                errors.location ? 'border-red-500' : 'border-slate-200'
-                            }`}
+                            className={`flex p-[8px] items-start gap-[10px] flex-1 self-stretch rounded-[6px] border `}
                         >
                             <input
                                 className="text-base font-normal leading-[24px] w-full outline-none"
@@ -189,6 +197,11 @@ export default function CreateNewProperty({ setIsCreateNewPropertyVisible }: Cre
                                 onChange={(e) => setLocation(e.target.value)}
                             />
                         </div>
+                        {errors.location && (
+                            <div className=" text-red-500 text-xs">
+                                <p>*Location is required</p>
+                            </div>
+                        )}
                     </div>
 
                     <div className="flex h-[144px] flex-col items-start gap-[4px] self-stretch">
@@ -214,11 +227,7 @@ export default function CreateNewProperty({ setIsCreateNewPropertyVisible }: Cre
                             </div>
                         </div>
                         <div className="flex items-center gap-[4px] self-stretch">
-                            <div
-                                className={`flex p-[8px] items-center gap-[10px] flex-1 rounded-[6px] border ${
-                                    errors.size ? 'border-red-500' : 'border-slate-200'
-                                }`}
-                            >
+                            <div className={`flex p-[8px] items-center gap-[10px] flex-1 rounded-[6px] border `}>
                                 <input
                                     type="number"
                                     className="text-base font-normal leading-[24px] w-full outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
@@ -228,6 +237,11 @@ export default function CreateNewProperty({ setIsCreateNewPropertyVisible }: Cre
                                 />
                             </div>
                         </div>
+                        {errors.size && (
+                            <div className=" text-red-500 text-xs">
+                                <p>*Size required more than zero</p>
+                            </div>
+                        )}
                     </div>
 
                     <div className="flex flex-col items-start gap-[4px] self-stretch">
@@ -236,11 +250,7 @@ export default function CreateNewProperty({ setIsCreateNewPropertyVisible }: Cre
                                 Price* (Baht per month)
                             </div>
                         </div>
-                        <div
-                            className={`flex p-[8px] items-center gap-[10px] self-stretch rounded-[6px] border ${
-                                errors.price ? 'border-red-500' : 'border-slate-200'
-                            }`}
-                        >
+                        <div className={`flex p-[8px] items-center gap-[10px] self-stretch rounded-[6px] border `}>
                             <input
                                 type="number"
                                 className="w-full text-base font-normal leading-[24px] outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
@@ -249,6 +259,11 @@ export default function CreateNewProperty({ setIsCreateNewPropertyVisible }: Cre
                                 onChange={(e) => setPrice(Number(e.target.value) || null)}
                             />
                         </div>
+                        {errors.price && (
+                            <div className=" text-red-500 text-xs">
+                                <p>*Price required more than 20 Baht</p>
+                            </div>
+                        )}
                         <div className="w-full h-[100px] empty"></div>
                     </div>
                 </div>

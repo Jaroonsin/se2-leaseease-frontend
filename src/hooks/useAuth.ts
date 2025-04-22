@@ -19,7 +19,6 @@ export function useAuth() {
 
     useEffect(() => {
         checkAuth();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -35,7 +34,6 @@ export function useAuth() {
                 }
             }
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isAuthenticated, loading, pathname, authCheckInitiated]);
 
     return { user, loading, isAuthenticated };

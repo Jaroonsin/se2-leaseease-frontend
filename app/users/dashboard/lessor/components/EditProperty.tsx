@@ -4,7 +4,8 @@
 import { Dispatch, SetStateAction, useState } from 'react';
 // import { Property } from '../../../type/Property'
 import { useAppDispatch, useAppSelector } from '@/src/store/hooks';
-import { updateProperty, Property } from '@/src/store/slice/propertySlice';
+import { updateProperty, Property, uploadPropertyImage } from '@/src/store/slice/propertySlice';
+import PropertyDescription from './PropertyDescription';
 type EditPropertyProps = {
     setIsEditPropertyVisible: Dispatch<SetStateAction<boolean>>;
 };
@@ -16,11 +17,13 @@ export default function EditProperty({ setIsEditPropertyVisible }: EditPropertyP
 
     // const [editProperty, setEditProperty] = useState<Property | null>(selectedProperty ?? null);
     const selectedProperty = useAppSelector((state) => state.property.selectedProperty);
-    const [selectedFile, setSelectedFile] = useState<string | null>(selectedProperty?.image_url ?? null);
+    const [selectedFile, setSelectedFile] = useState<string | null>('default.jpg');
     const [name, setName] = useState<string | null>(selectedProperty?.name || '');
     const [location, setLocation] = useState<string | null>(selectedProperty?.location || '');
     const [size, setSize] = useState<number | null>(selectedProperty?.size || 0);
     const [price, setPrice] = useState<number | null>(selectedProperty?.price || null);
+    const [image_url, setImage_url] = useState<string>(selectedProperty?.image_url || 'default.jpg');
+    const [File, setFile] = useState<File | null>(null);
 
     const [errors, setErrors] = useState<{
         name?: boolean;
@@ -33,6 +36,31 @@ export default function EditProperty({ setIsEditPropertyVisible }: EditPropertyP
         const file = event.target.files?.[0];
         if (file) {
             setSelectedFile(file.name);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImage_url(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+            setFile(file);
+        }
+    };
+
+    const handleUpload = async (id: string) => {
+        const formData = new FormData();
+        if (File) {
+            formData.append('image', File);
+        } else {
+            return '';
+        }
+        try {
+            const resultAction = await dispatch(uploadPropertyImage({ id, formData }));
+            const response = resultAction.payload;
+            setImage_url(response || '');
+            return response;
+        } catch (error) {
+            console.error('Upload error:', error);
+            alert('Upload failed!');
+            return '';
         }
     };
 
@@ -43,6 +71,8 @@ export default function EditProperty({ setIsEditPropertyVisible }: EditPropertyP
         if (!location) newErrors.location = true;
         if (!size) newErrors.size = true;
         if (!price) newErrors.price = true;
+
+        const id = selectedProperty?.id?.toString() || '';
 
         setErrors(newErrors);
         if (Object.keys(newErrors).length > 0) {
@@ -56,13 +86,20 @@ export default function EditProperty({ setIsEditPropertyVisible }: EditPropertyP
             id: selectedProperty?.id || 0,
             rating: selectedProperty?.rating || 0,
             date: selectedProperty?.date || new Date().toISOString(),
-            image_url: selectedProperty?.image_url || '',
+            image_url: image_url || selectedProperty?.image_url || '',
             status: selectedProperty?.status || 'Available',
             detail: selectedProperty?.detail || '',
             review_count: selectedProperty?.review_count || 0,
         };
         try {
-            await dispatch(updateProperty(editProperty)).unwrap(); // Unwraps the promise to handle errors properly
+            const response = await handleUpload(id);
+            const property = {
+                ...editProperty,
+                image_url: response || selectedProperty?.image_url || '',
+            };
+            console.log('Property to be updated:', property);
+
+            await dispatch(updateProperty(property)); // Unwraps the promise to handle errors properly
             setIsEditPropertyVisible(false);
             console.log('Property updated successfully');
         } catch (error) {
@@ -105,8 +142,8 @@ export default function EditProperty({ setIsEditPropertyVisible }: EditPropertyP
 
             <div className="flex h-[52.5rem] p-[1.25rem] [1.5rem] flex-col items-start gap-[0.625rem] self-stretch">
                 <div className="flex flex-col items-start gap-[16px] self-stretch">
-                    <div className="flex h-[280px] p-[28px] flex-col items-start gap-[10px] self-stretch rounded-[6px] bg-slate-200">
-                        {/* <div className="flex-1 self-stretch bg-[url('https://loremflickr.com/400/200?random=2')] bg-lightgray bg-[50%] bg-cover bg-no-repeat"></div> */}
+                    <div className="flex h-[280px] p-[28px] flex-col items-center justify-center gap-[10px] self-stretch rounded-[6px] bg-slate-200 relative overflow-hidden">
+                        <img src={image_url} alt="image" className="object-cover w-full h-full absolute inset-0" />
                     </div>
                     <div className="flex flex-col items-start gap-[4px] self-stretch">
                         <div className="flex items-start gap-[10px] self-stretch">
