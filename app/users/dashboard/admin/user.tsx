@@ -6,6 +6,7 @@ import { useAuth } from '@/src/hooks/useAuth';
 import LoadPage from '@/src/components/ui/loadpage';
 import { getUserData, userData } from '@/src/api/data/user';
 import Modal from './modal';
+import ButtonGroup from '../lessor/components/ButtonGroup';
 
 export default function UserDashboard() {
     const [sortColumn, setSortColumn] = useState<string>('name');
@@ -14,6 +15,9 @@ export default function UserDashboard() {
     const { loading } = useAuth();
     const [deleting, setDeleting] = useState<boolean>(false);
     const [filteredData, setFilteredData] = useState<userData[]>([]);
+    const [searchData, setSearchData] = useState<userData[]>([]);
+    const [activeButton, setActiveButton] = useState<string>('All');
+    const [searchValue, setSearchValue] = useState<string>('');
     // const mockData: reviewDataForAdmin[] = Array.from({ length: 30 }, (_, index) => ({
     //     name: `Lessee Name ${index + 1}`,
     //     reviewedAt: `2025-04-${(index % 30) + 1}T12:00:00Z`, // Example timestamp (modify for real data)
@@ -30,7 +34,6 @@ export default function UserDashboard() {
         try {
             const userDatas = await getUserData();
             setTableData(userDatas);
-            setFilteredData(userDatas);
             // setFilteredData(tableData);
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -39,7 +42,12 @@ export default function UserDashboard() {
     useEffect(() => {
         fetchData();
     }, []);
-
+    useEffect(() => {
+        searchByValue(searchValue);
+    }, [tableData]);
+    useEffect(() => {
+        handleButtonClick(activeButton);
+    }, [searchData]);
     if (loading || deleting) return <LoadPage></LoadPage>;
     // if (error) return <div>Error: {error}</div>
 
@@ -63,10 +71,28 @@ export default function UserDashboard() {
     };
     const search = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
-            const searchValue = event.currentTarget.value.toLowerCase();
-            const results = tableData.filter((item) => item.name.toLowerCase().includes(searchValue));
+            const value = event.currentTarget.value.toLowerCase();
+            const results = tableData.filter((item) => item.name.toLowerCase().includes(value));
+            setSearchValue('value');
+            setSearchData(results);
+        }
+    };
+    const searchByValue = (q: string) => {
+        const searchValue = q.toLowerCase();
+        const results = tableData.filter((item) => item.name.toLowerCase().includes(searchValue));
+        setSearchData(results);
+    };
+    const handleButtonClick = (activeButton: string) => {
+        if (activeButton == 'All') setFilteredData(searchData);
+        else if (activeButton == 'Active') {
+            const results = searchData.filter((item) => item.status === 'active');
+            setFilteredData(results);
+        } else {
+            const results = searchData.filter((item) => item.status === 'banned');
             setFilteredData(results);
         }
+        console.log('Active button:', activeButton);
+        setActiveButton(activeButton);
     };
     return (
         <div className=" flex w-full flex-col items-center rounded-md">
@@ -76,7 +102,9 @@ export default function UserDashboard() {
                     placeholder="Search User"
                     onKeyDown={search}
                 />
-
+                <div className="flex flex-col items-start gap-5 flex-1 self-stretch my-[20px]">
+                    <ButtonGroup buttons={['All', 'Active', 'Banned']} onClick={handleButtonClick} />
+                </div>
                 <div className="w-full h-full flex flex-col">
                     <div className="w-full h-full rounded-lg bg-slate-50 border-2 border-gray-200">
                         <div className="flex w-full bg-white rounded-t-lg text-slate-400 border-b border-gray-200">
@@ -102,6 +130,7 @@ export default function UserDashboard() {
                                     </svg>
                                 </div>
                             </div>
+
                             <div
                                 className="px-6 py-3 text-left w-[20%] flex items-center"
                                 onClick={() => handleSort('role')}
