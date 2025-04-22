@@ -214,7 +214,8 @@ export const createChatroom = (userId: string, userName: string) => async (dispa
 };
 
 export const sendStart = () => async (dispatch: any, getState: any) => {
-    let { ws, senderId } = getState().chat;
+	const { senderId } = getState().chat
+    let { ws} = getState().chat;
 
     if (!senderId) throw new Error("Sender ID is required.");
 
