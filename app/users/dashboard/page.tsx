@@ -11,6 +11,7 @@ import { initializeWebSocket, sendStart } from '@/src/store/slice/chatSlice';
 
 export default function DashboardPage() {
     const { user } = useAuth();
+
     const [role, setRole] = useState<string | null>(null);
     const dispatch = useAppDispatch();
 
@@ -28,7 +29,6 @@ export default function DashboardPage() {
             setRole(user.role); // Example: 'lessee', 'lessor', 'admin'
         }
     }, [user]);
-
     if (!role) return <LoadPage></LoadPage>;
 
     switch (role) {
