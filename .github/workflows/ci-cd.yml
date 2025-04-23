@@ -14,6 +14,7 @@ jobs:
             NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
             NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
             NEXT_PUBLIC_OMISE_PUBLIC_KEY: ${{ secrets.NEXT_PUBLIC_OMISE_PUBLIC_KEY }}
+            NEXT_PUBLIC_WS_BASE_URL: ${{ secrets.NEXT_PUBLIC_WS_BASE_URL }}
 
         steps:
             - name: Checkout Repository
@@ -55,6 +56,7 @@ jobs:
                   echo "NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}" >> .env
                   echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}" >> .env
                   echo "NEXT_PUBLIC_OMISE_PUBLIC_KEY=${{ secrets.NEXT_PUBLIC_OMISE_PUBLIC_KEY }}" >> .env
+                  echo "NEXT_PUBLIC_WS_BASE_URL=${{ secrets.NEXT_PUBLIC_WS_BASE_URL }}" >> .env
 
                   docker build -t ${{ secrets.DOCKER_USERNAME }}/leaseease-frontend:latest .
                   docker push ${{ secrets.DOCKER_USERNAME }}/leaseease-frontend:latest
