@@ -161,6 +161,11 @@ export default function CreateNewProperty({ setIsCreateNewPropertyVisible }: Cre
                                 </div>
                             </div>
                         </div>
+						{errors.image && (
+                            <div className=" text-red-500 text-xs">
+                                <p>*Image is required</p>
+                            </div>
+                        )}
                     </div>
 
                     <div className="flex flex-col items-start gap-[4px] self-stretch">
