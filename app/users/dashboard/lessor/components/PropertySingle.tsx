@@ -11,7 +11,7 @@ type ChildProps = {
 export default function PropertySingle({ property, isPropertyActive, onClick }: ChildProps) {
     return (
         <button
-            className={`flex py-2 px-[10px] items-center gap-2 self-stretch ${
+            className={`property-list-item flex py-2 px-[10px] items-center gap-2 self-stretch ${
                 isPropertyActive ? 'bg-[#E2E8F0]' : 'hover:bg-[#F1F5F9]'
             }`}
             onClick={onClick}
