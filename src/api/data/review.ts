@@ -69,7 +69,7 @@ export const convertToReviewDataForAdmin = (response: any): reviewDataForAdmin[]
         imageURL: item.imageURL,
         id: item.review_id,
         lesseeID: item.lesseeID,
-        pname: item.property_name,
+        pname: item.property_id,
     }));
 };
 export const deleteReview = async (id: number) => {
